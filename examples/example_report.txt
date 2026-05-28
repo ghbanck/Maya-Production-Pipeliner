@@ -1,0 +1,15 @@
+================================================================================
+Maya Production Pipeliner — Execution Report
+================================================================================
+
+  NOTE: This is a placeholder file for the scaffold phase.
+  A real example report will be generated in Phase 3 (Reporter).
+
+  The report format will include:
+    - Execution header  (date, scene file, scope mode, execution mode)
+    - Summary counters  (scanned, planned, moved, preserved, skipped, failed)
+    - Warnings          (high-level warnings from the run)
+    - MEL hook status   (pre/post hook called, success, errors)
+    - Per-object detail (one entry per RouteDecision)
+
+================================================================================

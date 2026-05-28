@@ -1,0 +1,10 @@
+{
+  "_note": "Placeholder for scaffold phase. Real example added in Phase 3 (Reporter).",
+  "_format": {
+    "header": "Execution metadata: date, scene_file, scope_mode, execution_mode",
+    "summary": "Counters: scanned, planned, moved, already_in_target, preserved, warnings, failed",
+    "warnings": "List of high-level warning strings",
+    "mel_hook_status": "pre/post hook called state, success flags, error strings",
+    "route_decisions": "Full per-object RouteDecision list"
+  }
+}
