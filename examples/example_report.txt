@@ -1,15 +1,29 @@
-================================================================================
-Maya Production Pipeliner — Execution Report
-================================================================================
+Maya Production Pipeliner
+Report generated: 2026-05-28T21:32:44
 
-  NOTE: This is a placeholder file for the scaffold phase.
-  A real example report will be generated in Phase 3 (Reporter).
+Execution
+---------
+Mode: dry_run
+Scope: all_scene
+Ignore string:
+Success: True
+Message: Dry Run completed without scene changes.
 
-  The report format will include:
-    - Execution header  (date, scene file, scope mode, execution mode)
-    - Summary counters  (scanned, planned, moved, preserved, skipped, failed)
-    - Warnings          (high-level warnings from the run)
-    - MEL hook status   (pre/post hook called, success, errors)
-    - Per-object detail (one entry per RouteDecision)
+Summary
+-------
+already_in_target: 0
+failed: 0
+moved: 0
+planned: 0
+preserved: 0
+scanned: 0
+warnings: 0
+would_move: 0
 
-================================================================================
+Warnings
+--------
+None
+
+Route Decisions
+---------------
+No route decisions.

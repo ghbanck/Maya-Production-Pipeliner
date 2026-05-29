@@ -74,15 +74,33 @@ def run(scope_mode, execution_mode, ignore_string="",
         RunResult dict.  The UI must read only this object; it must not
         open or parse report files to determine execution state.
     """
-    # TODO: Phase 6 — implement full coordination:
-    #   1. mel_bridge.run_pre_hook(pre_hook)
-    #   2. scanner.scan(scope_mode, ignore_string)
-    #   3. classifier.classify(records, execution_mode, scope_mode, ignore_string)
-    #   4. organizer.apply_routes(decisions) if Apply
-    #   5. reporter.write_reports(run_result, decisions)
-    #   6. mel_bridge.run_post_hook(post_hook)
-    #   7. return _build_run_result(...)
-    raise NotImplementedError("pipeline.run() is not yet implemented.")
+    if scope_mode not in config.SCOPE_MODES:
+        raise ValueError("Unsupported scope_mode: {0}".format(scope_mode))
+    if execution_mode not in config.EXECUTION_MODES:
+        raise ValueError("Unsupported execution_mode: {0}".format(execution_mode))
+
+    mel_hook_status = _build_disabled_hook_status(pre_hook, post_hook)
+
+    if execution_mode == config.APPLY:
+        message = "Apply is not implemented yet; no scene changes were made."
+        run_result = _build_run_result(
+            scope_mode, execution_mode, ignore_string, [], [], {},
+            mel_hook_status, False, message,
+        )
+        return run_result
+
+    object_records = scanner.scan(scope_mode, ignore_string)
+    route_decisions = classifier.classify(
+        object_records, execution_mode, scope_mode, ignore_string
+    )
+    run_result = _build_run_result(
+        scope_mode, execution_mode, ignore_string, object_records,
+        route_decisions, {}, mel_hook_status, True,
+        "Dry Run completed without scene changes.",
+    )
+    report_paths = reporter.write_reports(run_result, route_decisions)
+    run_result["report_paths"] = report_paths
+    return run_result
 
 
 # ---------------------------------------------------------------------------
@@ -95,21 +113,95 @@ def _build_run_result(scope_mode, execution_mode, ignore_string,
                       success, message):
     """Assemble and return a RunResult dict.
 
-    TODO: Phase 6 — populate all RunResult fields defined by the
-    project data contracts, including summary counters,
-    warnings, preview_routes (limited by MAX_UI_PREVIEW_ITEMS), and
-    route_decisions_count.
     """
-    raise NotImplementedError
+    warnings = []
+    for record in object_records:
+        warnings.extend(record.get("warnings") or [])
+    for decision in route_decisions:
+        warnings.extend(decision.get("warnings") or [])
+
+    ignore_matches = [
+        record for record in object_records
+        if record.get("matches_ignore_string")
+    ]
+    if len(ignore_matches) > config.IGNORE_MATCH_WARNING_THRESHOLD:
+        warnings.append(
+            "Ignore string matched {0} objects.".format(len(ignore_matches))
+        )
+
+    return {
+        "route_decisions": route_decisions,
+        "summary": _build_summary(route_decisions, len(object_records)),
+        "warnings": warnings,
+        "report_paths": report_paths or {"txt": None, "json": None},
+        "mel_hook_status": mel_hook_status,
+        "execution_mode": execution_mode,
+        "scope_mode": scope_mode,
+        "ignore_string": ignore_string,
+        "success": bool(success),
+        "message": message,
+        "route_decisions_count": len(route_decisions),
+        "preview_routes": _build_preview_routes(
+            route_decisions, config.MAX_UI_PREVIEW_ITEMS
+        ),
+        "max_ui_preview_items": config.MAX_UI_PREVIEW_ITEMS,
+    }
 
 
-def _build_summary(route_decisions):
+def _build_disabled_hook_status(pre_hook="", post_hook=""):
+    """Return hook status for the initial read-only runtime slice.
+
+    MEL hooks are implemented in mel_bridge.py but intentionally not called by
+    the first Dry Run runtime because user-defined hooks can mutate a scene.
+    """
+    errors = []
+    pre_status = _disabled_single_hook_status(pre_hook)
+    post_status = _disabled_single_hook_status(post_hook)
+    if pre_status["error"]:
+        errors.append(pre_status["error"])
+    if post_status["error"]:
+        errors.append(post_status["error"])
+    return {"pre": pre_status, "post": post_status, "errors": errors}
+
+
+def _disabled_single_hook_status(hook_name=""):
+    """Return neutral or disabled status for one optional MEL hook."""
+    if not hook_name:
+        return {"called": False, "success": True, "error": None}
+    return {
+        "called": False,
+        "success": False,
+        "error": "MEL hooks are disabled in the initial Dry Run runtime.",
+    }
+
+
+def _build_summary(route_decisions, scanned_count=0):
     """Return a summary dict with counters derived from *route_decisions*.
 
-    TODO: Phase 6 — count scanned, planned, moved, already_in_target,
-    preserved, warnings, and failed.
     """
-    raise NotImplementedError
+    summary = {
+        "scanned": scanned_count,
+        "planned": len(route_decisions),
+        "would_move": 0,
+        "moved": 0,
+        "already_in_target": 0,
+        "preserved": 0,
+        "warnings": 0,
+        "failed": 0,
+    }
+    for decision in route_decisions:
+        if decision.get("would_move"):
+            summary["would_move"] += 1
+        if decision.get("did_move"):
+            summary["moved"] += 1
+        if decision.get("operation_status") == config.STATUS_ALREADY_IN_TARGET:
+            summary["already_in_target"] += 1
+        if decision.get("report_only") or not decision.get("can_move"):
+            summary["preserved"] += 1
+        if decision.get("operation_status") == config.STATUS_FAILED_PARENTING:
+            summary["failed"] += 1
+        summary["warnings"] += len(decision.get("warnings") or [])
+    return summary
 
 
 def _build_preview_routes(route_decisions, max_items):
@@ -118,6 +210,14 @@ def _build_preview_routes(route_decisions, max_items):
     Each item contains: object_name, route, target_group, operation_status,
     can_move.
 
-    TODO: Phase 6 — slice to max_items and format each item.
     """
-    raise NotImplementedError
+    preview = []
+    for decision in route_decisions[:max_items]:
+        preview.append({
+            "object_name": decision.get("object_name"),
+            "route": decision.get("route"),
+            "target_group": decision.get("target_group"),
+            "operation_status": decision.get("operation_status"),
+            "can_move": decision.get("can_move"),
+        })
+    return preview

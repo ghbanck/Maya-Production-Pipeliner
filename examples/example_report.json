@@ -1,10 +1,44 @@
 {
-  "_note": "Placeholder for scaffold phase. Real example added in Phase 3 (Reporter).",
-  "_format": {
-    "header": "Execution metadata: date, scene_file, scope_mode, execution_mode",
-    "summary": "Counters: scanned, planned, moved, already_in_target, preserved, warnings, failed",
-    "warnings": "List of high-level warning strings",
-    "mel_hook_status": "pre/post hook called state, success flags, error strings",
-    "route_decisions": "Full per-object RouteDecision list"
-  }
+  "generated_at": "2026-05-28T21:32:44",
+  "route_decisions": [],
+  "run_result": {
+    "execution_mode": "dry_run",
+    "ignore_string": "",
+    "max_ui_preview_items": 25,
+    "mel_hook_status": {
+      "errors": [],
+      "post": {
+        "called": false,
+        "error": null,
+        "success": true
+      },
+      "pre": {
+        "called": false,
+        "error": null,
+        "success": true
+      }
+    },
+    "message": "Dry Run completed without scene changes.",
+    "preview_routes": [],
+    "report_paths": {
+      "json": "<temp>/maya_production_pipeliner_report.json",
+      "txt": "<temp>/maya_production_pipeliner_report.txt"
+    },
+    "route_decisions": [],
+    "route_decisions_count": 0,
+    "scope_mode": "all_scene",
+    "success": true,
+    "summary": {
+      "already_in_target": 0,
+      "failed": 0,
+      "moved": 0,
+      "planned": 0,
+      "preserved": 0,
+      "scanned": 0,
+      "warnings": 0,
+      "would_move": 0
+    },
+    "warnings": []
+  },
+  "tool": "Maya Production Pipeliner"
 }

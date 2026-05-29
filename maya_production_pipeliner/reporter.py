@@ -31,6 +31,7 @@ Public API
 import json
 import os
 import tempfile
+from datetime import datetime
 
 try:
     import maya.cmds as cmds
@@ -59,9 +60,25 @@ def write_reports(run_result, route_decisions):
     dict
         {'txt': <path or None>, 'json': <path or None>}
     """
-    # TODO: Phase 3 — resolve output directory, format and write TXT report,
-    #       serialise and write JSON report, return path dict.
-    raise NotImplementedError("reporter.write_reports() is not yet implemented.")
+    directory = _resolve_output_directory()
+    expected_paths = {
+        "txt": os.path.join(directory, config.REPORT_TXT_NAME),
+        "json": os.path.join(directory, config.REPORT_JSON_NAME),
+    }
+    report_result = dict(run_result)
+    report_result["report_paths"] = expected_paths
+
+    txt_content = _format_txt_report(report_result, route_decisions)
+    json_payload = _format_json_payload(report_result, route_decisions)
+
+    txt_path = _write_file(directory, config.REPORT_TXT_NAME, txt_content, mode="w")
+    json_path = _write_file(
+        directory,
+        config.REPORT_JSON_NAME,
+        json.dumps(json_payload, indent=2, sort_keys=True),
+        mode="w",
+    )
+    return {"txt": txt_path, "json": json_path}
 
 
 # ---------------------------------------------------------------------------
@@ -73,34 +90,123 @@ def _resolve_output_directory():
 
     Priority: scene file directory > workspace directory > temp directory.
 
-    TODO: Phase 3 — implement priority lookup using cmds.file and
-    cmds.workspace, fall back to tempfile.gettempdir().
     """
-    raise NotImplementedError
+    if cmds is not None:
+        try:
+            scene_path = cmds.file(query=True, sceneName=True)
+        except Exception:
+            scene_path = ""
+        if scene_path:
+            scene_directory = os.path.dirname(scene_path)
+            if scene_directory:
+                return scene_directory
+
+        try:
+            workspace_directory = cmds.workspace(query=True, rootDirectory=True)
+        except Exception:
+            workspace_directory = ""
+        if workspace_directory:
+            return workspace_directory
+
+    return tempfile.gettempdir()
 
 
 def _format_txt_report(run_result, route_decisions):
     """Return a formatted TXT string describing the full execution.
 
-    TODO: Phase 3 — include header, summary counters, warnings, hook status,
-    and per-object route detail.
     """
-    raise NotImplementedError
+    lines = [
+        config.TOOL_NAME,
+        "Report generated: {0}".format(_timestamp()),
+        "",
+        "Execution",
+        "---------",
+        "Mode: {0}".format(run_result.get("execution_mode")),
+        "Scope: {0}".format(run_result.get("scope_mode")),
+        "Ignore string: {0}".format(run_result.get("ignore_string") or ""),
+        "Success: {0}".format(run_result.get("success")),
+        "Message: {0}".format(run_result.get("message") or ""),
+        "",
+        "Summary",
+        "-------",
+    ]
+
+    summary = run_result.get("summary") or {}
+    for key in sorted(summary):
+        lines.append("{0}: {1}".format(key, summary[key]))
+
+    warnings = run_result.get("warnings") or []
+    lines.extend(["", "Warnings", "--------"])
+    if warnings:
+        lines.extend("- {0}".format(warning) for warning in warnings)
+    else:
+        lines.append("None")
+
+    lines.extend(["", "Route Decisions", "---------------"])
+    if route_decisions:
+        for decision in route_decisions:
+            lines.append(
+                "- {object_name} | route={route} | target={target_group} | "
+                "can_move={can_move} | status={operation_status} | "
+                "reason={reason}".format(**_txt_decision(decision))
+            )
+    else:
+        lines.append("No route decisions.")
+
+    return "\n".join(lines) + "\n"
 
 
 def _format_json_payload(run_result, route_decisions):
     """Return a JSON-serialisable dict for the full execution.
 
-    TODO: Phase 3 — mirror TXT content in structured form; ensure all values
-    are JSON-safe (strings, ints, floats, bools, lists, dicts).
     """
-    raise NotImplementedError
+    payload = {
+        "tool": config.TOOL_NAME,
+        "generated_at": _timestamp(),
+        "run_result": run_result,
+        "route_decisions": route_decisions,
+    }
+    return _json_safe(payload)
 
 
 def _write_file(directory, filename, content, mode="w"):
     """Write *content* to *filename* inside *directory*.
 
-    TODO: Phase 3 — handle IOError gracefully and return the full path or
-    None on failure.
     """
-    raise NotImplementedError
+    try:
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
+        path = os.path.join(directory, filename)
+        with open(path, mode, encoding="utf-8") as handle:
+            handle.write(content)
+        return path
+    except OSError:
+        return None
+
+
+def _timestamp():
+    """Return an ISO-like local timestamp for reports."""
+    return datetime.now().replace(microsecond=0).isoformat()
+
+
+def _txt_decision(decision):
+    """Return text-safe defaults for one route decision."""
+    return {
+        "object_name": decision.get("object_name") or "",
+        "route": decision.get("route") or "",
+        "target_group": decision.get("target_group") or "",
+        "can_move": decision.get("can_move"),
+        "operation_status": decision.get("operation_status") or "",
+        "reason": decision.get("reason") or "",
+    }
+
+
+def _json_safe(value):
+    """Convert common values into JSON-safe containers."""
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return str(value)

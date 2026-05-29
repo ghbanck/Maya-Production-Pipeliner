@@ -51,10 +51,10 @@ def run_pre_hook(hook_name=""):
     dict
         {'called': bool, 'success': bool, 'error': str or None}
     """
-    # TODO: Phase 2 — call maya_mel.eval(hook_name + "()") when hook_name is
-    #       non-empty and maya_mel is available, catch all exceptions, return
-    #       status dict.
-    return {"called": False, "success": False, "error": None}
+    if not hook_name:
+        return {"called": False, "success": True, "error": None}
+    success, error = _call_mel_procedure(hook_name)
+    return {"called": True, "success": success, "error": error}
 
 
 def run_post_hook(hook_name=""):
@@ -70,8 +70,10 @@ def run_post_hook(hook_name=""):
     dict
         {'called': bool, 'success': bool, 'error': str or None}
     """
-    # TODO: Phase 2 — same pattern as run_pre_hook.
-    return {"called": False, "success": False, "error": None}
+    if not hook_name:
+        return {"called": False, "success": True, "error": None}
+    success, error = _call_mel_procedure(hook_name)
+    return {"called": True, "success": success, "error": error}
 
 
 # ---------------------------------------------------------------------------
@@ -81,7 +83,11 @@ def run_post_hook(hook_name=""):
 def _call_mel_procedure(procedure_name):
     """Call a MEL procedure by name and return (success, error_string).
 
-    TODO: Phase 2 — wrap maya_mel.eval in try/except; return (True, None)
-    on success or (False, str(exception)) on failure.
     """
-    raise NotImplementedError
+    if maya_mel is None:
+        return False, "Maya MEL runtime is not available."
+    try:
+        maya_mel.eval(procedure_name + "()")
+        return True, None
+    except Exception as exc:
+        return False, str(exc)
