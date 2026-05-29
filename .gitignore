@@ -58,3 +58,6 @@ maya_production_pipeliner_report.json
 # Keep committed example reports
 !examples/example_report.txt
 !examples/example_report.json
+
+# Local collaborator guidance
+AGENTS.md
