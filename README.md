@@ -69,14 +69,14 @@ A module should only be considered functional when its implementation and manual
 | Repository scaffold     | In progress                          |
 | Maya package structure  | Scaffold                             |
 | Import safety           | Required before functional milestone |
-| Data contracts          | Planned                              |
-| TXT/JSON reporter       | Planned                              |
-| Scene scanner           | Planned                              |
-| Safety-aware classifier | Planned                              |
-| Dry Run pipeline        | Planned                              |
+| Data contracts          | Initial                              |
+| TXT/JSON reporter       | Initial Dry Run output               |
+| Scene scanner           | Early implementation                 |
+| Safety-aware classifier | Early implementation                 |
+| Dry Run pipeline        | Early implementation                 |
 | Maya UI                 | Planned                              |
-| Safe Apply organizer    | Planned                              |
-| Hardening pass          | Planned                              |
+| Safe Apply organizer    | Planned / gated                      |
+| Validation and release polish | Planned                        |
 
 ---
 
@@ -343,7 +343,7 @@ The repository is being built in vertical slices.
 | Phase              | Goal                                                 |
 | ------------------ | ---------------------------------------------------- |
 | Phase 1            | Repository scaffold                                  |
-| Import-safe scaffold modules | Import-safe scaffold modules                |
+| Import safety      | Import-safe scaffold modules                         |
 | Phase 2            | Data contracts and configuration                     |
 | Phase 3            | TXT/JSON reporter                                    |
 | Phase 4            | Scene scanner                                        |
