@@ -131,6 +131,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Check object parents before and after | No parent changes occur                                | PENDING |              |
 | Check object names before and after   | No rename occurs                                       | PENDING |              |
 | Check reports                         | TXT/JSON report planned actions without scene mutation | PENDING |              |
+| Check report schema field             | JSON includes `schema_version`                         | PENDING |              |
+| Check warning events field            | JSON includes `warning_events` list                    | PENDING |              |
 | Check RouteDecision values            | `would_move` may be true, but `did_move = false`       | PENDING |              |
 | Check operation status                | `operation_status = dry_run_only` or equivalent        | PENDING |              |
 
@@ -191,6 +193,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Run Dry Run on multi-material mesh    | Mesh receives multi-material review route          | PENDING |              |
 | Check multi-material route            | Object routes to `Review_MultiMaterial`            | PENDING |              |
 | Check multi-material reason           | Reason describes handoff review, not failure       | PENDING |              |
+| Check material semantics              | Report wording distinguishes shading-group count vs material-node count when present | PENDING |              |
 | Run Apply if objects are safe to move | Objects move only if `can_move = true`             | PENDING |              |
 
 **Expected result:** Material issues route to review buckets without being treated as fatal errors.
@@ -438,6 +441,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Check TXT preservation details | Includes `preserve_reason` when relevant                      | PENDING |              |
 | Check TXT operation details    | Includes `operation_status` and `new_long_name` when relevant | PENDING |              |
 | Check JSON report structure    | Equivalent data exists in structured form                     | PENDING |              |
+| Check JSON schema field        | `schema_version` is present and explicit                      | PENDING |              |
+| Check warning events structure | `warning_events` entries are structured when warnings exist   | PENDING |              |
 | Check warnings                 | Warnings appear in both TXT and JSON when present             | PENDING |              |
 
 **Expected result:** Reports are useful for review and debugging.
@@ -528,6 +533,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Run Dry Run                         | Route plan is generated                                        | PENDING |              |
 | Run Apply on same scene state       | Apply uses equivalent route-planning logic                     | PENDING |              |
 | Compare planned vs executed actions | Differences are explained by scene changes or operation status | PENDING |              |
+| Repeat Dry Run on same scene state  | Route ordering is stable across repeated runs                  | PENDING |              |
 | Check Apply report                  | Report records the plan actually executed                      | PENDING |              |
 | Check Dry Run scene state           | Dry Run did not influence Apply by mutating scene              | PENDING |              |
 
