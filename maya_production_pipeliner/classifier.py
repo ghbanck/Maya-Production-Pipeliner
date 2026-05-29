@@ -216,10 +216,16 @@ def _material_review_route(record):
     """
     if not record.get("is_mesh"):
         return None
-    material_count = record.get("material_count")
-    if record.get("uses_default_material") or material_count == 0:
+    material_node_count = record.get("material_node_count")
+    if material_node_count is None:
+        material_node_count = record.get("material_count")
+    shading_engine_count = record.get("shading_engine_count")
+    if record.get("uses_default_material") or material_node_count == 0:
         return config.ROUTE_REVIEW_MISSING_MATERIAL
-    if material_count and material_count > 1:
+    if (
+        (material_node_count and material_node_count > 1)
+        or (shading_engine_count and shading_engine_count > 1)
+    ):
         return config.ROUTE_REVIEW_MULTI_MATERIAL
     return None
 

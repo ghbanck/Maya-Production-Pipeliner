@@ -117,6 +117,7 @@ RIG_HISTORY_TYPES = ("skinCluster", "blendShape")
 TOOL_NAME = "Maya Production Pipeliner"
 REPORT_TXT_NAME = "maya_production_pipeliner_report.txt"
 REPORT_JSON_NAME = "maya_production_pipeliner_report.json"
+REPORT_SCHEMA_VERSION = "0.1"
 
 # ---------------------------------------------------------------------------
 # UI preview limits
@@ -129,3 +130,9 @@ MAX_UI_PREVIEW_ITEMS = 25
 # ---------------------------------------------------------------------------
 
 IGNORE_MATCH_WARNING_THRESHOLD = 25
+
+# ---------------------------------------------------------------------------
+# Warning codes
+# ---------------------------------------------------------------------------
+
+WARNING_IGNORE_MATCH_HIGH = "IGNORE_MATCH_HIGH"

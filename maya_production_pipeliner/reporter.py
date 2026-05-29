@@ -117,6 +117,7 @@ def _format_txt_report(run_result, route_decisions):
     """
     lines = [
         config.TOOL_NAME,
+        "Schema version: {0}".format(config.REPORT_SCHEMA_VERSION),
         "Report generated: {0}".format(_timestamp()),
         "",
         "Execution",
@@ -143,8 +144,9 @@ def _format_txt_report(run_result, route_decisions):
         lines.append("None")
 
     lines.extend(["", "Route Decisions", "---------------"])
-    if route_decisions:
-        for decision in route_decisions:
+    sorted_decisions = _sorted_route_decisions(route_decisions)
+    if sorted_decisions:
+        for decision in sorted_decisions:
             lines.append(
                 "- {object_name} | route={route} | target={target_group} | "
                 "can_move={can_move} | status={operation_status} | "
@@ -162,9 +164,10 @@ def _format_json_payload(run_result, route_decisions):
     """
     payload = {
         "tool": config.TOOL_NAME,
+        "schema_version": config.REPORT_SCHEMA_VERSION,
         "generated_at": _timestamp(),
         "run_result": run_result,
-        "route_decisions": route_decisions,
+        "route_decisions": _sorted_route_decisions(route_decisions),
     }
     return _json_safe(payload)
 
@@ -210,3 +213,15 @@ def _json_safe(value):
     if isinstance(value, (str, int, float, bool)) or value is None:
         return value
     return str(value)
+
+
+def _sorted_route_decisions(route_decisions):
+    """Return route decisions in a stable output order."""
+    return sorted(
+        route_decisions or [],
+        key=lambda item: (
+            item.get("long_name") or "",
+            item.get("route") or "",
+            item.get("target_group") or "",
+        ),
+    )

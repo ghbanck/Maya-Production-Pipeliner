@@ -115,24 +115,44 @@ def _build_run_result(scope_mode, execution_mode, ignore_string,
 
     """
     warnings = []
+    warning_events = []
     for record in object_records:
-        warnings.extend(record.get("warnings") or [])
+        for warning in record.get("warnings") or []:
+            warnings.append(str(warning))
+            warning_events.append({
+                "code": "SCANNER_WARNING",
+                "message": str(warning),
+                "source": "scanner",
+            })
     for decision in route_decisions:
-        warnings.extend(decision.get("warnings") or [])
+        for warning in decision.get("warnings") or []:
+            warnings.append(str(warning))
+            warning_events.append({
+                "code": "CLASSIFIER_WARNING",
+                "message": str(warning),
+                "source": "classifier",
+            })
 
     ignore_matches = [
         record for record in object_records
         if record.get("matches_ignore_string")
     ]
     if len(ignore_matches) > config.IGNORE_MATCH_WARNING_THRESHOLD:
-        warnings.append(
-            "Ignore string matched {0} objects.".format(len(ignore_matches))
+        warning_message = "Ignore string matched {0} objects.".format(
+            len(ignore_matches)
         )
+        warnings.append(warning_message)
+        warning_events.append({
+            "code": config.WARNING_IGNORE_MATCH_HIGH,
+            "message": warning_message,
+            "source": "pipeline",
+        })
 
     return {
         "route_decisions": route_decisions,
         "summary": _build_summary(route_decisions, len(object_records)),
         "warnings": warnings,
+        "warning_events": warning_events,
         "report_paths": report_paths or {"txt": None, "json": None},
         "mel_hook_status": mel_hook_status,
         "execution_mode": execution_mode,

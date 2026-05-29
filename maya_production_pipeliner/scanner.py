@@ -54,6 +54,9 @@ def scan(scope_mode, ignore_string=""):
     if cmds is None:
         return []
 
+    selected_transforms = set(
+        _normalize_to_transforms(cmds.ls(selection=True, long=True) or [])
+    )
     records = []
     seen = set()
     for transform in _resolve_scope(scope_mode):
@@ -61,8 +64,10 @@ def scan(scope_mode, ignore_string=""):
         if not long_name or long_name in seen:
             continue
         seen.add(long_name)
-        records.append(_build_object_record(long_name, ignore_string))
-    return records
+        records.append(
+            _build_object_record(long_name, ignore_string, selected_transforms)
+        )
+    return sorted(records, key=lambda item: item.get("long_name") or "")
 
 
 # ---------------------------------------------------------------------------
@@ -80,20 +85,20 @@ def _resolve_scope(scope_mode):
         return []
 
     if scope_mode == config.ALL_SCENE:
-        return cmds.ls(type="transform", long=True) or []
+        return sorted(cmds.ls(type="transform", long=True) or [])
 
     if scope_mode == config.SELECTED:
         selected = cmds.ls(selection=True, long=True) or []
-        return _normalize_to_transforms(selected)
+        return sorted(_normalize_to_transforms(selected))
 
     if scope_mode == config.VISIBLE:
         visible = cmds.ls(type="transform", visible=True, long=True) or []
-        return visible
+        return sorted(visible)
 
     raise ValueError("Unsupported scope_mode: {0}".format(scope_mode))
 
 
-def _build_object_record(transform, ignore_string=""):
+def _build_object_record(transform, ignore_string="", selected_transforms=None):
     """Build and return a single ObjectRecord dict for *transform*.
 
     """
@@ -104,7 +109,14 @@ def _build_object_record(transform, ignore_string=""):
     ) or []
     shape_types = [_safe_node_type(shape) for shape in shape_nodes]
     shape_type = shape_types[0] if shape_types else None
-    materials, material_count, uses_default_material = _detect_materials(long_name)
+    selected_transforms = selected_transforms or set()
+    (
+        materials,
+        material_node_count,
+        shading_engines,
+        shading_engine_count,
+        uses_default_material,
+    ) = _detect_materials(long_name)
     hierarchy_visible, native_visible, resolved_visible = _resolve_visibility(long_name)
     is_referenced = _safe_reference_query(long_name)
     is_instanced = _is_instanced(shape_nodes)
@@ -123,10 +135,13 @@ def _build_object_record(transform, ignore_string=""):
         "shape_types": shape_types,
         "is_mesh": config.MESH_SHAPE_TYPE in shape_types,
         "is_visible": resolved_visible,
-        "is_selected": _is_selected(long_name),
+        "is_selected": long_name in selected_transforms,
         "namespace": _namespace_from_name(name),
         "materials": materials,
-        "material_count": material_count,
+        "material_count": material_node_count,
+        "material_node_count": material_node_count,
+        "shading_engines": shading_engines,
+        "shading_engine_count": shading_engine_count,
         "uses_default_material": uses_default_material,
         "matches_ignore_string": _matches_ignore_string(name, long_name, ignore_string),
         "is_referenced": is_referenced,
@@ -183,11 +198,11 @@ def _resolve_visibility(transform):
 
 
 def _detect_materials(transform):
-    """Return (materials list, material_count, uses_default_material) tuple.
+    """Return material and shadingEngine facts for one transform.
 
     """
     if cmds is None:
-        return [], 0, False
+        return [], 0, [], 0, False
 
     materials = set()
     shading_engines = set()
@@ -214,9 +229,13 @@ def _detect_materials(transform):
     if not materials and config.DEFAULT_SHADING_GROUP in shading_engines:
         materials.add(config.DEFAULT_SHADING_GROUP)
 
+    sorted_materials = sorted(materials)
+    sorted_shading_engines = sorted(shading_engines)
     return (
-        sorted(materials),
-        len(shading_engines),
+        sorted_materials,
+        len(sorted_materials),
+        sorted_shading_engines,
+        len(sorted_shading_engines),
         config.DEFAULT_SHADING_GROUP in shading_engines,
     )
 
@@ -286,14 +305,6 @@ def _namespace_from_name(name):
     if ":" not in name:
         return ""
     return name.rsplit(":", 1)[0]
-
-
-def _is_selected(long_name):
-    """Return True when the transform is in the active selection."""
-    try:
-        return long_name in set(_normalize_to_transforms(cmds.ls(selection=True, long=True) or []))
-    except Exception:
-        return False
 
 
 def _safe_reference_query(node):
