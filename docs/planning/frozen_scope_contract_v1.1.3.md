@@ -87,6 +87,23 @@ Implementation details may evolve if they preserve the contract. This includes h
 
 The implementation must not add broader product features, hidden pipeline dependencies, destructive scene operations, complex external systems, or new user-facing responsibilities without explicit scope approval.
 
+Future architecture notes are directional guidance, not automatic implementation mandates. Findings from architecture review should be classified before action and should not widen scope by default.
+
+## Architecture Laws
+
+The implementation must preserve these module boundaries:
+
+* `scanner.py` reads scene facts only and never mutates the scene;
+* `classifier.py` creates route decisions only and never mutates the scene;
+* `reporter.py` writes reports only and never mutates the scene;
+* `ui.py` and `launcher.py` never mutate the scene directly;
+* `pipeline.py` coordinates execution but does not perform scene operations directly;
+* `organizer.py` is the only module allowed to mutate scene hierarchy, and only in Apply mode.
+
+Dry Run is always observational and non-mutating. It must not create groups, parent nodes, rename nodes, edit attributes, execute mutating hooks, or call Apply-only organizer behavior.
+
+Apply must execute a route plan that already exists. It must not improvise classification or routing while mutating the scene.
+
 ## User Flow
 
 The intended user flow is:
@@ -152,6 +169,8 @@ Apply executes the route plan.
 It creates or reuses the output group structure and parents only movable transform candidates. It must preserve protected content, record operation status, update `new_long_name` when parenting changes paths, and mark objects already in the correct destination as `already_in_target`.
 
 Apply must not improvise movement outside the route plan.
+
+Apply is not considered contract-complete until the Safe Move contract, failure policy, long-name policy, deterministic ordering policy, and manual test evidence are present.
 
 ## Ignore String
 
@@ -292,6 +311,8 @@ Review_MultiMaterial
 
 Multi-material routing indicates handoff review, not failure.
 
+Material fields must state what they measure. If a value counts shadingEngine connections, it should be documented as such. If a value counts unique material nodes, it should be documented separately. Classifier logic and reports must not rely on ambiguous material-count semantics.
+
 ### Scene Utilities
 
 Movable cameras, lights, locators, and simple utility transforms route to:
@@ -367,6 +388,25 @@ operation_status
 
 The classifier is responsible for conservative routing and safety decisions. The organizer is responsible for executing only the safe subset of the plan.
 
+## Safe Move Contract
+
+A route decision may be moved only when all required conditions are true at Apply time:
+
+```text
+can_move = true
+report_only = false
+source node exists
+source node is not referenced
+source node is not instanced
+source node is not rig/deformer-sensitive
+source node is not a tool structural group
+target group is valid
+parenting does not create an invalid or cyclic hierarchy
+post-parent validation succeeds
+```
+
+If any condition is unknown or false, the object must be preserved and reported instead of moved.
+
 ## Operation Status Values
 
 `operation_status` should use explicit values to avoid vague reporting:
@@ -403,6 +443,23 @@ The organizer must:
 * record `operation_status` for every attempted operation;
 * set `did_move = false` and add a warning when a move cannot be completed safely.
 
+The original `long_name` remains the scanned identity for reporting. The updated path after successful parenting belongs in `new_long_name`. If a node is renamed, missing, or failed during Apply, reports should preserve the original scanned value and record the final known state.
+
+## Apply Failure Policy
+
+Maya scene operations are not transactional. Apply must therefore favor safe partial handling over pretending that rollback is guaranteed.
+
+Expected failure behavior:
+
+* continue safely when one failed object does not invalidate independent decisions;
+* record `failed_parenting` when parenting fails;
+* record `skipped_missing_node` when a node disappears before movement;
+* leave failed objects in their original location when possible;
+* surface failures in `RunResult` and reports;
+* avoid reporting full success when partial failures occurred.
+
+Rollback is not guaranteed by this scope. Any future rollback-like behavior must be explicitly designed and documented before implementation.
+
 ## Movement Order
 
 When applying route decisions, object order must be handled conservatively.
@@ -416,6 +473,8 @@ Do not rely only on string length to decide hierarchy order. When hierarchy dept
 to reason about depth.
 
 The implementation should avoid destructive parent/child conflicts and should preserve hierarchy integrity over convenience.
+
+Route decisions and reports should use deterministic ordering where practical. Stable order reduces noisy diffs, supports manual review, and makes future regression checks easier.
 
 ## Pipeline Orchestrator
 
@@ -489,6 +548,12 @@ Report path priority:
 1. Current scene directory when the scene is saved.
 2. Maya workspace directory when available.
 3. User-safe temp fallback.
+
+JSON reports should include a simple schema version before the report format is treated as integration-stable.
+
+Warnings should support stable categories or warning codes as reporting matures. Human-readable warning text is useful for review, but stable identifiers are safer for tests, filtering, and future tooling.
+
+All report payloads must remain JSON-safe at the source record and route decision level. Late serialization cleanup may exist as a defensive fallback, but it should not be the primary data contract.
 
 ## Optional MEL Bridge
 
@@ -748,3 +813,19 @@ The v1.1.3 scope is focused on scene organization for production handoff.
 It does not expand into full asset validation, export validation, publishing, rig repair, material fixing, dependency management, database integration, or broad studio pipeline replacement.
 
 Future additions may be considered later, but they should not enter v1.1.3 without explicit scope approval.
+
+## Explicit Limitations
+
+The scope does not guarantee:
+
+* corrupted reference recovery;
+* rig correctness validation;
+* shader graph validation;
+* namespace conflict resolution;
+* animation semantic correctness;
+* resumable execution;
+* historical replay;
+* telemetry;
+* generalized pipeline runtime behavior.
+
+These limitations do not reduce the value of the tool. They keep the project focused on safe scene organization, conservative routing, and traceable handoff reports.

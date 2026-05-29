@@ -49,6 +49,23 @@ The UI and launcher should call the pipeline. They should not call scanner, clas
 
 ---
 
+## Architecture Laws
+
+The project relies on a strict mutation boundary:
+
+* `scanner.py` never mutates the Maya scene;
+* `classifier.py` never mutates the Maya scene;
+* `reporter.py` never mutates the Maya scene;
+* `ui.py` and `launcher.py` never mutate the Maya scene directly;
+* `pipeline.py` coordinates execution but does not perform scene operations directly;
+* `organizer.py` is the only module allowed to mutate scene hierarchy, and only in Apply mode.
+
+Dry Run is always non-mutating. It may scan, classify, build route decisions, return `RunResult`, and write reports. It must not create groups, parent objects, rename nodes, change attributes, execute user hooks that can mutate the scene, or call the organizer.
+
+Apply must be implemented as a gated execution of a previously built route plan. It must not improvise routing while mutating the scene.
+
+---
+
 ## Pre-implementation Risk Review
 
 The v1.1.3 planning phase identified runtime risks that are common in Maya production scenes.
@@ -143,6 +160,56 @@ The organizer should not reclassify objects. It executes the plan produced by th
 
 ---
 
+## Safe Move Contract
+
+A move is considered safe only when all required conditions are true at the moment of Apply:
+
+* the route decision was produced by the current route plan;
+* `can_move = true`;
+* `report_only = false`;
+* the source node still exists;
+* the source node is not referenced;
+* the source node is not instanced geometry;
+* the source node is not rig/deformer-sensitive;
+* the source node is not a tool structural group;
+* the target group exists or can be created safely by the organizer;
+* parenting will not create a cyclic or invalid hierarchy;
+* the object is not already in the target group, unless reporting `already_in_target`;
+* the result can be validated after parenting.
+
+If any condition is unknown or false, the object should be preserved and reported instead of moved.
+
+---
+
+## Apply Lifecycle and Failure Policy
+
+Apply must follow a predictable lifecycle:
+
+```text
+build route plan
+-> validate move candidates
+-> create or reuse required groups
+-> execute safe moves
+-> validate results
+-> write reports
+-> return RunResult
+```
+
+Maya is not transactional, so Apply must be conservative about partial failure.
+
+Expected failure policy:
+
+* continue safely when one object fails and remaining decisions can still be evaluated independently;
+* record `failed_parenting` when parenting fails;
+* record `skipped_missing_node` when a node disappears before movement;
+* leave failed objects in their original location when possible;
+* do not hide partial failure behind a successful summary;
+* include failures and warnings in reports and `RunResult`.
+
+Rollback is not guaranteed in the current scope. Any future rollback-like behavior must be designed explicitly and must not be implied by the existence of Apply.
+
+---
+
 ## Output Layer: RunResult and Reports
 
 The output layer has two different responsibilities.
@@ -150,6 +217,10 @@ The output layer has two different responsibilities.
 `RunResult` is lightweight in-memory feedback for UI and launcher.
 
 TXT/JSON reports contain full object-level details for review and debugging.
+
+JSON reports should include a simple schema version before downstream tools depend on them. Report fields should stay JSON-safe at the source record and route decision level; late serialization cleanup may be used as a safeguard, not as the primary contract.
+
+Warnings should support stable categories or codes as reporting matures. Human-readable warning text is useful, but stable warning identifiers are safer for tests, filtering, and future automation.
 
 The UI should use only `RunResult` fields such as:
 
@@ -192,6 +263,8 @@ Review_MultiMaterial
 ```
 
 The tool should not attempt to split meshes, fix material assignments, or alter shading. Multi-material cases are recorded for manual review.
+
+Material fields must state what they measure. If a field counts shadingEngine connections, it should be documented as shadingEngine count. If a field counts unique material nodes, it should be documented as material count. Reports and classifier logic must not use ambiguous material semantics.
 
 ---
 
@@ -270,6 +343,8 @@ Organizer rules:
 * record `operation_status`;
 * set `did_move = false` and add a warning if movement fails.
 
+The original `long_name` should remain the scanned identity for reporting. The post-parent path belongs in `new_long_name`. If a node is renamed or disappears during Apply, the report should preserve the original scanned value and record the final known state.
+
 ---
 
 ## Duplicate Names and Hierarchy Depth
@@ -285,6 +360,8 @@ Movement order should not rely on raw string length. When hierarchy depth matter
 ```
 
 This helps avoid processing a long-named shallow node before a deeply nested node.
+
+Reports should use deterministic ordering where practical. Stable ordering reduces noisy diffs, makes manual review easier, and helps future regression tests compare results reliably.
 
 ---
 

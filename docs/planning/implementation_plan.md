@@ -232,6 +232,30 @@ Acceptance criteria:
 
 ---
 
+## Phase 7 Gate - Before Apply
+
+Goal: define the contracts required before any scene-mutating Apply implementation.
+
+Required before Phase 8:
+
+* Safe Move contract is documented;
+* Apply lifecycle and failure policy are documented;
+* deterministic ordering policy is documented;
+* long-name mutation policy is documented;
+* report schema version policy is defined;
+* warning structure or warning-code direction is defined;
+* material-count semantics are clarified;
+* Dry Run remains non-mutating after any pipeline changes;
+* mutation isolation remains explicit: only `organizer.py` mutates scene hierarchy.
+
+Acceptance criteria:
+
+* Apply behavior is not widened implicitly;
+* no scene mutation is added before the safety contracts are clear;
+* planned Apply behavior is documented as planned until implementation and manual test evidence exist.
+
+---
+
 ## Phase 8 - Safe Apply Organizer
 
 Goal: execute route plan safely.

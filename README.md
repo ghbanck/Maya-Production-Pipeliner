@@ -36,6 +36,8 @@ Scan scene facts
 
 This is not intended to be a full validation framework, exporter, rig validator, material fixer, publisher, or studio pipeline replacement. It is a small production utility for scene organization, route planning, preservation, review grouping, and reportable handoff structure.
 
+The project favors explicit limitations and conservative behavior over broad automation. Future mutating behavior is expected to be documented and gated before implementation.
+
 ---
 
 ## At a Glance
@@ -49,7 +51,7 @@ This is not intended to be a full validation framework, exporter, rig validator,
 | DCC target             | Autodesk Maya                                                         |
 | API layer              | `maya.cmds`                                                           |
 | Optional compatibility | Isolated MEL bridge                                                   |
-| Current status         | Initial Dry Run runtime / implementation in progress                  |
+| Current status         | Scaffold / implementation in progress                                 |
 | Scope status           | v1.1.3 Final Hardened scope locked                                    |
 | License                | MIT                                                                   |
 
@@ -61,21 +63,19 @@ This project is in its initial implementation phase.
 
 A module should only be considered functional when its implementation and manual test evidence exist in the repository. Documentation may describe planned behavior, but planned behavior should not be treated as verified runtime behavior until the corresponding code and tests are present.
 
-The first runtime slice is now present: the package imports outside Maya, `pipeline.run(config.ALL_SCENE, config.DRY_RUN)` returns a lightweight `RunResult`, and TXT/JSON reports are written using the temp fallback when no Maya scene is available. Apply mode is intentionally blocked until the organizer is implemented and tested.
-
 | Area                    | Status                               |
 | ----------------------- | ------------------------------------ |
 | Frozen scope            | Locked                               |
-| Repository scaffold     | Present                              |
-| Maya package structure  | Present                              |
-| Import safety           | Basic smoke test passed outside Maya |
-| Data contracts          | Constants and JSON-safe dicts started |
-| TXT/JSON reporter       | Initial runtime implementation       |
-| Scene scanner           | Initial read-only implementation     |
-| Safety-aware classifier | Initial conservative implementation  |
-| Dry Run pipeline        | Initial runtime implementation       |
+| Repository scaffold     | In progress                          |
+| Maya package structure  | Scaffold                             |
+| Import safety           | Required before functional milestone |
+| Data contracts          | Planned                              |
+| TXT/JSON reporter       | Planned                              |
+| Scene scanner           | Planned                              |
+| Safety-aware classifier | Planned                              |
+| Dry Run pipeline        | Planned                              |
 | Maya UI                 | Planned                              |
-| Safe Apply organizer    | Planned / Apply blocked              |
+| Safe Apply organizer    | Planned                              |
 | Hardening pass          | Planned                              |
 
 ---
@@ -114,6 +114,7 @@ The v1.1.3 frozen scope defines a small Maya production utility that will:
 * build a route plan before any scene modification;
 * support **Dry Run** before **Apply**;
 * use a safety gate before moving objects;
+* define safe Apply behavior before scene mutation is implemented;
 * preserve referenced, instanced, rig-sensitive, or unclear-unsafe content;
 * preserve user-defined ignored content through an editable ignore string;
 * route material and unclear cases into review groups;
@@ -151,6 +152,8 @@ RunResult summary + TXT/JSON reports
 ```
 
 The route plan is central. Even in Apply mode, the tool should first decide what it intends to do, then execute only the safe subset of that plan.
+
+Dry Run is always observational and non-mutating. Apply is planned as a gated execution of an existing route plan, not as an opportunity to classify or improvise movement while mutating the scene.
 
 > Facts before routing. Route plan before scene changes. Reports before trust.
 
@@ -191,6 +194,8 @@ The v1.1.3 design includes:
 * optional MEL hooks isolated from the core Python workflow.
 
 The detailed architecture rationale lives in [`docs/architecture/defensive_design.md`](docs/architecture/defensive_design.md).
+
+The authoritative scope contract lives in [`docs/planning/frozen_scope_contract_v1.1.3.md`](docs/planning/frozen_scope_contract_v1.1.3.md). It defines mutation boundaries, Safe Move expectations, Apply failure policy, reporting contracts, and explicit limitations.
 
 ---
 
@@ -317,6 +322,8 @@ Reports are intended to make each run traceable by recording:
 * MEL hook status when used;
 * report paths.
 
+JSON reports are planned to use explicit schema/version semantics before the format is treated as integration-stable. Warning fields are expected to mature toward stable categories or codes for testing and filtering.
+
 Report path fallback should follow this order:
 
 ```text
@@ -325,7 +332,7 @@ saved scene directory
 -> user-safe temp fallback
 ```
 
-The files in `examples/` include a generated outside-Maya smoke report. In a live Maya session, report contents will depend on the open scene and selected scope.
+Example reports may be included before the reporter is fully implemented and should be treated as format previews until generated by the tool.
 
 ---
 
@@ -355,6 +362,8 @@ scan a simple scene
 -> write TXT/JSON reports
 -> make no scene modifications
 ```
+
+Apply work is intentionally gated behind documented safety contracts, including Safe Move rules, deterministic ordering, long-name mutation handling, failure policy, and manual test evidence.
 
 The full implementation plan is documented in [`docs/planning/implementation_plan.md`](docs/planning/implementation_plan.md).
 
@@ -436,11 +445,13 @@ The `install.py` file is a setup/helper script, not the same thing as the implem
 
 ## Current Limitations
 
-This repository is currently in early implementation phase.
+This repository is currently in scaffold / implementation phase.
 
-The tool is not yet a finished Maya utility. The current public runtime is a safe Dry Run slice: import, scan/classify/report orchestration, lightweight `RunResult`, and TXT/JSON report writing. Apply mode, UI execution, full Visible scope hardening, idempotent scene organization, and manual Maya validation are still pending.
+The tool is not yet a finished Maya utility. Features described in the planned scope should not be treated as implemented until the corresponding modules and manual test results are present.
 
 The project is focused on scene organization for production handoff. It does not replace full asset validation, export validation, publishing, rig repair, material fixing, dependency management, database integration, or broad studio pipeline systems.
+
+The current scope does not guarantee corrupted reference recovery, rig correctness validation, shader graph validation, namespace conflict resolution, animation semantic correctness, resumable execution, historical replay, telemetry, or generalized pipeline runtime behavior.
 
 ---
 
@@ -455,28 +466,3 @@ This is a public development repository for a Maya production tooling project. I
 ## License
 
 MIT License. See [LICENSE](LICENSE).
-
----
-
-## Patch Log
-
-### Initial Safe Dry Run Runtime
-
-Added the first public runtime slice for demonstration and review:
-
-* centralized modes, groups, routes, statuses, and report names in `config.py`;
-* implemented a read-only scanner that returns JSON-safe object records and stays safe outside Maya;
-* implemented a conservative classifier that produces route decisions without mutating the scene;
-* implemented TXT/JSON report writing with scene, workspace, and temp fallback paths;
-* wired `pipeline.run()` for Dry Run orchestration and lightweight `RunResult` output;
-* kept MEL hooks disabled in the initial Dry Run runtime so no user hook can mutate the scene during the first public slice;
-* updated example reports from scaffold placeholders to a safe outside-Maya smoke report;
-* kept Apply mode intentionally blocked until the organizer is implemented and manually tested.
-
-Verified with:
-
-```text
-python -m compileall maya_production_pipeliner
-python -c "import json; json.load(open('examples/example_report.json', encoding='utf-8'))"
-pipeline.run(config.ALL_SCENE, config.DRY_RUN)
-```
