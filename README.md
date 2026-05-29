@@ -343,7 +343,7 @@ The repository is being built in vertical slices.
 | Phase              | Goal                                                 |
 | ------------------ | ---------------------------------------------------- |
 | Phase 1            | Repository scaffold                                  |
-| Phase 1 correction | Import-safe scaffold modules                         |
+| Import-safe scaffold modules | Import-safe scaffold modules                |
 | Phase 2            | Data contracts and configuration                     |
 | Phase 3            | TXT/JSON reporter                                    |
 | Phase 4            | Scene scanner                                        |
