@@ -1,11 +1,12 @@
 Maya Production Pipeliner
-Report generated: 2026-05-28T21:32:44
+Schema version: 0.1
+Report generated: 2026-05-29T03:14:34
 
 Execution
 ---------
 Mode: dry_run
 Scope: all_scene
-Ignore string:
+Ignore string: 
 Success: True
 Message: Dry Run completed without scene changes.
 

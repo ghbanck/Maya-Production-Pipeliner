@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T21:32:44",
+  "generated_at": "2026-05-29T03:14:34",
   "route_decisions": [],
   "run_result": {
     "execution_mode": "dry_run",
@@ -21,8 +21,8 @@
     "message": "Dry Run completed without scene changes.",
     "preview_routes": [],
     "report_paths": {
-      "json": "<temp>/maya_production_pipeliner_report.json",
-      "txt": "<temp>/maya_production_pipeliner_report.txt"
+      "json": "C:\\Users\\gusta\\AppData\\Local\\Temp\\maya_production_pipeliner_report.json",
+      "txt": "C:\\Users\\gusta\\AppData\\Local\\Temp\\maya_production_pipeliner_report.txt"
     },
     "route_decisions": [],
     "route_decisions_count": 0,
@@ -38,7 +38,9 @@
       "warnings": 0,
       "would_move": 0
     },
+    "warning_events": [],
     "warnings": []
   },
+  "schema_version": "0.1",
   "tool": "Maya Production Pipeliner"
 }
