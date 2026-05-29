@@ -531,13 +531,16 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                                | Expected                                                       | Status  | Observations |
 | ----------------------------------- | -------------------------------------------------------------- | ------- | ------------ |
 | Run Dry Run                         | Route plan is generated                                        | PENDING |              |
-| Run Apply on same scene state       | Apply uses equivalent route-planning logic                     | PENDING |              |
+| Run Apply on same scene state       | Apply preflight uses equivalent route-planning logic           | PENDING |              |
+| Check Apply message                 | Message explicitly says "without scene changes"                | PENDING |              |
+| Check RouteDecision preflight field | Route decisions include `apply_preflight` eligibility/reasons  | PENDING |              |
+| Check Apply movement flags          | `did_move = false` and `new_long_name = None` in preflight run | PENDING |              |
 | Compare planned vs executed actions | Differences are explained by scene changes or operation status | PENDING |              |
 | Repeat Dry Run on same scene state  | Route ordering is stable across repeated runs                  | PENDING |              |
-| Check Apply report                  | Report records the plan actually executed                      | PENDING |              |
+| Check Apply report                  | Report records preflight outcome without scene mutation        | PENDING |              |
 | Check Dry Run scene state           | Dry Run did not influence Apply by mutating scene              | PENDING |              |
 
-**Expected result:** Dry Run preview and Apply behavior are trustworthy.
+**Expected result:** Dry Run preview and Apply preflight behavior are trustworthy without scene mutation.
 
 ---
 

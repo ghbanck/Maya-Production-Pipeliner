@@ -256,6 +256,27 @@ Acceptance criteria:
 
 ---
 
+## Phase 7.5 - Apply Preflight Gate Surface (Non-mutating)
+
+Goal: expose Apply eligibility and block reasons in runtime without mutating scene hierarchy.
+
+Expected work:
+
+* run scan/classify in Apply mode;
+* evaluate RouteDecision eligibility through non-mutating preflight checks;
+* annotate route decisions with preflight eligibility and block reasons;
+* keep `did_move = false` and `new_long_name = None`;
+* write reports that include the preflight-enriched route decisions;
+* return explicit "without scene changes" messaging.
+
+Acceptance criteria:
+
+* no `cmds.parent`, group creation, rename, or other scene mutation in this phase;
+* Dry Run behavior remains unchanged and read-only;
+* Apply runtime remains non-mutating and reportable until Safe Apply is implemented.
+
+---
+
 ## Phase 8 - Safe Apply Organizer
 
 Goal: execute route plan safely.

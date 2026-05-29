@@ -150,7 +150,9 @@ def _format_txt_report(run_result, route_decisions):
             lines.append(
                 "- {object_name} | route={route} | target={target_group} | "
                 "can_move={can_move} | status={operation_status} | "
-                "reason={reason}".format(**_txt_decision(decision))
+                "preflight={preflight} | reason={reason}".format(
+                    **_txt_decision(decision)
+                )
             )
     else:
         lines.append("No route decisions.")
@@ -200,8 +202,17 @@ def _txt_decision(decision):
         "target_group": decision.get("target_group") or "",
         "can_move": decision.get("can_move"),
         "operation_status": decision.get("operation_status") or "",
+        "preflight": _txt_preflight(decision),
         "reason": decision.get("reason") or "",
     }
+
+
+def _txt_preflight(decision):
+    """Return a compact preflight label for TXT route rows."""
+    preflight = decision.get("apply_preflight") or {}
+    if not preflight:
+        return "n/a"
+    return "eligible" if preflight.get("eligible") else "blocked"
 
 
 def _json_safe(value):

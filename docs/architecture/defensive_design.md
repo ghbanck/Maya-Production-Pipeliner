@@ -40,7 +40,7 @@ The pipeline follows a separated-responsibility model.
 | ---------- | --------------------------------------------------------------------------- |
 | Scanner    | Reads the Maya scene and creates factual `ObjectRecord` data                |
 | Classifier | Applies routing priority, safety gates, and creates `RouteDecision` records |
-| Organizer  | Executes the route plan in Apply mode, moving only safe objects             |
+| Organizer  | Runs Apply preflight today; executes safe moves only when mutating Apply is implemented |
 | Reporter   | Writes TXT/JSON reports from the result data                                |
 | Pipeline   | Orchestrates scan, classify, organize, report, and `RunResult` generation   |
 | UI         | Displays lightweight feedback from `RunResult` only                         |
@@ -138,11 +138,20 @@ The classifier must not modify the scene.
 
 ---
 
-## Organizer: Scene Mutation Only in Apply
+## Organizer: Apply Gate and Scene Mutation Boundary
 
-`organizer.py` executes the route plan in Apply mode.
+`organizer.py` currently evaluates Apply preflight eligibility without mutating scene hierarchy.
 
-It should:
+Future mutating Apply should execute only after the preflight gate and only for safe move candidates.
+
+Current preflight behavior should:
+
+* evaluate whether each route decision is eligible for future Apply;
+* attach explicit block reasons for ineligible decisions;
+* keep `did_move = false` and `new_long_name = None`;
+* avoid any Maya hierarchy mutation calls.
+
+When mutating Apply is implemented, organizer should:
 
 * create or reuse `Pipeline_Organized`;
 * create or reuse required child groups;

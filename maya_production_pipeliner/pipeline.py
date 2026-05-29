@@ -18,7 +18,7 @@ Execution flow
 2. Scan the scene with scanner.scan().
 3. Classify records with classifier.classify().
 4. If Dry Run: write reports and build RunResult without touching the scene.
-5. If Apply:   run organizer.apply_routes(), write reports, build RunResult.
+5. If Apply:   run non-mutating apply preflight, write reports, build RunResult.
 6. Call MEL post-hook (if configured) and return RunResult.
 
 Dependencies
@@ -82,11 +82,26 @@ def run(scope_mode, execution_mode, ignore_string="",
     mel_hook_status = _build_disabled_hook_status(pre_hook, post_hook)
 
     if execution_mode == config.APPLY:
-        message = "Apply is not implemented yet; no scene changes were made."
-        run_result = _build_run_result(
-            scope_mode, execution_mode, ignore_string, [], [], {},
-            mel_hook_status, False, message,
+        object_records = scanner.scan(scope_mode, ignore_string)
+        route_decisions = classifier.classify(
+            object_records, execution_mode, scope_mode, ignore_string
         )
+        route_decisions = organizer.apply_routes(route_decisions)
+        planned_count = len([
+            item for item in route_decisions
+            if (item.get("apply_preflight") or {}).get("eligible")
+        ])
+        blocked_count = len(route_decisions) - planned_count
+        message = (
+            "Apply preflight completed without scene changes. "
+            "Planned moves: {0}. Blocked: {1}."
+        ).format(planned_count, blocked_count)
+        run_result = _build_run_result(
+            scope_mode, execution_mode, ignore_string, object_records,
+            route_decisions, {}, mel_hook_status, True, message,
+        )
+        report_paths = reporter.write_reports(run_result, route_decisions)
+        run_result["report_paths"] = report_paths
         return run_result
 
     object_records = scanner.scan(scope_mode, ignore_string)
