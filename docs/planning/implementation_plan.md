@@ -164,6 +164,57 @@ Acceptance criteria:
 
 ---
 
+## Phase 4.1 - Scanner Contract and Visibility Hardening
+
+Goal: strengthen `scanner.py` locally without expanding product scope.
+
+This is a focused scanner-hardening unit. It should not add Apply behavior,
+UI behavior, command infrastructure, rollback, transactions, broad caching,
+or a repo-wide data model rewrite.
+
+Immediate work:
+
+* introduce a controlled ObjectRecord factory or local builder contract that
+  still returns a JSON-safe dict;
+* harden Visible scope path handling and avoid fragile partial DAG path
+  reconstruction;
+* add practical display-layer visibility detection where available;
+* narrow broad scanner exception handling where Maya-safe fallback is not the
+  explicit policy;
+* keep `material_count` as a compatibility alias for `material_node_count`, or
+  document the alias before any contract change;
+* remove stale `# noqa: F401` comments where imports are now used.
+
+Known limitation:
+
+* Visible scope is not complete coverage of every Maya viewport, isolate,
+  display-layer, and visibility mechanism until verified by manual Maya tests.
+
+Backlog:
+
+* performance profiling on very large scenes;
+* material/history cache improvements;
+* broader rig sensitivity expansion.
+
+Out of scope for this unit:
+
+* deep immutable dataclass conversion across modules;
+* Pydantic or third-party validation frameworks;
+* generic caching framework;
+* command layer;
+* transaction or rollback system;
+* real Apply movement.
+
+Acceptance criteria:
+
+* scanner still collects facts only and never mutates the scene;
+* ObjectRecord output remains JSON-safe and compatible with classifier,
+  pipeline, and reporter;
+* Visible scope behavior is more explicit and less fragile;
+* limitations remain documented until manual Maya test evidence exists.
+
+---
+
 ## Phase 5 - Classifier
 
 Goal: create safety-aware route decisions.
