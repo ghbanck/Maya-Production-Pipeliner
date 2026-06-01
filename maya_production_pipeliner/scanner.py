@@ -25,12 +25,46 @@ try:
 except ImportError:
     cmds = None  # Running outside Maya; stubs will raise NotImplementedError.
 
-from maya_production_pipeliner import config  # noqa: F401  (used in Phase 4)
+from maya_production_pipeliner import config
 
 
 # ---------------------------------------------------------------------------
 # Public entry point
 # ---------------------------------------------------------------------------
+
+OBJECT_RECORD_KEYS = (
+    "name",
+    "long_name",
+    "transform_node",
+    "shape_nodes",
+    "node_type",
+    "shape_type",
+    "shape_types",
+    "is_mesh",
+    "is_visible",
+    "is_selected",
+    "namespace",
+    "materials",
+    "material_count",
+    "material_node_count",
+    "shading_engines",
+    "shading_engine_count",
+    "uses_default_material",
+    "matches_ignore_string",
+    "is_referenced",
+    "is_instanced",
+    "has_skin_cluster",
+    "has_blendshape",
+    "parent_is_joint",
+    "is_under_sensitive_hierarchy",
+    "is_inside_tool_output",
+    "is_tool_structural_group",
+    "hierarchy_visible",
+    "display_layer_visible",
+    "native_visible",
+    "resolved_visible",
+    "warnings",
+)
 
 def scan(scope_mode, ignore_string=""):
     """Scan the Maya scene and return a list of ObjectRecord dicts.
@@ -93,7 +127,9 @@ def _resolve_scope(scope_mode):
 
     if scope_mode == config.VISIBLE:
         visible = cmds.ls(type="transform", visible=True, long=True) or []
-        return sorted(visible)
+        normalized = [_as_long_name(node) for node in visible]
+        normalized = [node for node in normalized if node and cmds.objExists(node)]
+        return sorted(set(normalized))
 
     raise ValueError("Unsupported scope_mode: {0}".format(scope_mode))
 
@@ -117,7 +153,12 @@ def _build_object_record(transform, ignore_string="", selected_transforms=None):
         shading_engine_count,
         uses_default_material,
     ) = _detect_materials(long_name)
-    hierarchy_visible, native_visible, resolved_visible = _resolve_visibility(long_name)
+    (
+        hierarchy_visible,
+        display_layer_visible,
+        native_visible,
+        resolved_visible,
+    ) = _resolve_visibility(long_name)
     is_referenced = _safe_reference_query(long_name)
     is_instanced = _is_instanced(shape_nodes)
     has_skin_cluster, has_blendshape = _detect_rig_history(long_name, shape_nodes)
@@ -125,7 +166,7 @@ def _build_object_record(transform, ignore_string="", selected_transforms=None):
     is_inside_tool_output = _is_inside_tool_output(long_name)
     is_tool_structural_group = name in config.STRUCTURAL_GROUPS
 
-    return {
+    return _build_object_record_dict({
         "name": name,
         "long_name": long_name,
         "transform_node": long_name,
@@ -153,11 +194,11 @@ def _build_object_record(transform, ignore_string="", selected_transforms=None):
         "is_inside_tool_output": is_inside_tool_output,
         "is_tool_structural_group": is_tool_structural_group,
         "hierarchy_visible": hierarchy_visible,
-        "display_layer_visible": None,
+        "display_layer_visible": display_layer_visible,
         "native_visible": native_visible,
         "resolved_visible": resolved_visible,
         "warnings": [],
-    }
+    })
 
 
 def _resolve_visibility(transform):
@@ -165,36 +206,99 @@ def _resolve_visibility(transform):
 
     """
     if cmds is None:
-        return None, None, None
+        return None, None, None, None
 
     hierarchy_visible = True
-    parts = transform.split("|")
-    for index in range(1, len(parts) + 1):
-        path = "|".join(parts[:index])
-        if not path or not cmds.objExists(path):
+    for path in _ancestor_paths(transform):
+        if not cmds.objExists(path):
             continue
         try:
             if cmds.attributeQuery("visibility", node=path, exists=True):
                 if not bool(cmds.getAttr(path + ".visibility")):
                     hierarchy_visible = False
                     break
-        except Exception:
+        except (RuntimeError, ValueError):
             hierarchy_visible = None
             break
 
+    display_layer_visible = _display_layer_visibility(transform)
+
     try:
         native_visible = bool(cmds.ls(transform, visible=True))
-    except Exception:
+    except RuntimeError:
         native_visible = None
 
-    if hierarchy_visible is False or native_visible is False:
+    if (
+        hierarchy_visible is False
+        or display_layer_visible is False
+        or native_visible is False
+    ):
         resolved_visible = False
-    elif hierarchy_visible is None and native_visible is None:
+    elif (
+        hierarchy_visible is None
+        and display_layer_visible is None
+        and native_visible is None
+    ):
         resolved_visible = None
     else:
         resolved_visible = True
 
-    return hierarchy_visible, native_visible, resolved_visible
+    return hierarchy_visible, display_layer_visible, native_visible, resolved_visible
+
+
+def _build_object_record_dict(values):
+    """Return a JSON-safe ObjectRecord dict with stable keys."""
+    record = {key: None for key in OBJECT_RECORD_KEYS}
+    for key in OBJECT_RECORD_KEYS:
+        if key not in values:
+            continue
+        if key in ("shape_nodes", "shape_types", "materials", "shading_engines", "warnings"):
+            record[key] = list(values.get(key) or [])
+        else:
+            record[key] = values.get(key)
+    if record["material_count"] is None:
+        record["material_count"] = record["material_node_count"]
+    return record
+
+
+def _ancestor_paths(long_name):
+    """Return ancestor DAG paths from root-to-node for a long path."""
+    if not long_name:
+        return []
+    parts = [part for part in long_name.split("|") if part]
+    out = []
+    for index in range(1, len(parts) + 1):
+        out.append("|" + "|".join(parts[:index]))
+    return out
+
+
+def _display_layer_visibility(transform):
+    """Return display-layer visibility for a transform, when detectable."""
+    if cmds is None:
+        return None
+    shapes = cmds.listRelatives(
+        transform, shapes=True, fullPath=True, noIntermediate=True
+    ) or []
+    candidates = [transform] + shapes
+    layers = set()
+    for node in candidates:
+        try:
+            node_layers = cmds.listConnections(node, type="displayLayer") or []
+        except RuntimeError:
+            node_layers = []
+        layers.update(node_layers)
+    layers.discard("defaultLayer")
+    if not layers:
+        return None
+    visible_flags = []
+    for layer in layers:
+        try:
+            visible_flags.append(bool(cmds.getAttr(layer + ".visibility")))
+        except RuntimeError:
+            continue
+    if not visible_flags:
+        return None
+    return all(visible_flags)
 
 
 def _detect_materials(transform):
@@ -213,7 +317,7 @@ def _detect_materials(transform):
     for shape in shapes:
         try:
             connections = cmds.listConnections(shape, type="shadingEngine") or []
-        except Exception:
+        except RuntimeError:
             connections = []
         shading_engines.update(connections)
 
@@ -222,7 +326,7 @@ def _detect_materials(transform):
             connected_materials = cmds.listConnections(
                 shading_engine + ".surfaceShader"
             ) or []
-        except Exception:
+        except RuntimeError:
             connected_materials = []
         materials.update(connected_materials)
 
@@ -287,7 +391,7 @@ def _as_long_name(node):
         return node
     try:
         matches = cmds.ls(node, long=True) or []
-    except Exception:
+    except RuntimeError:
         matches = []
     return matches[0] if matches else node
 
