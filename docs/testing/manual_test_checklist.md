@@ -435,15 +435,15 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                           | Expected                                                      | Status  | Observations |
 | ------------------------------ | ------------------------------------------------------------- | ------- | ------------ |
-| Check TXT report header        | Includes tool name, timestamp, mode, and scope                | PENDING |              |
-| Check TXT report summary       | Includes scanned count and route summary                      | PENDING |              |
-| Check TXT route details        | Includes object route, target group, and safety state         | PENDING |              |
-| Check TXT preservation details | Includes `preserve_reason` when relevant                      | PENDING |              |
-| Check TXT operation details    | Includes `operation_status` and `new_long_name` when relevant | PENDING |              |
-| Check JSON report structure    | Equivalent data exists in structured form                     | PENDING |              |
-| Check JSON schema field        | `schema_version` is present and explicit                      | PENDING |              |
-| Check warning events structure | `warning_events` entries are structured when warnings exist   | PENDING |              |
-| Check warnings                 | Warnings appear in both TXT and JSON when present             | PENDING |              |
+| Check TXT report header        | Includes tool name, timestamp, mode, and scope                | PASS    | `mayapy` report validation confirmed tool name, `Report generated`, `Mode: apply`, and `Scope: all_scene`. |
+| Check TXT report summary       | Includes scanned count and route summary                      | PASS    | TXT summary included `scanned` and `planned` counters from a rich Apply-preflight scene. |
+| Check TXT route details        | Includes object route, target group, and safety state         | PASS    | TXT route rows included `route=`, `target=`, `can_move=`, and preflight/safety state. |
+| Check TXT preservation details | Includes `preserve_reason` when relevant                      | PASS    | TXT route rows now include `preserve_reason=` for preserved/report-only content. |
+| Check TXT operation details    | Includes `operation_status` and `new_long_name` when relevant | PASS    | TXT route rows included `status=` and `new_long_name=`. |
+| Check JSON report structure    | Equivalent data exists in structured form                     | PASS    | JSON report contained top-level `route_decisions` and structured `run_result`. |
+| Check JSON schema field        | `schema_version` is present and explicit                      | PASS    | JSON report included explicit `schema_version = 0.1`. |
+| Check warning events structure | `warning_events` entries are structured when warnings exist   | PASS    | Warning validation produced structured `warning_events` with `code`, `message`, and `source`. |
+| Check warnings                 | Warnings appear in both TXT and JSON when present             | PASS    | Ignore-string threshold warning appeared in both TXT and JSON. |
 
 **Expected result:** Reports are useful for review and debugging.
 

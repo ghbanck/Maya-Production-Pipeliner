@@ -152,7 +152,7 @@ def _format_txt_report(run_result, route_decisions):
                 "can_move={can_move} | status={operation_status} | "
                 "did_move={did_move} | new_long_name={new_long_name} | "
                 "preflight={preflight} | preflight_reasons={preflight_reasons} | "
-                "reason={reason}".format(
+                "reason={reason} | preserve_reason={preserve_reason}".format(
                     **_txt_decision(decision)
                 )
             )
@@ -209,6 +209,7 @@ def _txt_decision(decision):
         "preflight": _txt_preflight(decision),
         "preflight_reasons": _txt_preflight_reasons(decision),
         "reason": decision.get("reason") or "",
+        "preserve_reason": decision.get("preserve_reason") or "",
     }
 
 
