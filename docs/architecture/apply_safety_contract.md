@@ -17,6 +17,8 @@ Current Apply behavior:
 * keeps `new_long_name = None`;
 * does not create groups or move scene nodes.
 
+This means current Apply is real runtime code, but it is still preflight-only runtime code.
+
 ## Mutation Boundary
 
 Only `organizer.py` should own future scene-hierarchy mutation.

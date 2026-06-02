@@ -4,6 +4,14 @@ This document describes the public usage model for Maya Production Pipeliner wit
 
 For frozen scope authority, see [`docs/planning/frozen_scope_contract_v1.1.3.md`](planning/frozen_scope_contract_v1.1.3.md).
 
+## Maturity Note
+
+Current usage maturity is mixed:
+
+* Dry Run is real runtime behavior and has focused manual validation evidence.
+* Apply currently means non-mutating preflight, not scene reorganization.
+* The launcher path exists, but installation and UI flow should still be treated conservatively.
+
 ## Working Model
 
 The tool is intended to help artists and technical users understand scene organization before deeper downstream work begins.

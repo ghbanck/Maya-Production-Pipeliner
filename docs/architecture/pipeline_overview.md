@@ -31,6 +31,33 @@ Current validated slices support:
 
 Mutating Apply remains out of the current runtime.
 
+## Implementation Status Snapshot
+
+The repository is no longer only scaffold. The current state is better understood in three buckets:
+
+### Runtime code already in use
+
+* `scanner.py` performs real scene scanning;
+* `classifier.py` produces real route decisions;
+* `reporter.py` writes real TXT/JSON reports;
+* `pipeline.py` runs the end-to-end Dry Run and Apply-preflight flow;
+* `organizer.py` performs non-mutating Apply preflight checks;
+* `config.py` defines the active constants and contracts used by runtime modules.
+
+### Partial or scaffold-heavy modules
+
+* `ui.py` still contains placeholder/UI-phase scaffolding;
+* `launcher.py` exists as the intended entry point but remains lightly validated;
+* `mel_bridge.py` is isolated but still depends on broader optional-behavior validation;
+* `install.py` is a setup helper, not the core runtime workflow.
+
+### Planned but not implemented behavior
+
+* mutating Apply;
+* real Outliner reparenting/group creation as runtime Apply behavior;
+* mutation outcomes such as `moved` and `failed_parenting`;
+* a fully validated end-user UI flow.
+
 ## Module Responsibilities
 
 ```text
