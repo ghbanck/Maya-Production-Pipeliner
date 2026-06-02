@@ -186,7 +186,7 @@ The user may replace it with any string used by the scene or pipeline. An empty 
 
 The string should be evaluated against object name, long name, and hierarchy path when available.
 
-Matching objects are preserved outside normal production/review routing. If Bypass movement is implemented, it must remain safe and explicit. Bypass must not become a generic ambiguity bucket.
+Matching objects are preserved outside normal production/review routing. Ignore-string matching is bypass/preservation intent, not a separate organization class by default.
 
 The tool should emit a warning when the ignore string matches an unusually high percentage of scanned objects.
 
@@ -207,12 +207,11 @@ References
 Review_MissingMaterial
 Review_MultiMaterial
 Review_UnclearCases
-Bypass
 ```
 
 Group names must be centralized in `config.py`.
 
-`Bypass` reflects explicit user ignore-string intent.
+Ignored content matched by the user-defined ignore string should remain bypassed/preserved rather than becoming a normal output bucket by default.
 
 `Review_UnclearCases` is reserved for safe-to-move ambiguous content.
 

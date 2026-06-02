@@ -68,6 +68,12 @@ Scan scene facts
 -> write TXT/JSON reports
 ```
 
+<p align="center">
+  <a href="docs/architecture/pipeline_overview.md">
+    <img src="docs/architecture/pipeline-graph.png" alt="Maya Production Pipeliner pipeline graph" />
+  </a>
+</p>
+
 Current safety posture:
 
 * Dry Run is strictly observational and non-mutating.

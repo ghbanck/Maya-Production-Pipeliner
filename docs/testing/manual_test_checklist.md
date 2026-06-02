@@ -160,7 +160,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 ---
 
-## Test 8 - Ignore String / Bypass Behavior
+## Test 8 - Ignore String / Bypass Preservation
 
 **Purpose:** Verify user-defined preservation logic.
 
@@ -169,10 +169,10 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                                                | Expected                                                                            | Status  | Observations |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------ |
 | Set ignore string to `BYPASS` and run Dry Run       | Matching objects are excluded from normal production/review routing                 | PENDING |              |
-| Run Apply if Bypass movement is implemented as safe | Matching objects route to `Bypass` only if implementation marks this operation safe | PENDING |              |
-| If Bypass movement is not safe or not implemented   | Matching objects remain preserved/report-only                                       | PENDING |              |
+| Run Apply if ignore preservation is implemented     | Matching objects remain bypassed/preserved unless an explicit safe contract says otherwise | PENDING |              |
+| If Bypass movement is not safe or not implemented   | Matching objects remain preserved/report-only                                           | PENDING |              |
 | Check report                                        | Preserve reason or route reason reflects user ignore string                         | PENDING |              |
-| Use empty ignore string                             | No objects route through Bypass due to empty string                                 | PENDING |              |
+| Use empty ignore string                             | No objects enter ignore-string preservation due to empty string                     | PENDING |              |
 | Use overly broad ignore string                      | Warning appears in RunResult and report                                             | PENDING |              |
 
 **Expected result:** User-defined ignored content is respected without contradictory movement behavior.

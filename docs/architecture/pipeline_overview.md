@@ -62,10 +62,11 @@ References
 Review_MissingMaterial
 Review_MultiMaterial
 Review_UnclearCases
-Bypass
 ```
 
 This is the intended output structure for future Safe Apply, not a claim that object movement is already implemented.
+
+Ignored content matched by the user-defined ignore string should be preserved outside the normal organized output buckets unless a future contract explicitly says otherwise.
 
 ## Architecture Graph
 

@@ -68,6 +68,7 @@ Current intent:
 
 * matching objects should not be treated as normal production routing candidates;
 * matching objects remain explicit and reportable;
+* matching objects are preserved outside the normal organized output groups by default;
 * broad ignore usage can generate warnings when the match count becomes suspiciously high.
 
 ## Planned Output Structure
@@ -87,10 +88,11 @@ References
 Review_MissingMaterial
 Review_MultiMaterial
 Review_UnclearCases
-Bypass
 ```
 
 This structure should be treated as target architecture, not as evidence that mutating Apply is already available.
+
+Ignored content matched by the user-defined ignore string should be bypassed/preserved rather than treated as its own organized class by default.
 
 ## Launch Note
 

@@ -227,10 +227,11 @@ References
 Review_MissingMaterial
 Review_MultiMaterial
 Review_UnclearCases
-Bypass
 ```
 
 These groups are designed to make the Outliner readable at handoff time.
+
+Ignored content matched by the user-defined ignore string should be bypassed/preserved rather than treated as its own organized output class by default.
 
 ## Repeated Run and Idempotency Policy
 
@@ -321,7 +322,7 @@ Multi-material routing indicates handoff review, not failure.
 
 ### Ignored Content
 
-Objects matching the user-defined ignore string are preserved through the ignore/bypass flow.
+Objects matching the user-defined ignore string are preserved through the ignore/bypass flow rather than organized into a dedicated output class by default.
 
 ### Unclear Cases
 
