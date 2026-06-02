@@ -205,9 +205,16 @@ def _is_scene_utility(record):
     shape_types = record.get("shape_types") or []
     return (
         node_type in config.UTILITY_NODE_TYPES
-        or shape_type in config.UTILITY_SHAPE_TYPES
-        or any(item in config.UTILITY_SHAPE_TYPES for item in shape_types)
+        or _is_utility_shape_type(shape_type)
+        or any(_is_utility_shape_type(item) for item in shape_types)
     )
+
+
+def _is_utility_shape_type(shape_type):
+    """Return True when a Maya shape type should route as a scene utility."""
+    if shape_type in config.UTILITY_SHAPE_TYPES:
+        return True
+    return bool(shape_type and str(shape_type).endswith("Light"))
 
 
 def _material_review_route(record):

@@ -150,7 +150,9 @@ def _format_txt_report(run_result, route_decisions):
             lines.append(
                 "- {object_name} | route={route} | target={target_group} | "
                 "can_move={can_move} | status={operation_status} | "
-                "preflight={preflight} | reason={reason}".format(
+                "did_move={did_move} | new_long_name={new_long_name} | "
+                "preflight={preflight} | preflight_reasons={preflight_reasons} | "
+                "reason={reason}".format(
                     **_txt_decision(decision)
                 )
             )
@@ -202,7 +204,10 @@ def _txt_decision(decision):
         "target_group": decision.get("target_group") or "",
         "can_move": decision.get("can_move"),
         "operation_status": decision.get("operation_status") or "",
+        "did_move": decision.get("did_move"),
+        "new_long_name": decision.get("new_long_name") or "",
         "preflight": _txt_preflight(decision),
+        "preflight_reasons": _txt_preflight_reasons(decision),
         "reason": decision.get("reason") or "",
     }
 
@@ -213,6 +218,15 @@ def _txt_preflight(decision):
     if not preflight:
         return "n/a"
     return "eligible" if preflight.get("eligible") else "blocked"
+
+
+def _txt_preflight_reasons(decision):
+    """Return preflight reasons as a text-safe compact string."""
+    preflight = decision.get("apply_preflight") or {}
+    reasons = preflight.get("reasons") or []
+    if not reasons:
+        return ""
+    return "; ".join(str(reason) for reason in reasons)
 
 
 def _json_safe(value):

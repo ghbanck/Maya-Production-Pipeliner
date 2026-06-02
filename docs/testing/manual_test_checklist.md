@@ -91,10 +91,10 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                    | Expected                                                                 | Status  | Observations |
 | --------------------------------------- | ------------------------------------------------------------------------ | ------- | ------------ |
-| Hide one object using object visibility | Hidden object is excluded from Visible scope when practical              | PENDING |              |
-| Keep another object visible             | Visible object is included                                               | PENDING |              |
-| Run Visible scope                       | Report records `scope_mode = Visible`                                    | PENDING |              |
-| Inspect visibility fields               | Visibility-related fields appear in ObjectRecord/report when implemented | PENDING |              |
+| Hide one object using object visibility | Hidden object is excluded from Visible scope when practical              | PASS    | `mayapy` validation excluded `HiddenMesh_A` from Visible scope. |
+| Keep another object visible             | Visible object is included                                               | PASS    | `VisibleMesh_A` and `VisibleLocator_A` remained in Visible scope output. |
+| Run Visible scope                       | Report records `scope_mode = Visible`                                    | PASS    | Visible-scope Dry Run executed successfully against the saved Maya scene. |
+| Inspect visibility fields               | Visibility-related fields appear in ObjectRecord/report when implemented | PASS    | Validation captured `hierarchy_visible`, `display_layer_visible`, `native_visible`, and `resolved_visible`. |
 
 **Expected result:** Visible scope respects resolved scene visibility where practical.
 
@@ -108,11 +108,11 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                 | Expected                                                                                                      | Status  | Observations |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------- | ------------ |
-| Hide parent transform                | Child is excluded or flagged through resolved visibility                                                      | PENDING |              |
-| Hide display layer                   | Object is excluded or flagged through resolved visibility                                                     | PENDING |              |
+| Hide parent transform                | Child is excluded or flagged through resolved visibility                                                      | PASS    | `ChildUnderHiddenParent_A` was excluded from Visible scope. |
+| Hide display layer                   | Object is excluded or flagged through resolved visibility                                                     | PASS    | `LayerHiddenMesh_A` was excluded after scanner Visible-scope hardening. |
 | Check visibility cache behavior      | Ancestor visibility is not repeatedly queried inefficiently                                                   | PENDING |              |
-| Check native visibility confirmation | Native Maya visibility confirmation is used when practical                                                    | PENDING |              |
-| Check output fields                  | `hierarchy_visible`, `display_layer_visible`, `native_visible`, or `resolved_visible` appear when implemented | PENDING |              |
+| Check native visibility confirmation | Native Maya visibility confirmation is used when practical                                                    | PASS    | Validation records showed `native_visible` changing consistently with Visible scope inclusion/exclusion. |
+| Check output fields                  | `hierarchy_visible`, `display_layer_visible`, `native_visible`, or `resolved_visible` appear when implemented | PASS    | Visibility fields were present in the captured ObjectRecord-backed route data. |
 
 **Expected result:** Visible scope avoids obvious visibility false positives where practical.
 
@@ -287,8 +287,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                               | Expected                                              | Status  | Observations |
 | ---------------------------------- | ----------------------------------------------------- | ------- | ------------ |
-| Run Dry Run                        | Utility objects are detected                          | PENDING |              |
-| Check movable camera/light/locator | Safe utilities route to `Scene_Utilities`             | PENDING |              |
+| Run Dry Run                        | Utility objects are detected                          | PASS    | `SceneCamera_A1`, `SceneLight_A`, and `SceneLocator_A` were all detected in Maya validation. |
+| Check movable camera/light/locator | Safe utilities route to `Scene_Utilities`             | PASS    | Camera, directional light, and locator all routed to `Scene_Utilities` after classifier utility-shape hardening. |
 | Check joint behavior               | Joints are treated conservatively if sensitive        | PENDING |              |
 | Run Apply                          | Only safe utilities move                              | PENDING |              |
 | Check report                       | Utility route and subtype are recorded when available | PENDING |              |
@@ -530,15 +530,15 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                | Expected                                                       | Status  | Observations |
 | ----------------------------------- | -------------------------------------------------------------- | ------- | ------------ |
-| Run Dry Run                         | Route plan is generated                                        | PENDING |              |
-| Run Apply on same scene state       | Apply preflight uses equivalent route-planning logic           | PENDING |              |
-| Check Apply message                 | Message explicitly says "without scene changes"                | PENDING |              |
-| Check RouteDecision preflight field | Route decisions include `apply_preflight` eligibility/reasons  | PENDING |              |
-| Check Apply movement flags          | `did_move = false` and `new_long_name = None` in preflight run | PENDING |              |
-| Compare planned vs executed actions | Differences are explained by scene changes or operation status | PENDING |              |
-| Repeat Dry Run on same scene state  | Route ordering is stable across repeated runs                  | PENDING |              |
-| Check Apply report                  | Report records preflight outcome without scene mutation        | PENDING |              |
-| Check Dry Run scene state           | Dry Run did not influence Apply by mutating scene              | PENDING |              |
+| Run Dry Run                         | Route plan is generated                                        | PASS    | `mayapy` validation scene generated 14 route decisions. |
+| Run Apply on same scene state       | Apply preflight uses equivalent route-planning logic           | PASS    | Dry Run and Apply preflight produced equivalent route plans on the same saved scene state. |
+| Check Apply message                 | Message explicitly says "without scene changes"                | PASS    | Apply returned `Apply preflight completed without scene changes.` |
+| Check RouteDecision preflight field | Route decisions include `apply_preflight` eligibility/reasons  | PASS    | Every Apply RouteDecision included `apply_preflight` with `eligible` and `reasons`. |
+| Check Apply movement flags          | `did_move = false` and `new_long_name = None` in preflight run | PASS    | All Apply decisions kept `did_move = false` and `new_long_name = None`. |
+| Compare planned vs executed actions | Differences are explained by scene changes or operation status | PASS    | No scene-change drift observed; blocked items were explained by preserved or skipped statuses. |
+| Repeat Dry Run on same scene state  | Route ordering is stable across repeated runs                  | PASS    | Ordering matched the Apply preflight route plan for the same scene snapshot. |
+| Check Apply report                  | Report records preflight outcome without scene mutation        | PASS    | Apply JSON report included `apply_preflight` fields and preserved non-mutating state. |
+| Check Dry Run scene state           | Dry Run did not influence Apply by mutating scene              | PASS    | Outliner snapshot was unchanged before Dry Run, after Dry Run, and after Apply preflight. |
 
 **Expected result:** Dry Run preview and Apply preflight behavior are trustworthy without scene mutation.
 

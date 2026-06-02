@@ -11,7 +11,7 @@ try:
 except ImportError:
     cmds = None  # Running outside Maya; stubs will raise NotImplementedError.
 
-from maya_production_pipeliner import config  # noqa: F401  (used in Phase 8)
+from maya_production_pipeliner import config
 
 
 # ---------------------------------------------------------------------------
@@ -80,7 +80,7 @@ def _preflight_decision(decision):
             return {"eligible": False, "status": config.STATUS_SKIPPED_MISSING_NODE, "reasons": reasons}
     else:
         reasons.append("maya runtime unavailable; eligibility not verified")
-        return {"eligible": False, "status": config.STATUS_SKIPPED_MISSING_NODE, "reasons": reasons}
+        return {"eligible": False, "status": config.STATUS_PRESERVED_REPORT_ONLY, "reasons": reasons}
 
     if _is_already_in_target(long_name, target_group):
         reasons.append("already in target group")
@@ -96,7 +96,7 @@ def _is_already_in_target(long_name, target_group):
         return False
     try:
         parents = cmds.listRelatives(long_name, parent=True, fullPath=True) or []
-    except Exception:
+    except (RuntimeError, ValueError, TypeError):
         parents = []
     if not parents:
         return False

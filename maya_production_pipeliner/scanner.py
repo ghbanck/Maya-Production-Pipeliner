@@ -111,9 +111,8 @@ def scan(scope_mode, ignore_string=""):
 def _resolve_scope(scope_mode):
     """Return the list of transform node names for the given scope mode.
 
-    Visible scope currently uses Maya's native visible transform query as the
-    first safe slice.  Display-layer and inherited visibility hardening belongs
-    to a later scanner pass.
+    Visible scope starts with Maya's native visible transform query and then
+    removes transforms that fail the scanner's resolved-visibility check.
     """
     if cmds is None:
         return []
@@ -129,6 +128,10 @@ def _resolve_scope(scope_mode):
         visible = cmds.ls(type="transform", visible=True, long=True) or []
         normalized = [_as_long_name(node) for node in visible]
         normalized = [node for node in normalized if node and cmds.objExists(node)]
+        normalized = [
+            node for node in normalized
+            if _resolve_visibility(node)[3] is not False
+        ]
         return sorted(set(normalized))
 
     raise ValueError("Unsupported scope_mode: {0}".format(scope_mode))
