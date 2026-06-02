@@ -415,15 +415,15 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                       | Expected                                                       | Status  | Observations |
 | -------------------------- | -------------------------------------------------------------- | ------- | ------------ |
-| Dry Run object             | `operation_status = dry_run_only` or equivalent                | PENDING |              |
-| Successfully moved object  | `operation_status = moved`                                     | PENDING |              |
-| Already organized object   | `operation_status = already_in_target`                         | PENDING |              |
-| Referenced object          | `operation_status = skipped_reference`                         | PENDING |              |
-| Instanced object           | `operation_status = skipped_instance`                          | PENDING |              |
-| Sensitive hierarchy object | `operation_status = skipped_sensitive_hierarchy` or equivalent | PENDING |              |
-| Tool structural group      | `operation_status = skipped_tool_structure` when reported      | PENDING |              |
-| Missing node during Apply  | `operation_status = skipped_missing_node` when simulated       | PENDING |              |
-| Parenting failure          | `operation_status = failed_parenting` when simulated           | PENDING |              |
+| Dry Run object             | `operation_status = dry_run_only` or equivalent                | PASS    | `mayapy` validation returned `dry_run_only` for a normal movable mesh in Dry Run. |
+| Successfully moved object  | `operation_status = moved`                                     | PENDING | Requires mutating Apply; current runtime is still Apply preflight only. |
+| Already organized object   | `operation_status = already_in_target`                         | PASS    | Mesh parented under `Pipeline_Organized|Production_Meshes` returned `already_in_target` in Apply preflight. |
+| Referenced object          | `operation_status = skipped_reference`                         | PASS    | Referenced mesh returned `skipped_reference` in Apply preflight. |
+| Instanced object           | `operation_status = skipped_instance`                          | PASS    | Both source and instance copy returned `skipped_instance`. |
+| Sensitive hierarchy object | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Mesh under joint hierarchy returned `skipped_sensitive_hierarchy`. |
+| Tool structural group      | `operation_status = skipped_tool_structure` when reported      | PASS    | `Pipeline_Organized` and child output group returned `skipped_tool_structure`. |
+| Missing node during Apply  | `operation_status = skipped_missing_node` when simulated       | PASS    | Simulated by classifying a movable mesh, deleting it, then running Apply preflight through `organizer.apply_routes()`. |
+| Parenting failure          | `operation_status = failed_parenting` when simulated           | PENDING | Requires mutating Apply path with actual parenting failure handling. |
 
 **Expected result:** Operation states are explicit and reportable.
 
