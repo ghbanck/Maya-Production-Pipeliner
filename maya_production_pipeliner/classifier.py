@@ -11,7 +11,7 @@ list of RouteDecision dicts.  This module must never modify the Maya scene.
 Classification priority (highest to lowest)
 --------------------------------------------
 1. Internal tool structural groups  -> skipped_tool_structure
-2. User ignore-string (Bypass)      -> Bypass / can_move=False
+2. User ignore-string               -> preserved / can_move=False
 3. Referenced nodes                 -> References / can_move=False
 4. Instanced geometry               -> preserved / can_move=False
 5. Rig/deformer-sensitive content   -> preserved / can_move=False
@@ -79,7 +79,7 @@ def classify(object_records, execution_mode, scope_mode, ignore_string=""):
 
         if _is_bypass(record):
             decisions.append(_build_route_decision(
-                record, config.ROUTE_BYPASS, config.BYPASS, False,
+                record, config.ROUTE_BYPASS, None, False,
                 config.OPERATION_REPORT_ONLY, config.STATUS_PRESERVED_REPORT_ONLY,
                 "matches ignore string", "user ignore string", warnings,
                 execution_mode, scope_mode,
