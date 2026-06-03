@@ -208,14 +208,14 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                    | Expected                                                   | Status  | Observations |
 | ----------------------- | ---------------------------------------------------------- | ------- | ------------ |
-| Run Dry Run             | Referenced object is detected as referenced                | PENDING |              |
-| Check route             | `route = References`                                       | PENDING |              |
-| Check safety            | `can_move = false`                                         | PENDING |              |
-| Check report-only state | `report_only = true`                                       | PENDING |              |
-| Check preserve reason   | `preserve_reason = Immutable reference node` or equivalent | PENDING |              |
-| Run Apply               | Referenced node is not parented                            | PENDING |              |
-| Check operation status  | `operation_status = skipped_reference`                     | PENDING |              |
-| Check report            | Referenced object is documented as preserved               | PENDING |              |
+| Run Dry Run             | Referenced object is detected as referenced                | PASS    | `mayapy` protected-content validation detected `refProtected:RefMesh_A` with `is_referenced = true`. |
+| Check route             | `route = References`                                       | PASS    | Referenced mesh routed to `References`. |
+| Check safety            | `can_move = false`                                         | PASS    | Referenced mesh returned `can_move = false`. |
+| Check report-only state | `report_only = true`                                       | PASS    | Referenced mesh returned `operation = report_only` and `report_only = true`. |
+| Check preserve reason   | `preserve_reason = Immutable reference node` or equivalent | PASS    | Referenced mesh returned `preserve_reason = referenced content`. |
+| Run Apply               | Referenced node is not parented                            | PASS    | Apply preflight kept the referenced mesh blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
+| Check operation status  | `operation_status = skipped_reference`                     | PASS    | Referenced mesh returned `operation_status = skipped_reference` in Dry Run and Apply preflight. |
+| Check report            | Referenced object is documented as preserved               | PASS    | Apply JSON report documented the referenced mesh with `can_move = false`, `report_only = true`, and `skipped_reference`. |
 
 **Expected result:** Referenced content is never falsely reported as moved.
 
@@ -248,12 +248,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                    | Expected                                          | Status  | Observations |
 | ----------------------- | ------------------------------------------------- | ------- | ------------ |
-| Run Dry Run             | Instance state is detected when practical         | PENDING |              |
-| Check safety            | `can_move = false`                                | PENDING |              |
-| Check report-only state | Preserved/report-only behavior is recorded        | PENDING |              |
-| Run Apply               | Instanced geometry is not parented as normal mesh | PENDING |              |
-| Check operation status  | `operation_status = skipped_instance`             | PENDING |              |
-| Check report            | Instance preservation reason is recorded          | PENDING |              |
+| Run Dry Run             | Instance state is detected when practical         | PASS    | `mayapy` protected-content validation detected both `InstancedMesh_A` and `InstancedMesh_A_Copy` with `is_instanced = true`. |
+| Check safety            | `can_move = false`                                | PASS    | Both instanced transforms returned `can_move = false`. |
+| Check report-only state | Preserved/report-only behavior is recorded        | PASS    | Both instanced transforms returned `operation = report_only` and `report_only = true`. |
+| Run Apply               | Instanced geometry is not parented as normal mesh | PASS    | Apply preflight kept both instanced transforms blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
+| Check operation status  | `operation_status = skipped_instance`             | PASS    | Both instanced transforms returned `operation_status = skipped_instance` in Dry Run and Apply preflight. |
+| Check report            | Instance preservation reason is recorded          | PASS    | Apply JSON report documented both instanced transforms with `preserve_reason = instanced geometry`. |
 
 **Expected result:** Instanced geometry is preserved by default.
 
@@ -267,13 +267,13 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                      | Expected                                                       | Status  | Observations |
 | ----------------------------------------- | -------------------------------------------------------------- | ------- | ------------ |
-| Run Dry Run on skinCluster mesh           | SkinCluster history is detected when practical                 | PENDING |              |
-| Run Dry Run on blendShape mesh            | BlendShape history is detected when practical                  | PENDING |              |
-| Run Dry Run on mesh under joint hierarchy | Sensitive hierarchy is detected when practical                 | PENDING |              |
-| Check safety                              | Sensitive object receives `can_move = false`                   | PENDING |              |
-| Check preserve reason                     | Preserve reason identifies rig/deformer sensitivity            | PENDING |              |
-| Run Apply                                 | Sensitive object is not parented                               | PENDING |              |
-| Check operation status                    | `operation_status = skipped_sensitive_hierarchy` or equivalent | PENDING |              |
+| Run Dry Run on skinCluster mesh           | SkinCluster history is detected when practical                 | PASS    | `mayapy` protected-content validation detected `SkinClusterMesh_A` with `has_skin_cluster = true`. |
+| Run Dry Run on blendShape mesh            | BlendShape history is detected when practical                  | PASS    | `mayapy` protected-content validation detected `BlendShapeMesh_A` with `has_blendshape = true`. |
+| Run Dry Run on mesh under joint hierarchy | Sensitive hierarchy is detected when practical                 | PASS    | `mayapy` protected-content validation detected `JointChildMesh_A` with `parent_is_joint = true` and `is_under_sensitive_hierarchy = true`. |
+| Check safety                              | Sensitive object receives `can_move = false`                   | PASS    | SkinCluster, blendShape, and joint-child test meshes all returned `can_move = false`. |
+| Check preserve reason                     | Preserve reason identifies rig/deformer sensitivity            | PASS    | Sensitive test meshes returned `preserve_reason = rig/deformer sensitive content`. |
+| Run Apply                                 | Sensitive object is not parented                               | PASS    | Apply preflight kept the sensitive test meshes blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
+| Check operation status                    | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Sensitive test meshes returned `operation_status = skipped_sensitive_hierarchy` in Dry Run and Apply preflight. |
 
 **Expected result:** Rig-sensitive and deformation-sensitive objects are preserved by default.
 
@@ -571,7 +571,7 @@ Before tagging or presenting a release candidate, verify:
 | Package imports cleanly              | No import-time scene mutation                                      | PENDING |              |
 | Dry Run works                        | Scan, classify, RunResult, and reports work without scene mutation | PENDING |              |
 | Apply works on simple safe scene     | Safe objects move to expected groups                               | PENDING |              |
-| Protected content stays protected    | References, instances, and sensitive hierarchies are preserved     | PENDING |              |
+| Protected content stays protected    | References, instances, and sensitive hierarchies are preserved     | PASS    | `mayapy` protected-content validation confirmed referenced, instanced, skinCluster, blendShape, and joint-child meshes remain report-only, blocked, and unmoved in Apply preflight. |
 | Reports are traceable                | TXT/JSON reflect real run data                                     | PENDING |              |
 | UI remains lightweight               | UI does not render full route list                                 | PENDING |              |
 | Idempotency works                    | Repeated run does not duplicate structure                          | PENDING |              |
