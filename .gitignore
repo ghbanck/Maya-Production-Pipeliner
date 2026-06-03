@@ -55,6 +55,9 @@ scene_report.json
 maya_production_pipeliner_report.txt
 maya_production_pipeliner_report.json
 
+# Local validation/public snapshot artifacts
+docs/architecture/test27.png
+
 # Keep committed example reports
 !examples/example_report.txt
 !examples/example_report.json
