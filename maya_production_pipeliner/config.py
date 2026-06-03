@@ -135,3 +135,4 @@ IGNORE_MATCH_WARNING_THRESHOLD = 25
 # ---------------------------------------------------------------------------
 
 WARNING_IGNORE_MATCH_HIGH = "IGNORE_MATCH_HIGH"
+WARNING_REPORT_WRITE_FAILED = "REPORT_WRITE_FAILED"

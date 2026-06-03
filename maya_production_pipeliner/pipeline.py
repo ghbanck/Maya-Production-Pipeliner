@@ -101,7 +101,7 @@ def run(scope_mode, execution_mode, ignore_string="",
             route_decisions, {}, mel_hook_status, True, message,
         )
         report_paths = reporter.write_reports(run_result, route_decisions)
-        run_result["report_paths"] = report_paths
+        _apply_report_paths(run_result, report_paths)
         return run_result
 
     object_records = scanner.scan(scope_mode, ignore_string)
@@ -114,7 +114,7 @@ def run(scope_mode, execution_mode, ignore_string="",
         "Dry Run completed without scene changes.",
     )
     report_paths = reporter.write_reports(run_result, route_decisions)
-    run_result["report_paths"] = report_paths
+    _apply_report_paths(run_result, report_paths)
     return run_result
 
 
@@ -208,6 +208,29 @@ def _disabled_single_hook_status(hook_name=""):
         "success": False,
         "error": "MEL hooks are disabled in the initial Dry Run runtime.",
     }
+
+
+def _apply_report_paths(run_result, report_paths):
+    """Attach report paths and emit a warning if writing failed."""
+    report_paths = report_paths or {"txt": None, "json": None}
+    run_result["report_paths"] = report_paths
+
+    missing_formats = [
+        report_type for report_type, path in sorted(report_paths.items())
+        if not path
+    ]
+    if not missing_formats:
+        return
+
+    warning_message = "Report write failed for: {0}.".format(
+        ", ".join(missing_formats)
+    )
+    run_result["warnings"].append(warning_message)
+    run_result["warning_events"].append({
+        "code": config.WARNING_REPORT_WRITE_FAILED,
+        "message": warning_message,
+        "source": "pipeline",
+    })
 
 
 def _build_summary(route_decisions, scanned_count=0):

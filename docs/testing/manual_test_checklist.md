@@ -497,7 +497,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Run UI workflow                            | UI receives feedback through RunResult              | PENDING | Current `ui.py` workflow remains unimplemented (`show`, `_on_run_clicked`, and `_update_result_display` still raise `NotImplementedError`), so no runtime UI flow could be exercised honestly. |
 | Inspect UI behavior                        | UI does not parse TXT/JSON to know what happened    | PASS    | Validation confirmed `ui.py` imports only `config` and `pipeline`, explicitly documents RunResult-only feedback, and explicitly forbids parsing TXT/JSON report files. |
 | Inspect reporter behavior                  | Reporter writes files independently from UI display | PASS    | Validation confirmed `reporter.py` has no UI import path and `pipeline.run()` receives report paths through `reporter.write_reports()` rather than through any UI callback or display dependency. |
-| Simulate report write failure if practical | UI receives clear warning through RunResult         | PENDING | Validation forced `reporter.write_reports()` to return `{'txt': None, 'json': None}`; current `RunResult` preserved failed paths but still returned success with no warning or warning event to surface clearly to UI. |
+| Simulate report write failure if practical | UI receives clear warning through RunResult         | PASS    | `tools/validation/test28_report_failure_signaling_validation.py` confirmed failed report paths remain explicit while `RunResult` now adds warning text plus a structured `REPORT_WRITE_FAILED` warning event, without changing current `success=True` Dry Run semantics. |
 
 **Expected result:** UI feedback is not coupled to report file parsing.
 
