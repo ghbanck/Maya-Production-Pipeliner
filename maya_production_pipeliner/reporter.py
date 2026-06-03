@@ -60,37 +60,48 @@ def write_reports(run_result, route_decisions):
     dict
         {'txt': <path or None>, 'json': <path or None>}
     """
-    directory = _resolve_output_directory()
-    expected_paths = {
-        "txt": os.path.join(directory, config.REPORT_TXT_NAME),
-        "json": os.path.join(directory, config.REPORT_JSON_NAME),
-    }
+    directories = _resolve_output_directories()
     report_result = dict(run_result)
-    report_result["report_paths"] = expected_paths
+    txt_content = None
+    json_content = None
 
-    txt_content = _format_txt_report(report_result, route_decisions)
-    json_payload = _format_json_payload(report_result, route_decisions)
+    for directory in directories:
+        expected_paths = {
+            "txt": os.path.join(directory, config.REPORT_TXT_NAME),
+            "json": os.path.join(directory, config.REPORT_JSON_NAME),
+        }
+        report_result["report_paths"] = expected_paths
 
-    txt_path = _write_file(directory, config.REPORT_TXT_NAME, txt_content, mode="w")
-    json_path = _write_file(
-        directory,
-        config.REPORT_JSON_NAME,
-        json.dumps(json_payload, indent=2, sort_keys=True),
-        mode="w",
-    )
-    return {"txt": txt_path, "json": json_path}
+        if txt_content is None:
+            txt_content = _format_txt_report(report_result, route_decisions)
+        if json_content is None:
+            json_payload = _format_json_payload(report_result, route_decisions)
+            json_content = json.dumps(json_payload, indent=2, sort_keys=True)
+
+        txt_path = _write_file(directory, config.REPORT_TXT_NAME, txt_content, mode="w")
+        json_path = _write_file(
+            directory,
+            config.REPORT_JSON_NAME,
+            json_content,
+            mode="w",
+        )
+        if txt_path and json_path:
+            return {"txt": txt_path, "json": json_path}
+
+    return {"txt": None, "json": None}
 
 
 # ---------------------------------------------------------------------------
 # Internal helpers (stubs)
 # ---------------------------------------------------------------------------
 
-def _resolve_output_directory():
-    """Return the best available output directory for reports.
+def _resolve_output_directories():
+    """Return output directories in fallback priority order for reports.
 
     Priority: scene file directory > workspace directory > temp directory.
 
     """
+    directories = []
     if cmds is not None:
         try:
             scene_path = cmds.file(query=True, sceneName=True)
@@ -99,16 +110,25 @@ def _resolve_output_directory():
         if scene_path:
             scene_directory = os.path.dirname(scene_path)
             if scene_directory:
-                return scene_directory
+                directories.append(scene_directory)
 
         try:
             workspace_directory = cmds.workspace(query=True, rootDirectory=True)
         except Exception:
             workspace_directory = ""
         if workspace_directory:
-            return workspace_directory
+            directories.append(workspace_directory)
 
-    return tempfile.gettempdir()
+    directories.append(tempfile.gettempdir())
+    ordered = []
+    seen = set()
+    for directory in directories:
+        normalized = os.path.normcase(os.path.normpath(directory))
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        ordered.append(directory)
+    return ordered
 
 
 def _format_txt_report(run_result, route_decisions):
