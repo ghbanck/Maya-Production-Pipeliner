@@ -511,12 +511,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                               | Expected                                            | Status  | Observations |
 | ---------------------------------- | --------------------------------------------------- | ------- | ------------ |
-| Run with MEL bridge disabled       | Main pipeline runs normally                         | PENDING |              |
-| Missing MEL hook                   | Missing hook does not fail import or main execution | PENDING |              |
-| Valid pre-run hook if implemented  | Status is recorded                                  | PENDING |              |
-| Valid post-run hook if implemented | Status is recorded                                  | PENDING |              |
-| Failing MEL hook if practical      | Failure is reported clearly                         | PENDING |              |
-| Check reports                      | MEL hook status appears when used                   | PENDING |              |
+| Run with MEL bridge disabled       | Main pipeline runs normally                         | PASS    | `tools/validation/test26_mel_bridge_validation.py` showed Dry Run success with empty hook names and neutral `mel_hook_status` (`called=False`, `success=True`, `error=None`) for both pre/post entries. |
+| Missing MEL hook                   | Missing hook does not fail import or main execution | PASS    | Isolated `mel_bridge` import stayed safe outside Maya; direct hook calls reported `Maya MEL runtime is not available.` without raising, and pipeline Dry Run still completed with configured hook names represented as disabled status only. |
+| Valid pre-run hook if implemented  | Status is recorded                                  | PASS    | Validation stubbed `mel_bridge.maya_mel.eval` and confirmed `run_pre_hook('preHookOk')` returns `{'called': True, 'success': True, 'error': None}`. |
+| Valid post-run hook if implemented | Status is recorded                                  | PASS    | Validation stubbed `mel_bridge.maya_mel.eval` and confirmed `run_post_hook('postHookOk')` returns `{'called': True, 'success': True, 'error': None}`. |
+| Failing MEL hook if practical      | Failure is reported clearly                         | PASS    | Validation stubbed MEL failure and confirmed both pre/post hook helpers return `called=True`, `success=False`, and the captured error text `Stub MEL hook failure`. |
+| Check reports                      | MEL hook status appears when used                   | PENDING | Validation confirmed `RunResult` and JSON report payload preserve `mel_hook_status`, but current TXT report output does not render any MEL hook status section or disabled-hook message. |
 
 **Expected result:** MEL bridge does not contaminate or destabilize the core Python workflow.
 
