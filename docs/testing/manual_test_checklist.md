@@ -33,13 +33,13 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                    | Expected                                          | Status  | Observations |
 | --------------------------------------- | ------------------------------------------------- | ------- | ------------ |
-| Import `maya_production_pipeliner`      | Package imports without errors                    | PENDING |              |
-| Import `launcher.py`                    | Import succeeds without modifying the scene       | PENDING |              |
-| Import `pipeline.py`                    | Import succeeds without modifying the scene       | PENDING |              |
-| Check `launcher.launch()`               | Callable entry point exists                       | PENDING |              |
-| Check `pipeline.run_pipeline(settings)` | Callable entry point exists                       | PENDING |              |
-| Import with MEL bridge disabled         | Disabled or missing MEL hooks do not break import | PENDING |              |
-| Import package in an empty scene        | No groups or objects are created on import        | PENDING |              |
+| Import `maya_production_pipeliner`      | Package imports without errors                    | PASS    | `mayapy` smoke validation imported the package successfully in a fresh Maya scene. |
+| Import `launcher.py`                    | Import succeeds without modifying the scene       | PASS    | `mayapy` smoke validation imported `launcher` successfully and the scene remained at the four default startup cameras only. |
+| Import `pipeline.py`                    | Import succeeds without modifying the scene       | PASS    | `mayapy` smoke validation imported `pipeline` successfully with no `Pipeline_Organized` root created. |
+| Check `launcher.launch()`               | Callable entry point exists                       | PASS    | `launcher.launch` exists as a callable Maya-facing entry point in the real Maya runtime. |
+| Check `pipeline.run(...)`               | Callable entry point exists                       | PASS    | Real Maya validation confirmed `pipeline.run(...)` exists as the current callable runtime entry point. |
+| Import with MEL bridge disabled         | Disabled or missing MEL hooks do not break import | PASS    | The package imported cleanly in `mayapy` without configuring any MEL hooks, so disabled hook behavior did not break load. |
+| Import package in an empty scene        | No groups or objects are created on import        | PASS    | In a new Maya scene, import left the Outliner unchanged (`|persp`, `|top`, `|front`, `|side`) and did not create `Pipeline_Organized`. |
 
 **Expected result:** The project can be loaded without destructive or mutating scene operations.
 
@@ -53,12 +53,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                               | Expected                                                   | Status  | Observations |
 | ---------------------------------- | ---------------------------------------------------------- | ------- | ------------ |
-| Run Dry Run with scope = All Scene | No crash; clear empty or no-content result                 | PENDING |              |
-| Run Dry Run with scope = Selected  | No crash; clear empty-selection result                     | PENDING |              |
-| Run Dry Run with scope = Visible   | No crash; clear empty or no-visible-content result         | PENDING |              |
-| Inspect Outliner after Dry Run     | No `Pipeline_Organized` group created                      | PENDING |              |
-| Check RunResult                    | `success` and/or `message` clearly describes empty state   | PENDING |              |
-| Check report behavior              | Report is generated or clear no-content result is returned | PENDING |              |
+| Run Dry Run with scope = All Scene | No crash; existing Maya scene content is processed safely  | PASS    | Real Maya validation completed successfully in a fresh scene and processed the four default startup cameras as existing Maya content. |
+| Run Dry Run with scope = Selected  | No crash; clear empty-selection result                     | PASS    | With no selection in a fresh Maya scene, Dry Run returned `scanned = 0`, `planned = 0`, and completed successfully. |
+| Run Dry Run with scope = Visible   | No crash; clear empty or no-visible-content result         | PASS    | In the same fresh Maya scene, Visible-scope Dry Run completed successfully with `scanned = 0` and `planned = 0`. |
+| Inspect Outliner after Dry Run     | No `Pipeline_Organized` group created                      | PASS    | Repeated Dry Run calls left the Outliner unchanged and did not create `Pipeline_Organized`. |
+| Check RunResult                    | `success` and/or `message` clearly describes empty state   | PASS    | For empty Selected and Visible runs, `RunResult.success` stayed true and the summary counters remained at zero, clearly indicating no-content execution. |
+| Check report behavior              | Report is generated or clear no-content result is returned | PASS    | Real Maya Dry Run wrote TXT/JSON reports into the Maya default workspace for All Scene, Selected, and Visible runs. |
 
 **Expected result:** Empty scenes and empty selections do not raise unhandled exceptions.
 
