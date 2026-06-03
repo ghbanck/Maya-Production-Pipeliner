@@ -476,8 +476,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                  | Expected                                              | Status  | Observations |
 | --------------------- | ----------------------------------------------------- | ------- | ------------ |
-| Run pipeline          | RunResult includes `route_decisions_count`            | PENDING |              |
-| Check preview         | `preview_routes` is limited by `max_ui_preview_items` | PENDING |              |
+| Run pipeline          | RunResult includes `route_decisions_count`            | PASS    | Validation script returned `route_decisions_count = 30` with matching `summary`, `warnings`, `report_paths`, `message`, and `success` fields in Dry Run. |
+| Check preview         | `preview_routes` is limited by `max_ui_preview_items` | PASS    | Validation script returned 30 route decisions but only 25 preview entries, matching `max_ui_preview_items = 25`. |
 | Check UI summary      | UI displays summary counters and report paths         | PENDING |              |
 | Check full route list | UI does not render every object route                 | PENDING |              |
 | Check reports         | Full route details remain in TXT/JSON                 | PENDING |              |
