@@ -57,6 +57,9 @@ maya_production_pipeliner_report.json
 
 # Local validation/public snapshot artifacts
 docs/architecture/test27.png
+maya_test*_validation/
+test*_result.json
+**/test*_result.json
 
 # Keep committed example reports
 !examples/example_report.txt
