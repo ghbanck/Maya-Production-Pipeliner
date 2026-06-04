@@ -133,11 +133,19 @@ def case_unwritable_primary_dir():
         with mock.patch.object(reporter, "_write_file", side_effect=fake_write):
             paths = reporter.write_reports(dict(SAMPLE_RUN_RESULT), list(SAMPLE_ROUTE_DECISIONS))
 
+    with open(paths["json"], encoding="utf-8") as handle:
+        written_payload = json.load(handle)
+    written_report_paths = (
+        written_payload.get("run_result") or {}
+    ).get("report_paths")
+
     return {
         "primary_dir": str(scene_dir),
         "workspace_dir": str(workspace_dir),
         "report_paths": paths,
         "uses_workspace_fallback": all(str(path).startswith(str(workspace_dir)) for path in paths.values()),
+        "written_report_paths": written_report_paths,
+        "written_report_paths_match_returned_paths": written_report_paths == paths,
     }
 
 

@@ -62,9 +62,6 @@ def write_reports(run_result, route_decisions):
     """
     directories = _resolve_output_directories()
     report_result = dict(run_result)
-    txt_content = None
-    json_content = None
-
     for directory in directories:
         expected_paths = {
             "txt": os.path.join(directory, config.REPORT_TXT_NAME),
@@ -72,11 +69,9 @@ def write_reports(run_result, route_decisions):
         }
         report_result["report_paths"] = expected_paths
 
-        if txt_content is None:
-            txt_content = _format_txt_report(report_result, route_decisions)
-        if json_content is None:
-            json_payload = _format_json_payload(report_result, route_decisions)
-            json_content = json.dumps(json_payload, indent=2, sort_keys=True)
+        txt_content = _format_txt_report(report_result, route_decisions)
+        json_payload = _format_json_payload(report_result, route_decisions)
+        json_content = json.dumps(json_payload, indent=2, sort_keys=True)
 
         txt_path = _write_file(directory, config.REPORT_TXT_NAME, txt_content, mode="w")
         json_path = _write_file(

@@ -200,7 +200,7 @@ def _preflight_decision(decision):
 
 
 def _is_already_in_target(long_name, target_group):
-    """Return True when long_name parent short name matches target_group."""
+    """Return True when long_name parent is the managed target group path."""
     if cmds is None:
         return False
     try:
@@ -209,5 +209,5 @@ def _is_already_in_target(long_name, target_group):
         parents = []
     if not parents:
         return False
-    parent_short = parents[0].split("|")[-1]
-    return parent_short == target_group
+    expected_parent = "|{0}|{1}".format(config.ROOT_GROUP, target_group)
+    return parents[0] == expected_parent
