@@ -47,7 +47,7 @@ During current Apply preflight, these decisions can also include eligibility ann
 
 It is intended to include:
 
-* summary counters;
+* summary counters (`total`, `scanned`, `moved`, `already_in_target`, `preserved`, `would_move`, `warnings`, `failed`); `total` is the count of all route decisions processed, regardless of outcome;
 * warnings and warning events;
 * report paths;
 * execution and scope mode;

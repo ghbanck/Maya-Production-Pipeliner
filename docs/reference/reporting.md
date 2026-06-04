@@ -59,6 +59,8 @@ Current JSON output includes:
 
 The presence of JSON structure does not mean the schema is permanently integration-stable. Schema/version behavior should still be treated conservatively.
 
+Current schema version is `0.2`. Bumped from `0.1` when `summary.planned` was renamed to `summary.total` to remove ambiguity with `operation_status = planned`.
+
 ## Schema Version Bump Policy
 
 The `schema_version` field in JSON reports must be incremented when the JSON structure changes in a way that would break a reader relying on the current shape. Specifically:

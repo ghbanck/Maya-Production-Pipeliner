@@ -696,7 +696,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Results message reflects move | Message contains moved count | PASS | UI message showed "1 moved". |
 | Preview shows moved status | Preview row shows object, group, and status | PASS | Preview showed `pCube1 -> Production_Meshes [moved]`. |
 | JSON report `moved` count | `summary.moved = 1` in JSON report | PASS | JSON report confirmed `moved = 1` and `success = true` after UI Apply run. |
-| `summary.planned` label clarity | `planned` count meaning is unambiguous after movement | REVIEW | `summary.planned` currently reflects total planned route decisions in context; label may need clarification once all movement slices are complete to distinguish "planned and not yet moved" from total route count. Backlog item — no code change needed now. |
+| `summary.planned` label clarity | `planned` count meaning is unambiguous after movement | PASS    | Renamed `summary.planned` → `summary.total` in `_build_summary`; UI label updated to "Total:"; `REPORT_SCHEMA_VERSION` bumped to `0.2`; `data_contracts.md` updated. |
 
 ---
 
