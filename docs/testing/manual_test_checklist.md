@@ -153,7 +153,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Check production mesh  | Mesh routes to `Production_Meshes` if safe    | PASS    | mayapy 8b: eligible mesh with non-default material moved to `Production_Meshes`; `did_move = True`, `new_long_name` set and confirmed in scene. |
 | Check utility object   | Utility routes to `Scene_Utilities` if safe   | PASS    | mayapy 8c: `SceneLocator_A` moved to `Scene_Utilities`; `did_move = True`, confirmed in scene. |
 | Check can_move gate    | Only objects with `can_move = true` move      | PASS    | mayapy 8b/8c: `can_move = False` objects not moved; instanced content blocked; `failed_parenting` branch continues (test30, 10/10). |
-| Check report           | TXT/JSON reflects actual movement             | PENDING | Report content for movement not explicitly validated in isolation; deferred to Phase 9 polish. |
+| Check report           | TXT/JSON reflects actual movement             | PASS    | Phase 9a report audit (33/33): JSON contains `did_move=true`, `new_long_name`, `operation_status=moved`, `schema_version`, `warning_events`, `summary.moved`; TXT contains `did_move=True`, `new_long_name=`, `status=moved`. Reports in `examples/`. |
 | Check operation status | Moved objects have `operation_status = moved` | PASS    | mayapy 8b: `STATUS_MOVED` confirmed on moved Production_Meshes decision; `STATUS_FAILED_PARENTING` confirmed via mocked failure (test30). |
 
 **Expected result:** Apply organizes simple safe content and records what happened.
@@ -327,7 +327,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Validate before move              | Organizer checks node existence before movement | PASS    | 8e: `cmds.objExists` re-checked at move time; missing node gets `STATUS_SKIPPED_MISSING_NODE` and is skipped. |
 | Capture parenting result          | Returned Maya path is captured when available   | PASS    | 8b/8c: `cmds.parent` return value captured; `cmds.ls(long=True)` used to resolve full post-parent path. |
 | Check `new_long_name`             | New path is recorded after move                 | PASS    | mayapy 8b: `new_long_name` set and confirmed present in scene after Apply. |
-| Check report                      | Original long name and new long name appear     | PENDING | Report file content for long-name fields not explicitly validated; deferred to Phase 9 report audit. |
+| Check report                      | Original long name and new long name appear     | PASS    | Phase 9a: JSON route decisions contain `long_name` (original) and `new_long_name` (post-parent path) for moved objects. Confirmed in `examples/example_report.json`. |
 | Simulate failed move if practical | `did_move = false` and warning are recorded     | PASS    | 8b test30 (mocked failure): `did_move = False`, `STATUS_FAILED_PARENTING`, warning confirmed; next decision continued. |
 
 **Expected result:** Path mutation after parenting is tracked accurately.
@@ -363,7 +363,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Check structural groups         | Tool-created structural groups are not routed as production content | PASS    | mayapy test18: structural groups returned `skipped_tool_structure`; none appeared as movable content decisions. |
 | Check objects already in target | `operation_status = already_in_target`                              | PASS    | mayapy test18: 7 decisions returned `already_in_target` on second run; `did_move = False` on all. |
 | Check moved count               | Second run does not move already-correct objects                    | PASS    | mayapy test18: `summary.moved = 0` on second Apply; message showed "0 moved". |
-| Check report                    | Idempotent behavior is documented                                   | PENDING | Report file content not explicitly validated; deferred to Phase 9 report audit. |
+| Check report                    | Idempotent behavior is documented                                   | PASS    | Phase 9a: run-2 JSON shows `summary.already_in_target=9`, `summary.moved=0`; route decisions show `operation_status=already_in_target` for previously moved objects. |
 
 **Expected result:** Repeated execution is safe and does not duplicate structure.
 
