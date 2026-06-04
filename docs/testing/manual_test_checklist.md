@@ -342,10 +342,10 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step               | Expected                                                     | Status  | Observations |
 | ------------------ | ------------------------------------------------------------ | ------- | ------------ |
-| Run Selected scope | Both selected inputs are handled safely                      | PENDING |              |
-| Check route plan   | Parent/child conflict is detected or resolved conservatively | PENDING |              |
-| Run Apply          | Tool avoids destructive double-parenting                     | PENDING |              |
-| Check warnings     | Conflict warning or clear operation status is recorded       | PENDING |              |
+| Run Selected scope | Both selected inputs are handled safely                      | PASS    | `mayapy` validation selected `|ConflictParent_A` and `|ConflictParent_A|ConflictChild_A` together and returned both as separate Selected-scope records with `summary['scanned'] = 2`. |
+| Check route plan   | Parent/child conflict is detected or resolved conservatively | PASS    | Dry Run kept parent and child as distinct route decisions by `long_name`, without collapsing or losing either selected input. |
+| Run Apply          | Tool avoids destructive double-parenting                     | PASS    | Apply preflight left both selected meshes at `did_move = false` and `new_long_name = None`, so no scene mutation or double-parenting attempt occurred in the current runtime. |
+| Check warnings     | Conflict warning or clear operation status is recorded       | PASS    | Apply preflight returned clear `operation_status = planned` for both selected meshes and preserved both `long_name` values in the JSON report. |
 
 **Expected result:** Parent/child overlap does not create duplicate or destructive movement.
 
