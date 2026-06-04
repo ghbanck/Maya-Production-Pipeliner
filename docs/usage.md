@@ -10,7 +10,7 @@ Current usage maturity is mixed:
 
 * Dry Run is real runtime behavior and has focused manual validation evidence.
 * Apply currently means non-mutating preflight, not scene reorganization.
-* The launcher path exists, but installation and UI flow should still be treated conservatively.
+* The minimal UI is implemented and smoke validated in Maya 2027.1 for Dry Run and Apply Preflight; installation maturity should still be treated conservatively.
 
 ## Working Model
 

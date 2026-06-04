@@ -48,9 +48,8 @@ The repository is no longer only scaffold. The current state is better understoo
 
 ### Partial or scaffold-heavy modules
 
-* `ui.py` still contains placeholder/UI-phase scaffolding;
-* UI remains partial and scaffold-heavy;
-* `launcher.py` exists as the intended entry point but remains lightly validated;
+* `ui.py` implements the Phase 7 minimal UI; Dry Run and Apply Preflight flows smoke validated in Maya 2027.1;
+* `launcher.py` is the intended entry point and smoke validated alongside `ui.py`;
 * `mel_bridge.py` is isolated but still depends on broader optional-behavior validation;
 * `install.py` is a setup helper, not the core runtime workflow.
 
@@ -59,7 +58,7 @@ The repository is no longer only scaffold. The current state is better understoo
 * mutating Apply;
 * real Outliner reparenting/group creation as runtime Apply behavior;
 * mutation outcomes such as `moved` and `failed_parenting`;
-* a fully validated end-user UI flow.
+* UI flow for mutating Apply (depends on mutating Apply implementation).
 
 ## Module Responsibilities
 

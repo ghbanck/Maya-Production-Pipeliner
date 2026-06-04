@@ -50,7 +50,7 @@ This repository is still in controlled implementation.
 | Dry Run | Implemented and validated in focused checklist slices |
 | Apply | Non-mutating preflight only |
 | Mutating Apply | Not implemented |
-| UI | Early / partial |
+| UI | Minimal UI implemented; Dry Run and Apply Preflight smoke validated in Maya 2027.1 |
 | Release status | Not release-ready |
 
 Treat planned behavior as planned until code and manual Maya validation evidence are both present in the repository.
