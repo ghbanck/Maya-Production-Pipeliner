@@ -72,12 +72,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                                       | Expected                                                 | Status  | Observations |
 | ---------------------------------------------------------- | -------------------------------------------------------- | ------- | ------------ |
-| Run with scope = All Scene                                 | Relevant transforms appear in ObjectRecord output        | PENDING |              |
-| Run with scope = Selected after selecting two objects      | Only selected processable candidates appear              | PENDING |              |
-| Select a shape node directly                               | Scanner normalizes to transform candidate when practical | PENDING |              |
-| Select a child node under a transform                      | Scanner records safe transform candidate behavior        | PENDING |              |
-| Select component-level data if supported by Maya selection | Scanner handles or reports unsupported selection safely  | PENDING |              |
-| Compare RunResult count to expected scene content          | `summary['scanned']` or equivalent count is accurate     | PENDING |              |
+| Run with scope = All Scene                                 | Relevant transforms appear in ObjectRecord output        | PASS    | `mayapy` scope validation captured mesh, locator, camera, light, referenced mesh, instanced meshes, parent transform, and child mesh as ObjectRecords. |
+| Run with scope = Selected after selecting two objects      | Only selected processable candidates appear              | PASS    | Selecting `ScopeMesh_A` and `ScopeLocator_A` returned only those two records, both with `is_selected = true`. |
+| Select a shape node directly                               | Scanner normalizes to transform candidate when practical | PASS    | Selecting `ScopeMesh_AShape` returned the transform record `ScopeMesh_A`. |
+| Select a child node under a transform                      | Scanner records safe transform candidate behavior        | PASS    | Selecting `ScopeChildMesh_A` returned the child transform with long name `|ScopeParent_A|ScopeChildMesh_A`. |
+| Select component-level data if supported by Maya selection | Scanner handles or reports unsupported selection safely  | PASS    | Selecting `ScopeMesh_A.vtx[0]` normalized safely to the transform record `ScopeMesh_A`. |
+| Compare RunResult count to expected scene content          | `summary['scanned']` or equivalent count is accurate     | PASS    | Selected-scope Dry Run returned `summary['scanned'] = 2` and `route_decisions_count = 2`, matching the scanner-selected records. |
 
 **Expected result:** Scanner gathers facts according to scope and does not classify or move objects.
 
