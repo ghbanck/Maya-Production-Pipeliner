@@ -289,9 +289,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | ---------------------------------- | ----------------------------------------------------- | ------- | ------------ |
 | Run Dry Run                        | Utility objects are detected                          | PASS    | `SceneCamera_A1`, `SceneLight_A`, and `SceneLocator_A` were all detected in Maya validation. |
 | Check movable camera/light/locator | Safe utilities route to `Scene_Utilities`             | PASS    | Camera, directional light, and locator all routed to `Scene_Utilities` after classifier utility-shape hardening. |
-| Check joint behavior               | Joints are treated conservatively if sensitive        | PENDING |              |
-| Run Apply                          | Only safe utilities move                              | PENDING |              |
-| Check report                       | Utility route and subtype are recorded when available | PENDING |              |
+| Check joint behavior               | Joints are treated conservatively if sensitive        | PASS    | Real Maya validation showed the plain joint itself routes as `Scene_Utilities`, while the mesh parented under that joint remained blocked as `skipped_sensitive_hierarchy`, keeping joint-adjacent sensitive content out of utility movement. |
+| Run Apply                          | Only safe utilities move                              | PASS    | Apply preflight marked camera, locator, light, and plain joint as `planned`, while the joint-child mesh stayed blocked with `eligible = false` and no scene mutation. |
+| Check report                       | Utility route and subtype are recorded when available | PASS    | TXT reported utility route/target details for `SceneCamera_A1`, and JSON preserved scanner-facing subtype facts such as `shape_type = camera`, `shape_type = locator`, and the joint-child `preserve_reason`. |
 
 **Expected result:** Utility objects are organized or preserved according to safety state.
 
