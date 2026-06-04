@@ -424,7 +424,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Instanced object           | `operation_status = skipped_instance`                          | PASS    | Both source and instance copy returned `skipped_instance`. |
 | Sensitive hierarchy object | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Mesh under joint hierarchy returned `skipped_sensitive_hierarchy`. |
 | Tool structural group      | `operation_status = skipped_tool_structure` when reported      | PASS    | `Pipeline_Organized` and child output group returned `skipped_tool_structure`. |
-| Missing node during Apply  | `operation_status = skipped_missing_node` when simulated       | PASS    | Simulated by classifying a movable mesh, deleting it, then running Apply preflight through `organizer.apply_routes()`. |
+| Missing node during Apply  | `operation_status = skipped_missing_node` when simulated       | PASS    | 8e (mocked cmds, 10/10): node present at preflight but missing at move time → `STATUS_SKIPPED_MISSING_NODE`, `did_move = False`, `new_long_name = None`, warning "node missing at move time"; next eligible decision continued and moved; `cmds.parent` called exactly once. |
 | Parenting failure          | `operation_status = failed_parenting` when simulated           | PASS    | test30 (mocked `cmds.parent` raising): `STATUS_FAILED_PARENTING`, `did_move = False`, `new_long_name = None`, warning contains "parenting failed"; next eligible PM decision continued and succeeded. |
 
 **Expected result:** Operation states are explicit and reportable.
@@ -665,6 +665,26 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Dry Run non-regression | No groups, no movement, message unchanged | PASS | `Pipeline_Organized` absent; all `did_move = False`; message confirmed. |
 
 **Expected result:** Already-organized objects are identified and skipped cleanly. Movement gate is not blocked globally; newly added objects still move. No code change was needed.
+
+---
+
+## Phase 8e — Skipped Missing Node Validation
+
+**Purpose:** Verify that a node present at preflight but missing before movement is handled gracefully, remaining decisions continue, and no exception escapes the organizer.
+
+**Validated:** mocked cmds outside Maya. `test31_phase8e_missing_node_validation.py`. 10/10 PASS. No code change required.
+
+| Step | Expected | Status | Observations |
+| ---- | -------- | ------ | ------------ |
+| Missing node gets `STATUS_SKIPPED_MISSING_NODE` | Correct status on affected decision | PASS | `node_A` eligible at preflight; `cmds.objExists` returns `False` at move time → `STATUS_SKIPPED_MISSING_NODE`. |
+| `did_move = False` on missing node | No partial move | PASS | Confirmed. |
+| `new_long_name = None` on missing node | No stale path | PASS | Confirmed. |
+| Warning contains `"node missing at move time"` | Warning text accurate | PASS | Exact text confirmed in decision warnings. |
+| Remaining eligible decision continues and moves | Processing not aborted | PASS | `node_B` moved successfully after `node_A` was skipped; `did_move = True`, `STATUS_MOVED`. |
+| `cmds.parent` called exactly once | No redundant call for missing node | PASS | `mock_cmds.parent.call_count == 1` confirmed. |
+| No exception escapes `apply_routes` | Clean return | PASS | `apply_routes` returned normally; no exception raised. |
+
+**Expected result:** Missing nodes are isolated and warned. Processing continues cleanly for remaining decisions. No code change was needed.
 
 ### Phase 8b — Maya 2027 GUI Smoke (Apply button)
 
