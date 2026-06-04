@@ -144,9 +144,9 @@ def classify(object_records, execution_mode, scope_mode, ignore_string=""):
 
         decisions.append(_build_route_decision(
             record, config.ROUTE_REVIEW_UNCLEAR_CASES,
-            config.REVIEW_UNCLEAR_CASES, False, config.OPERATION_REPORT_ONLY,
-            config.STATUS_PRESERVED_REPORT_ONLY, "unclear object type",
-            "unclear non-mesh content", warnings, execution_mode, scope_mode,
+            config.REVIEW_UNCLEAR_CASES, True, config.OPERATION_MOVE,
+            config.STATUS_DRY_RUN_ONLY, "unclear object type",
+            "", warnings, execution_mode, scope_mode,
         ))
 
     return decisions

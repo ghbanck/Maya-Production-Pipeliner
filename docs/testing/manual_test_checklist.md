@@ -396,12 +396,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                 | Expected                               | Status  | Observations |
 | ------------------------------------ | -------------------------------------- | ------- | ------------ |
-| Run Dry Run on safe unclear object   | Object receives unclear route          | PENDING |              |
-| Check safe unclear target            | Object routes to `Review_UnclearCases` | PENDING |              |
-| Check safe unclear movement          | Object moves only if `can_move = true` | PENDING |              |
-| Run Dry Run on unsafe unclear object | Object is preserved/report-only        | PENDING |              |
-| Check unsafe unclear safety          | `can_move = false`                     | PENDING |              |
-| Check report                         | Reason explains uncertainty or risk    | PENDING |              |
+| Run Dry Run on safe unclear object   | Object receives unclear route          | PASS    | `mayapy` unclear-case validation routed `AmbiguousGroup_A` to `Review_UnclearCases` as a non-mesh ambiguous object. |
+| Check safe unclear target            | Object routes to `Review_UnclearCases` | PASS    | The safe-looking ambiguous group returned `route = Review_UnclearCases` and `target_group = Review_UnclearCases`. |
+| Check safe unclear movement          | Object moves only if `can_move = true` | PASS    | Current runtime now treats the safe-looking ambiguous group as movable review content: `can_move = true`, `operation = move`, and Apply preflight marks it as eligible `planned` content for `Review_UnclearCases`. |
+| Run Dry Run on unsafe unclear object | Object is preserved/report-only        | PASS    | `AmbiguousChildGroup_A` under a joint stayed preserved as `report_only` in Dry Run. |
+| Check unsafe unclear safety          | `can_move = false`                     | PASS    | The unsafe ambiguous child group returned `can_move = false` and `operation_status = skipped_sensitive_hierarchy`. |
+| Check report                         | Reason explains uncertainty or risk    | PASS    | TXT and JSON reports matched runtime facts: the safe ambiguous group kept `reason = unclear object type` with the `Review_UnclearCases` target, while the unsafe child group kept `preserve_reason = rig/deformer sensitive content`. |
 
 **Expected result:** Safe ambiguity has a review destination; unsafe ambiguity is preserved.
 
