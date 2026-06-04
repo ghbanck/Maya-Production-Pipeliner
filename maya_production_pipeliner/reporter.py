@@ -266,6 +266,7 @@ def _sorted_route_decisions(route_decisions):
     return sorted(
         route_decisions or [],
         key=lambda item: (
+            (item.get("long_name") or "").count("|"),
             item.get("long_name") or "",
             item.get("route") or "",
             item.get("target_group") or "",

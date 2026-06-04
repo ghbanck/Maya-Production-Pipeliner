@@ -87,8 +87,6 @@ def show():
     cmds.setParent("..")
 
     # -- Execution Mode -------------------------------------------------------
-    # "Apply Preflight" label reflects that mutating Apply is not yet active;
-    # pipeline runs apply_routes() read-only and reports planned moves.
     cmds.frameLayout(label="Execution Mode", collapsable=False,
                      marginWidth=6, marginHeight=4)
     cmds.columnLayout(adjustableColumn=True)

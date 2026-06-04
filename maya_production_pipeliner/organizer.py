@@ -168,6 +168,11 @@ def _preflight_decision(decision):
         reasons.append("can_move is false")
         return {"eligible": False, "status": decision.get("operation_status"), "reasons": reasons}
 
+    if decision.get("report_only"):
+        reasons.append("report_only is true")
+        status = decision.get("operation_status") or config.STATUS_PRESERVED_REPORT_ONLY
+        return {"eligible": False, "status": status, "reasons": reasons}
+
     target_group = decision.get("target_group")
     if not target_group:
         reasons.append("missing target group")

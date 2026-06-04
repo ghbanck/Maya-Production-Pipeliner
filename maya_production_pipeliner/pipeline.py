@@ -278,7 +278,16 @@ def _build_preview_routes(route_decisions, max_items):
 
     """
     preview = []
-    for decision in route_decisions[:max_items]:
+    sorted_decisions = sorted(
+        route_decisions or [],
+        key=lambda item: (
+            (item.get("long_name") or "").count("|"),
+            item.get("long_name") or "",
+            item.get("route") or "",
+            item.get("target_group") or "",
+        ),
+    )
+    for decision in sorted_decisions[:max_items]:
         preview.append({
             "object_name": decision.get("object_name"),
             "route": decision.get("route"),
