@@ -148,13 +148,13 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                   | Expected                                      | Status  | Observations |
 | ---------------------- | --------------------------------------------- | ------- | ------------ |
-| Execute Apply          | `Pipeline_Organized` is created or reused     | PENDING |              |
-| Check child groups     | Planned child groups are created or reused    | PENDING |              |
-| Check production mesh  | Mesh routes to `Production_Meshes` if safe    | PENDING |              |
-| Check utility object   | Utility routes to `Scene_Utilities` if safe   | PENDING |              |
-| Check can_move gate    | Only objects with `can_move = true` move      | PENDING |              |
-| Check report           | TXT/JSON reflects actual movement             | PENDING |              |
-| Check operation status | Moved objects have `operation_status = moved` | PENDING |              |
+| Execute Apply          | `Pipeline_Organized` is created or reused     | PASS    | mayapy 8a: `Pipeline_Organized` created on first Apply; reused on second Apply. |
+| Check child groups     | Planned child groups are created or reused    | PASS    | mayapy 8a: all 6 `config.OUTPUT_GROUPS` children created as direct children of `Pipeline_Organized`; idempotent on second run. |
+| Check production mesh  | Mesh routes to `Production_Meshes` if safe    | PENDING | Requires Phase 8b object movement. |
+| Check utility object   | Utility routes to `Scene_Utilities` if safe   | PENDING | Requires Phase 8b object movement. |
+| Check can_move gate    | Only objects with `can_move = true` move      | PENDING | Phase 8a validates group creation only; can_move gate for object movement requires Phase 8b. |
+| Check report           | TXT/JSON reflects actual movement             | PENDING | Requires Phase 8b object movement. |
+| Check operation status | Moved objects have `operation_status = moved` | PENDING | Requires Phase 8b object movement. |
 
 **Expected result:** Apply organizes simple safe content and records what happened.
 
@@ -573,6 +573,30 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Run in Apply Preflight mode | Results populated; no scene mutation | PASS    | Maya 2027.1 smoke: message "Apply preflight completed without scene changes. Planned moves: 11. Blocked: 3."; summary Scanned 14, Planned 14, Would Move 0, Preserved 3, Warnings 0, Failed 0; preview showed planned and skipped statuses; Pipeline_Organized exists: False. |
 
 **Expected result:** Phase 7 minimal UI is functional for Dry Run and Apply Preflight in a real Maya GUI session. Open Report buttons require a follow-up smoke session.
+
+---
+
+## Phase 8a — Apply Group Creation — Maya 2027 mayapy Validation
+
+**Purpose:** Verify that Apply creates or reuses the fixed group structure without moving any route decision objects, and that Dry Run remains non-mutating.
+
+**Validated:** Maya 2027, mayapy standalone. `test29_mayapy_phase8a.py`. 14/14 PASS.
+
+| Step | Expected | Status | Observations |
+| ---- | -------- | ------ | ------------ |
+| Apply creates `Pipeline_Organized` | Group exists after Apply on clean scene | PASS | `cmds.objExists("\|Pipeline_Organized") == True` after first Apply. |
+| Apply creates all OUTPUT_GROUPS children | All 6 child groups present as direct children | PASS | `cmds.listRelatives` matched `sorted(config.OUTPUT_GROUPS)` exactly. |
+| `group_structure_status` in RunResult | RunResult contains group creation status dict | PASS | Key present; `Pipeline_Organized = "created"`, all 6 children `= "created"` on first run. |
+| No route decision objects moved | `did_move = False` and `new_long_name = None` on all decisions | PASS | All route decisions confirmed unmoved after Apply. |
+| Apply message updated | Message contains "group structure ready" and "No objects moved" | PASS | Exact message: `"Apply: group structure ready. Planned moves: N. Blocked: M. No objects moved."` |
+| Second Apply is idempotent — no duplicates | Same 6 children, none added or duplicated | PASS | `scene_groups()` identical after second Apply. |
+| Second Apply reuses root group | `group_structure_status[ROOT_GROUP] = "reused"` | PASS | Confirmed via RunResult on second Apply call. |
+| Second Apply reuses all child groups | All 6 child statuses `= "reused"` | PASS | Confirmed via RunResult on second Apply call. |
+| Dry Run creates no groups | `Pipeline_Organized` absent after Dry Run on clean scene | PASS | `cmds.objExists("\|Pipeline_Organized") == False` after Dry Run. |
+| Dry Run message unchanged | `"Dry Run completed without scene changes."` | PASS | Exact message confirmed. |
+| Dry Run has no `group_structure_status` | Key absent from Dry Run RunResult | PASS | `"group_structure_status" not in result` confirmed. |
+
+**Expected result:** Apply creates the fixed group structure and is idempotent. Dry Run remains fully non-mutating. Object movement is not part of this slice.
 
 ---
 
