@@ -1,9 +1,13 @@
-"""Apply preflight surface for future scene organization.
+"""Apply organizer for Maya Production Pipeliner.
 
-Current runtime scope:
-- Evaluate whether each RouteDecision would be eligible for a future Apply.
-- Annotate decisions with preflight status/reasons.
-- Never mutate the Maya scene (no grouping, parenting, renaming).
+Phase 8a runtime scope:
+- Create or reuse Pipeline_Organized and all config.OUTPUT_GROUPS child groups
+  when Apply is called (ensure_group_structure).
+- Evaluate Apply preflight eligibility for each RouteDecision (apply_routes).
+- No route decision objects are moved, parented, or renamed.
+- Dry Run must never call ensure_group_structure.
+
+Mutation boundary: only organizer.py may mutate scene hierarchy.
 """
 
 try:
@@ -15,8 +19,51 @@ from maya_production_pipeliner import config
 
 
 # ---------------------------------------------------------------------------
-# Public entry point
+# Public entry points
 # ---------------------------------------------------------------------------
+
+def ensure_group_structure():
+    """Create or reuse Pipeline_Organized and all OUTPUT_GROUPS child groups.
+
+    Called by pipeline.py in Apply mode before apply_routes().
+    Never called during Dry Run.
+
+    Returns
+    -------
+    dict
+        Mapping of group name -> 'created' | 'reused' | 'error: <msg>'.
+        Empty dict when cmds is unavailable (outside Maya).
+    """
+    if cmds is None:
+        return {}
+
+    status = {}
+    root_full = "|" + config.ROOT_GROUP
+
+    try:
+        if not cmds.objExists(root_full):
+            cmds.createNode("transform", name=config.ROOT_GROUP)
+            status[config.ROOT_GROUP] = "created"
+        else:
+            status[config.ROOT_GROUP] = "reused"
+    except Exception as exc:
+        status[config.ROOT_GROUP] = "error: " + str(exc)
+        return status
+
+    for group_name in config.OUTPUT_GROUPS:
+        child_full = root_full + "|" + group_name
+        try:
+            if not cmds.objExists(child_full):
+                cmds.createNode("transform", name=group_name,
+                                parent=config.ROOT_GROUP)
+                status[group_name] = "created"
+            else:
+                status[group_name] = "reused"
+        except Exception as exc:
+            status[group_name] = "error: " + str(exc)
+
+    return status
+
 
 def apply_routes(route_decisions):
     """Return non-mutating Apply preflight results for route decisions.

@@ -94,7 +94,7 @@ def show():
     cmds.columnLayout(adjustableColumn=True)
     _ctrl["mode"] = cmds.radioButtonGrp(
         numberOfRadioButtons=2,
-        labelArray2=["Dry Run", "Apply Preflight"],
+        labelArray2=["Dry Run", "Apply"],
         select=1,
     )
     cmds.setParent("..")

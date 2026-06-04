@@ -18,7 +18,7 @@ Execution flow
 2. Scan the scene with scanner.scan().
 3. Classify records with classifier.classify().
 4. If Dry Run: write reports and build RunResult without touching the scene.
-5. If Apply:   run non-mutating apply preflight, write reports, build RunResult.
+5. If Apply:   create/reuse group structure, run apply preflight, write reports, build RunResult.
 6. Call MEL post-hook (if configured) and return RunResult.
 
 Dependencies
@@ -86,6 +86,7 @@ def run(scope_mode, execution_mode, ignore_string="",
         route_decisions = classifier.classify(
             object_records, execution_mode, scope_mode, ignore_string
         )
+        group_status = organizer.ensure_group_structure()
         route_decisions = organizer.apply_routes(route_decisions)
         planned_count = len([
             item for item in route_decisions
@@ -93,13 +94,14 @@ def run(scope_mode, execution_mode, ignore_string="",
         ])
         blocked_count = len(route_decisions) - planned_count
         message = (
-            "Apply preflight completed without scene changes. "
-            "Planned moves: {0}. Blocked: {1}."
+            "Apply: group structure ready. "
+            "Planned moves: {0}. Blocked: {1}. No objects moved."
         ).format(planned_count, blocked_count)
         run_result = _build_run_result(
             scope_mode, execution_mode, ignore_string, object_records,
             route_decisions, {}, mel_hook_status, True, message,
         )
+        run_result["group_structure_status"] = group_status
         report_paths = reporter.write_reports(run_result, route_decisions)
         _apply_report_paths(run_result, report_paths)
         return run_result
