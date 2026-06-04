@@ -227,13 +227,13 @@ def _material_review_route(record):
     if material_node_count is None:
         material_node_count = record.get("material_count")
     shading_engine_count = record.get("shading_engine_count")
-    if record.get("uses_default_material") or material_node_count == 0:
-        return config.ROUTE_REVIEW_MISSING_MATERIAL
     if (
         (material_node_count and material_node_count > 1)
         or (shading_engine_count and shading_engine_count > 1)
     ):
         return config.ROUTE_REVIEW_MULTI_MATERIAL
+    if record.get("uses_default_material") or material_node_count == 0:
+        return config.ROUTE_REVIEW_MISSING_MATERIAL
     return None
 
 

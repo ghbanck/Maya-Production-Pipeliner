@@ -187,13 +187,13 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                  | Expected                                           | Status  | Observations |
 | ------------------------------------- | -------------------------------------------------- | ------- | ------------ |
-| Run Dry Run on default-material mesh  | Mesh receives material review route                | PENDING |              |
-| Check default-material route          | Object routes to `Review_MissingMaterial`          | PENDING |              |
-| Check default-material reason         | Reason mentions default or missing material review | PENDING |              |
-| Run Dry Run on multi-material mesh    | Mesh receives multi-material review route          | PENDING |              |
-| Check multi-material route            | Object routes to `Review_MultiMaterial`            | PENDING |              |
-| Check multi-material reason           | Reason describes handoff review, not failure       | PENDING |              |
-| Check material semantics              | Report wording distinguishes shading-group count vs material-node count when present | PENDING |              |
+| Run Dry Run on default-material mesh  | Mesh receives material review route                | PASS    | `mayapy` material validation routed `DefaultMaterialMesh_A` into material review during Dry Run. |
+| Check default-material route          | Object routes to `Review_MissingMaterial`          | PASS    | `DefaultMaterialMesh_A` routed to `Review_MissingMaterial`. |
+| Check default-material reason         | Reason mentions default or missing material review | PASS    | Current classifier reason is `material review required`, which is consistent with review handoff rather than runtime failure. |
+| Run Dry Run on multi-material mesh    | Mesh receives multi-material review route          | PASS    | `mayapy` material validation routed `MultiMaterialMesh_A` into multi-material review during Dry Run. |
+| Check multi-material route            | Object routes to `Review_MultiMaterial`            | PASS    | `MultiMaterialMesh_A` routed to `Review_MultiMaterial` after material-review precedence hardening. |
+| Check multi-material reason           | Reason describes handoff review, not failure       | PASS    | The runtime still returns `reason = material review required`, which stays review-oriented rather than sounding like an execution error. |
+| Check material semantics              | Report wording distinguishes shading-group count vs material-node count when present | PASS    | The JSON report preserved both `material_node_count` and `shading_engine_count`, showing `3` for the multi-material test mesh. |
 | Run Apply if objects are safe to move | Objects move only if `can_move = true`             | PENDING |              |
 
 **Expected result:** Material issues route to review buckets without being treated as fatal errors.
