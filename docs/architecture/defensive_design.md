@@ -372,7 +372,7 @@ Movement order should not rely on raw string length. When hierarchy depth matter
 
 This helps avoid processing a long-named shallow node before a deeply nested node.
 
-Reports should use deterministic ordering where practical. Stable ordering reduces noisy diffs, makes manual review easier, and helps future regression tests compare results reliably.
+Reports should use deterministic ordering. The required ordering rule is: sort route decisions by hierarchy depth ascending (counted by `|` separators in `long_name`), then alphabetically by `long_name` within the same depth. This ordering must be applied before writing reports and before building `preview_routes` in `RunResult`. Stable ordering reduces noisy diffs, makes manual review easier, and helps future regression tests compare results reliably.
 
 ---
 

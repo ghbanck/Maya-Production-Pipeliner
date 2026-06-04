@@ -59,6 +59,16 @@ Current JSON output includes:
 
 The presence of JSON structure does not mean the schema is permanently integration-stable. Schema/version behavior should still be treated conservatively.
 
+## Schema Version Bump Policy
+
+The `schema_version` field in JSON reports must be incremented when the JSON structure changes in a way that would break a reader relying on the current shape. Specifically:
+
+* bump when a top-level key is added, removed, or renamed;
+* bump when a field inside `route_decisions` entries is added, removed, or renamed;
+* bump when the type of an existing field changes.
+
+Do not bump for changes to counter values, warning text content, summary numbers, or any change that fits within the existing key and type structure.
+
 ## Warning Model
 
 Warnings should be visible in both TXT and JSON outputs when they occur.
