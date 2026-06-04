@@ -305,10 +305,10 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                     | Expected                                           | Status  | Observations |
 | ------------------------ | -------------------------------------------------- | ------- | ------------ |
-| Run Dry Run              | Scanner records long names                         | PENDING |              |
-| Check route decisions    | Objects are distinguishable by path                | PENDING |              |
+| Run Dry Run              | Scanner records long names                         | PASS    | `mayapy` duplicate-name validation returned two distinct Dry Run route decisions for `|DupParent_A|SharedMesh` and `|DupParent_B|SharedMesh`. |
+| Check route decisions    | Objects are distinguishable by path                | PASS    | The scanner kept both duplicate short-name meshes as separate ObjectRecords and Dry Run kept both `long_name` values distinct. |
 | Run Apply                | Correct objects are moved                          | PENDING |              |
-| Check report             | Original long names are traceable                  | PENDING |              |
+| Check report             | Original long names are traceable                  | PASS    | The JSON report preserved both original `long_name` values for the duplicate-name meshes. |
 | Check collision handling | Maya auto-renames, if any, are reflected in output | PENDING |              |
 
 **Expected result:** Duplicate short names do not break routing or reporting.
