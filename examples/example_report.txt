@@ -1,6 +1,6 @@
 Maya Production Pipeliner
-Schema version: 0.1
-Report generated: 2026-06-04T05:19:46
+Schema version: 0.2
+Report generated: 2026-06-04T05:27:51
 
 Execution
 ---------
@@ -15,9 +15,9 @@ Summary
 already_in_target: 0
 failed: 0
 moved: 9
-planned: 11
 preserved: 2
 scanned: 11
+total: 11
 warnings: 0
 would_move: 0
 

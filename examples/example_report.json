@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-04T05:19:46",
+  "generated_at": "2026-06-04T05:27:51",
   "route_decisions": [
     {
       "apply_preflight": {
@@ -1489,15 +1489,15 @@
       "already_in_target": 0,
       "failed": 0,
       "moved": 9,
-      "planned": 11,
       "preserved": 2,
       "scanned": 11,
+      "total": 11,
       "warnings": 0,
       "would_move": 0
     },
     "warning_events": [],
     "warnings": []
   },
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "tool": "Maya Production Pipeliner"
 }
