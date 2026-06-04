@@ -150,11 +150,11 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | ---------------------- | --------------------------------------------- | ------- | ------------ |
 | Execute Apply          | `Pipeline_Organized` is created or reused     | PASS    | mayapy 8a: `Pipeline_Organized` created on first Apply; reused on second Apply. |
 | Check child groups     | Planned child groups are created or reused    | PASS    | mayapy 8a: all 6 `config.OUTPUT_GROUPS` children created as direct children of `Pipeline_Organized`; idempotent on second run. |
-| Check production mesh  | Mesh routes to `Production_Meshes` if safe    | PENDING | Requires Phase 8b object movement. |
-| Check utility object   | Utility routes to `Scene_Utilities` if safe   | PENDING | Requires Phase 8b object movement. |
-| Check can_move gate    | Only objects with `can_move = true` move      | PENDING | Phase 8a validates group creation only; can_move gate for object movement requires Phase 8b. |
-| Check report           | TXT/JSON reflects actual movement             | PENDING | Requires Phase 8b object movement. |
-| Check operation status | Moved objects have `operation_status = moved` | PENDING | Requires Phase 8b object movement. |
+| Check production mesh  | Mesh routes to `Production_Meshes` if safe    | PASS    | mayapy 8b: eligible mesh with non-default material moved to `Production_Meshes`; `did_move = True`, `new_long_name` set and confirmed in scene. |
+| Check utility object   | Utility routes to `Scene_Utilities` if safe   | PENDING | Requires Phase 8c movement slice. |
+| Check can_move gate    | Only objects with `can_move = true` move      | PASS    | mayapy 8b: `can_move = False` objects not moved; non-PM eligible stays `STATUS_PLANNED`; `failed_parenting` branch continues processing remaining decisions (test30, 10/10). |
+| Check report           | TXT/JSON reflects actual movement             | PENDING | Report content for movement not explicitly validated; requires Phase 8c full pass. |
+| Check operation status | Moved objects have `operation_status = moved` | PASS    | mayapy 8b: `STATUS_MOVED` confirmed on moved Production_Meshes decision; `STATUS_FAILED_PARENTING` confirmed via mocked failure (test30). |
 
 **Expected result:** Apply organizes simple safe content and records what happened.
 
@@ -418,14 +418,14 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                       | Expected                                                       | Status  | Observations |
 | -------------------------- | -------------------------------------------------------------- | ------- | ------------ |
 | Dry Run object             | `operation_status = dry_run_only` or equivalent                | PASS    | `mayapy` validation returned `dry_run_only` for a normal movable mesh in Dry Run. |
-| Successfully moved object  | `operation_status = moved`                                     | PENDING | Requires mutating Apply; current runtime is still Apply preflight only. |
+| Successfully moved object  | `operation_status = moved`                                     | PASS    | mayapy 8b: `STATUS_MOVED` confirmed for eligible Production_Meshes object; `did_move = True`, `new_long_name` set. |
 | Already organized object   | `operation_status = already_in_target`                         | PASS    | Mesh parented under `Pipeline_Organized|Production_Meshes` returned `already_in_target` in Apply preflight. |
 | Referenced object          | `operation_status = skipped_reference`                         | PASS    | Referenced mesh returned `skipped_reference` in Apply preflight. |
 | Instanced object           | `operation_status = skipped_instance`                          | PASS    | Both source and instance copy returned `skipped_instance`. |
 | Sensitive hierarchy object | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Mesh under joint hierarchy returned `skipped_sensitive_hierarchy`. |
 | Tool structural group      | `operation_status = skipped_tool_structure` when reported      | PASS    | `Pipeline_Organized` and child output group returned `skipped_tool_structure`. |
 | Missing node during Apply  | `operation_status = skipped_missing_node` when simulated       | PASS    | Simulated by classifying a movable mesh, deleting it, then running Apply preflight through `organizer.apply_routes()`. |
-| Parenting failure          | `operation_status = failed_parenting` when simulated           | PENDING | Requires mutating Apply path with actual parenting failure handling. |
+| Parenting failure          | `operation_status = failed_parenting` when simulated           | PASS    | test30 (mocked `cmds.parent` raising): `STATUS_FAILED_PARENTING`, `did_move = False`, `new_long_name = None`, warning contains "parenting failed"; next eligible PM decision continued and succeeded. |
 
 **Expected result:** Operation states are explicit and reportable.
 
@@ -597,6 +597,32 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Dry Run has no `group_structure_status` | Key absent from Dry Run RunResult | PASS | `"group_structure_status" not in result` confirmed. |
 
 **Expected result:** Apply creates the fixed group structure and is idempotent. Dry Run remains fully non-mutating. Object movement is not part of this slice.
+
+---
+
+## Phase 8b — Production_Meshes Movement Validation
+
+**Purpose:** Verify that eligible Production_Meshes route decisions are moved into `Production_Meshes`, protected and non-PM content is untouched, failure handling is correct, and Dry Run remains non-mutating.
+
+**Validated:** mayapy 8b main (`test30_mayapy_phase8b.py`) 14/14 PASS. Failed-parenting branch (`test30_phase8b_failed_parenting_validation.py`) 10/10 PASS.
+
+| Step | Expected | Status | Observations |
+| ---- | -------- | ------ | ------------ |
+| Eligible Production_Meshes object moves | `did_move = True`, object under `Production_Meshes` in scene | PASS | mayapy: `ProdMesh_A` (unique material) moved; `cmds.objExists(new_long_name) == True`. |
+| `operation_status = moved` on moved object | Status reflects actual movement | PASS | mayapy: `STATUS_MOVED` confirmed in route decision. |
+| `new_long_name` set and correct | Reflects post-parent Maya path | PASS | mayapy: `new_long_name` exists in scene; path contains `\|Pipeline_Organized\|Production_Meshes\|`. |
+| Original `long_name` preserved | Pre-move identity retained in decision | PASS | mayapy: `long_name = "\|ProdMesh_A"` unchanged alongside `new_long_name`. |
+| `summary.moved` accurate | RunResult summary count matches actual moves | PASS | mayapy: `summary.moved == 1` confirmed. |
+| Non-PM eligible stays `STATUS_PLANNED` | `ReviewMesh_A` not moved; remains planned | PASS | mayapy: `did_move = False`, `operation_status = planned` on review-routed mesh. |
+| Apply message reflects moved count | Message updated from "No objects moved" | PASS | mayapy: message contains "1 moved"; "No objects moved" absent. |
+| Dry Run creates no groups, moves nothing | Non-regression after 8b | PASS | mayapy: `Pipeline_Organized` absent; all `did_move = False` after Dry Run. |
+| `failed_parenting` — status correct | `STATUS_FAILED_PARENTING` on failing decision | PASS | test30 mock: `STATUS_FAILED_PARENTING` confirmed when `cmds.parent` raises. |
+| `failed_parenting` — `did_move = False` | No partial move recorded | PASS | test30 mock: `did_move = False` on failing decision. |
+| `failed_parenting` — `new_long_name = None` | No stale path recorded | PASS | test30 mock: `new_long_name = None` on failing decision. |
+| `failed_parenting` — warning recorded | Warning text contains "parenting failed" | PASS | test30 mock: warning confirmed on failing decision. |
+| Remaining decisions continue after failure | Next eligible PM still processed | PASS | test30 mock: `ProdMesh_B` moved successfully after `ProdMesh_A` failed. |
+
+**Expected result:** Production_Meshes eligible objects move correctly. Failures are isolated and reported. Non-PM and protected content untouched. Dry Run fully non-mutating.
 
 ---
 
