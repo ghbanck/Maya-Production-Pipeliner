@@ -10,7 +10,7 @@ Current usage maturity is mixed:
 
 * Dry Run is real runtime behavior and has focused manual validation evidence.
 * Apply creates the group structure and moves eligible routed objects; idempotency is validated.
-* The minimal UI is implemented and smoke validated in Maya 2027.1 for Dry Run and Apply Preflight; installation maturity should still be treated conservatively.
+* The minimal UI is implemented and smoke validated in Maya 2027.1 for Dry Run and Apply; installation maturity should still be treated conservatively.
 
 ## Working Model
 
@@ -22,7 +22,7 @@ High-level flow:
 scan scene facts
 -> classify route decisions
 -> preserve unsafe content
--> preview through Dry Run or Apply preflight
+-> execute through Dry Run or Apply
 -> review TXT/JSON reports
 ```
 

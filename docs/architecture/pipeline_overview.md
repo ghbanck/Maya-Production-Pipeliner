@@ -46,7 +46,7 @@ The repository is no longer only scaffold. The current state is better understoo
 
 ### Partial or scaffold-heavy modules
 
-* `ui.py` implements the Phase 7 minimal UI; Dry Run and Apply Preflight flows smoke validated in Maya 2027.1;
+* `ui.py` implements the Phase 7 minimal UI; Dry Run and Apply flows smoke validated in Maya 2027.1;
 * `launcher.py` is the intended entry point and smoke validated alongside `ui.py`;
 * `mel_bridge.py` is isolated but still depends on broader optional-behavior validation;
 * `install.py` is a setup helper, not the core runtime workflow.
@@ -62,7 +62,7 @@ The repository is no longer only scaffold. The current state is better understoo
 config.py      -> names, constants, modes, routes, and status values
 scanner.py     -> reads scene facts and builds ObjectRecord data
 classifier.py  -> creates RouteDecision data from factual records
-organizer.py   -> runs Apply preflight today; future mutation boundary
+organizer.py   -> creates Apply groups and moves eligible route decisions
 reporter.py    -> writes TXT/JSON reports
 pipeline.py    -> orchestrates scan, classify, organize, report, RunResult
 ui.py          -> lightweight Maya-facing interface

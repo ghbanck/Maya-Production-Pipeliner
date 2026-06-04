@@ -6,28 +6,32 @@ For the broader defensive rationale, see [`defensive_design.md`](defensive_desig
 
 ## Current State
 
-Apply is currently non-mutating preflight.
+Apply currently creates or reuses the fixed output group structure and moves
+eligible route decisions into their target groups.
 
 Current Apply behavior:
 
 * evaluates route-decision eligibility;
 * records preflight reasons;
-* updates reportable operation state for preflight outcomes;
-* keeps `did_move = false`;
-* keeps `new_long_name = None`;
-* does not create groups or move scene nodes.
+* creates or reuses `Pipeline_Organized` and configured child groups;
+* moves eligible route decisions into their target groups;
+* preserves referenced, instanced, rig/deformer-sensitive, report-only, missing,
+  already-in-target, and otherwise ineligible content;
+* records `did_move`, `new_long_name`, `operation_status`, warnings, and
+  summary counts from actual execution.
 
-This means current Apply is real runtime code, but it is still preflight-only runtime code.
+Dry Run remains strictly observational and must not create groups or move scene
+nodes.
 
 ## Mutation Boundary
 
-Only `organizer.py` should own future scene-hierarchy mutation.
+Only `organizer.py` should own scene-hierarchy mutation.
 
 The scanner, classifier, reporter, pipeline, UI, and launcher should not silently widen Apply behavior by introducing mutation on their own.
 
 ## Safe Move Contract
 
-A future move should be considered safe only when all required conditions are true at the moment of Apply:
+A move should be considered safe only when all required conditions are true at the moment of Apply:
 
 * the route decision belongs to the current plan;
 * `can_move = true`;
@@ -44,9 +48,9 @@ A future move should be considered safe only when all required conditions are tr
 
 If any required condition is false or unknown, the object should be preserved and reported rather than moved.
 
-## Future Apply Lifecycle
+## Apply Lifecycle
 
-The intended mutating lifecycle is:
+The current mutating lifecycle is:
 
 ```text
 build route plan
@@ -58,11 +62,11 @@ build route plan
 -> return RunResult
 ```
 
-Maya is not transactional, so future Apply should assume partial failure is possible.
+Maya is not transactional, so Apply assumes partial failure is possible.
 
 ## Failure Policy
 
-When mutating Apply is eventually implemented, it should:
+Apply should:
 
 * continue only when remaining decisions can still be handled independently;
 * record `failed_parenting` when parenting fails;

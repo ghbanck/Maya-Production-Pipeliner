@@ -556,7 +556,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | ---- | -------- | ------ | ------------ |
 | `launcher.launch()` opens window | Window titled "Maya Production Pipeliner" appears | PASS | Window opened without errors from Script Editor. |
 | Scope controls rendered | Three radio buttons: All Scene, Selected, Visible | PASS | `labelArray3 = ['All Scene', 'Selected', 'Visible']` confirmed. |
-| Execution mode controls rendered | Two radio buttons: Dry Run, Apply Preflight | PASS | `labelArray2 = ['Dry Run', 'Apply Preflight']` confirmed; bare "Apply" label is absent. |
+| Execution mode controls rendered | Two radio buttons: Dry Run, Apply | PASS | `labelArray2 = ['Dry Run', 'Apply']` confirmed after Apply became mutating runtime behavior. |
 | Ignore string field rendered | Text field present and queryable | PASS | `cmds.textField` query returned empty string on fresh window. |
 | Run button rendered | Button present in window | PASS | Button visible and clickable. |
 | Results section rendered | Message, summary, warnings, reports, preview area visible | PASS | All result widgets present and queryable after window open. |
@@ -570,9 +570,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Dry Run non-mutating | `cmds.objExists("Pipeline_Organized") == False` | PASS | Outliner unchanged after Run; no Pipeline_Organized group created. |
 | Second `launcher.launch()` is idempotent | Existing window raised; no duplicate created | PASS    | Maya 2027.1 smoke: called launcher.launch() while window was open; window count remained 1. |
 | Open TXT/JSON Report buttons | Clicking opens file in system viewer | PASS    | Maya 2027.1 smoke: Open TXT Report and Open JSON Report buttons both clicked; respective report files opened successfully in system viewer. |
-| Run in Apply Preflight mode | Results populated; no scene mutation | PASS    | Maya 2027.1 smoke: message "Apply preflight completed without scene changes. Planned moves: 11. Blocked: 3."; summary Scanned 14, Planned 14, Would Move 0, Preserved 3, Warnings 0, Failed 0; preview showed planned and skipped statuses; Pipeline_Organized exists: False. |
+| Run in Apply mode | Results populated from RunResult after Apply execution | PASS    | Later Maya 2027.1 GUI smoke confirmed the Apply button moved eligible content and surfaced moved counts through the UI. |
 
-**Expected result:** Phase 7 minimal UI is functional for Dry Run and Apply Preflight in a real Maya GUI session. Open Report buttons require a follow-up smoke session.
+**Expected result:** The minimal UI is functional for Dry Run and current Apply behavior in a real Maya GUI session.
 
 ---
 

@@ -10,11 +10,16 @@ The project is implemented in small vertical slices. Each phase should add one c
 
 ## Current implementation status
 
-The repository is currently in scaffold / implementation-in-progress state.
+The repository is currently in controlled implementation.
 
-Phase 1 created the package structure, placeholder modules, README, license, examples, manual test checklist, and install helper.
+Dry Run, reporting, minimal UI, and Safe Apply slices have runtime
+implementation and focused validation evidence. Apply creates or reuses the
+fixed output group structure and moves eligible route decisions while preserving
+unsafe and report-only content. Remaining work is tracked as explicit open
+behavior rather than assumed complete release readiness.
 
-A Phase 1 correction was identified for import safety: Maya runtime imports should not break package imports outside a live Maya session, and importing the package should not open UI or mutate a scene.
+This plan preserves earlier phases as build history and uses later phases to
+describe the current implementation gates.
 
 ## Build principles
 
