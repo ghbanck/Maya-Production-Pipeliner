@@ -48,8 +48,8 @@ This repository is still in controlled implementation.
 | Scope contract | Locked at v1.1.3 |
 | Core runtime | Implemented in slices |
 | Dry Run | Implemented and validated in focused checklist slices |
-| Apply | Non-mutating preflight only |
-| Mutating Apply | Not implemented |
+| Apply | Creates group structure and moves eligible routed objects; mayapy-validated through Phase 8c |
+| Mutating Apply (full) | Idempotency and remaining edge cases pending |
 | UI | Minimal UI implemented; Dry Run and Apply Preflight smoke validated in Maya 2027.1 |
 | Release status | Not release-ready |
 
@@ -77,8 +77,8 @@ Scan scene facts
 Current safety posture:
 
 * Dry Run is strictly observational and non-mutating.
-* Apply currently runs as preflight and reports eligibility without scene mutation.
-* Future mutating Apply remains gated behind explicit safety contracts and additional validation.
+* Apply creates or reuses the output group structure and moves eligible routed objects into their target groups. Protected content — referenced nodes, instanced geometry, rig/deformer-sensitive objects — remains report-only and is never moved.
+* Idempotency, already-in-target detection, and remaining edge cases are pending validation.
 
 ---
 
@@ -136,7 +136,7 @@ Treat that launch path as the intended public interface, not as proof of a finis
 
 Current limitations include:
 
-* mutating Apply is not implemented;
+* Apply moves eligible routed objects but idempotency and all edge cases are not yet fully validated;
 * no claim of production-ready or release-ready behavior;
 * no promise of full validation, publishing, export correctness, shader repair, namespace conflict resolution, telemetry, or generalized pipeline runtime features;
 * no guarantee that every planned feature in the frozen scope is already implemented.
