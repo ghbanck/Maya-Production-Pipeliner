@@ -247,7 +247,7 @@ def _build_summary(route_decisions, scanned_count=0):
     """
     summary = {
         "scanned": scanned_count,
-        "planned": len(route_decisions),
+        "total": len(route_decisions),
         "would_move": 0,
         "moved": 0,
         "already_in_target": 0,

@@ -193,12 +193,12 @@ def _update_result_display(run_result):
 
     summary = run_result.get("summary") or {}
     summary_line = (
-        "Scanned: {scanned}  Planned: {planned}  "
+        "Scanned: {scanned}  Total: {total}  "
         "Would Move: {would_move}  Preserved: {preserved}  "
         "Warnings: {warnings}  Failed: {failed}"
     ).format(
         scanned=summary.get("scanned", 0),
-        planned=summary.get("planned", 0),
+        total=summary.get("total", 0),
         would_move=summary.get("would_move", 0),
         preserved=summary.get("preserved", 0),
         warnings=summary.get("warnings", 0),
