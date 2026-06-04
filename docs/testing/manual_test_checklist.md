@@ -419,7 +419,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | -------------------------- | -------------------------------------------------------------- | ------- | ------------ |
 | Dry Run object             | `operation_status = dry_run_only` or equivalent                | PASS    | `mayapy` validation returned `dry_run_only` for a normal movable mesh in Dry Run. |
 | Successfully moved object  | `operation_status = moved`                                     | PASS    | mayapy 8b: `STATUS_MOVED` confirmed for eligible Production_Meshes object; `did_move = True`, `new_long_name` set. |
-| Already organized object   | `operation_status = already_in_target`                         | PASS    | Mesh parented under `Pipeline_Organized|Production_Meshes` returned `already_in_target` in Apply preflight. |
+| Already organized object   | `operation_status = already_in_target`                         | PASS    | mayapy 8d: second Apply run marked previously moved objects `already_in_target`; `did_move = False`; no redundant `cmds.parent`; `summary.already_in_target = 6` matched actual count. |
 | Referenced object          | `operation_status = skipped_reference`                         | PASS    | Referenced mesh returned `skipped_reference` in Apply preflight. |
 | Instanced object           | `operation_status = skipped_instance`                          | PASS    | Both source and instance copy returned `skipped_instance`. |
 | Sensitive hierarchy object | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Mesh under joint hierarchy returned `skipped_sensitive_hierarchy`. |
@@ -645,6 +645,26 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Dry Run creates no groups, moves nothing | Non-regression | PASS | `Pipeline_Organized` absent; all `did_move = False`; message unchanged. |
 
 **Expected result:** All eligible routes move to their target groups in a single Apply call. Protected content untouched. Dry Run fully non-mutating.
+
+---
+
+## Phase 8d — Already-in-Target Validation
+
+**Purpose:** Verify that a second Apply run correctly identifies previously moved objects without attempting a redundant `cmds.parent`, and that new objects added after the first run still move.
+
+**Validated:** Maya 2027, mayapy standalone. `test32_mayapy_phase8d.py`. 14/14 PASS. No code change required.
+
+| Step | Expected | Status | Observations |
+| ---- | -------- | ------ | ------------ |
+| Run 1 moves eligible objects | `did_move = True` for eligible objects | PASS | `ProdMesh_A` and `SceneLocator_A` moved on first Apply. |
+| Run 2: previously moved objects are `already_in_target` | `operation_status = already_in_target` | PASS | Both objects returned `STATUS_ALREADY_IN_TARGET` on second Apply. |
+| Run 2: `did_move = False` for already-in-target objects | No redundant `cmds.parent` | PASS | `did_move = False`; objects remain at post-run-1 paths unchanged. |
+| Objects remain in scene at post-run-1 path | `cmds.objExists(new_long_name)` still true | PASS | Both paths confirmed still present after second Apply. |
+| `summary.already_in_target` accurate | Count matches actual decisions with that status | PASS | `summary.already_in_target = 6` matched actual count of `STATUS_ALREADY_IN_TARGET` decisions. |
+| New object added after run 1 still moves on run 2 | `did_move = True`, `STATUS_MOVED` | PASS | `ProdMesh_B` (added between runs) moved correctly on run 2. |
+| Dry Run non-regression | No groups, no movement, message unchanged | PASS | `Pipeline_Organized` absent; all `did_move = False`; message confirmed. |
+
+**Expected result:** Already-organized objects are identified and skipped cleanly. Movement gate is not blocked globally; newly added objects still move. No code change was needed.
 
 ### Phase 8b — Maya 2027 GUI Smoke (Apply button)
 
