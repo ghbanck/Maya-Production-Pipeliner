@@ -706,13 +706,13 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                          | Expected                                                          | Status  | Observations |
 | ----------------------------- | ----------------------------------------------------------------- | ------- | ------------ |
-| Check README status           | README matches current implementation state                       | PENDING |              |
-| Check README feature language | Planned features are not described as already implemented         | PENDING |              |
-| Check docs links              | README links resolve to existing Markdown files                   | PENDING |              |
-| Check examples                | Example reports are labeled correctly if they are format previews | PENDING |              |
-| Check checklist               | Manual test checklist is current                                  | PENDING |              |
-| Check screenshots if present  | Screenshots reflect actual tool behavior                          | PENDING |              |
-| Check version/tag if present  | Version matches implementation state                              | PENDING |              |
+| Check README status           | README matches current implementation state                       | PASS    | Test 28 audit: status table, safety posture, limitations, and workflow updated to reflect Phase 8a–8e validated state. |
+| Check README feature language | Planned features are not described as already implemented         | PASS    | Test 28 audit: Apply, idempotency, already-in-target described as validated; leaf reclassification noted as remaining open case. |
+| Check docs links              | README links resolve to existing Markdown files                   | PASS    | All linked files in docs table exist and are reachable. |
+| Check examples                | Example reports are labeled correctly if they are format previews | PASS    | Phase 9a: examples replaced with real Apply output; `examples/README.md` updated; `schema_version: 0.2`, `summary.total` present. |
+| Check checklist               | Manual test checklist is current                                  | PASS    | Test 28 audit: checklist reflects validated state through Phase 9a; remaining PENDING rows are genuinely unvalidated (Test 19, Final Release Gate). |
+| Check screenshots if present  | Screenshots reflect actual tool behavior                          | PASS    | No screenshots in repository; not applicable. |
+| Check version/tag if present  | Version matches implementation state                              | PASS    | No version tag present; scope is locked at v1.1.3 contract; README states "not release-ready" — consistent. |
 
 **Expected result:** Public repository materials are accurate and do not overclaim.
 
