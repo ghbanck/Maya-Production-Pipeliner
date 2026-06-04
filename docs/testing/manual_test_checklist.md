@@ -168,12 +168,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                                | Expected                                                                            | Status  | Observations |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------ |
-| Set ignore string to `BYPASS` and run Dry Run       | Matching objects are excluded from normal production/review routing                 | PENDING |              |
-| Run Apply if ignore preservation is implemented     | Matching objects remain bypassed/preserved unless an explicit safe contract says otherwise | PENDING |              |
-| If Bypass movement is not safe or not implemented   | Matching objects remain preserved/report-only                                           | PENDING |              |
-| Check report                                        | Preserve reason or route reason reflects user ignore string                         | PENDING |              |
-| Use empty ignore string                             | No objects enter ignore-string preservation due to empty string                     | PENDING |              |
-| Use overly broad ignore string                      | Warning appears in RunResult and report                                             | PENDING |              |
+| Set ignore string to `BYPASS` and run Dry Run       | Matching objects are excluded from normal production/review routing                 | PASS    | `mayapy` bypass validation routed `ProdMesh_BYPASS_0` and `ProdMesh_BYPASS_1` to `Bypass` with `matches_ignore_string = true`. |
+| Run Apply if ignore preservation is implemented     | Matching objects remain bypassed/preserved unless an explicit safe contract says otherwise | PASS    | Apply preflight kept bypassed meshes in `Bypass` with `did_move = false`, `new_long_name = None`, and blocked preflight status. |
+| If Bypass movement is not safe or not implemented   | Matching objects remain preserved/report-only                                           | PASS    | Bypassed meshes returned `can_move = false`, `operation = report_only`, `report_only = true`, and `operation_status = preserved_report_only`. |
+| Check report                                        | Preserve reason or route reason reflects user ignore string                         | PASS    | Apply JSON report documented bypassed meshes with `reason = matches ignore string` and `preserve_reason = user ignore string`. |
+| Use empty ignore string                             | No objects enter ignore-string preservation due to empty string                     | PASS    | Running the same scene with `ignore_string = ""` removed bypass behavior and returned the former bypass meshes to normal classifier routing. |
+| Use overly broad ignore string                      | Warning appears in RunResult and report                                             | PASS    | A scene with 28 `BYPASS` matches produced `IGNORE_MATCH_HIGH` plus warning text `Ignore string matched 28 objects.` in `RunResult`. |
 
 **Expected result:** User-defined ignored content is respected without contradictory movement behavior.
 
