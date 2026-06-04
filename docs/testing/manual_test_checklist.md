@@ -624,6 +624,18 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 **Expected result:** Production_Meshes eligible objects move correctly. Failures are isolated and reported. Non-PM and protected content untouched. Dry Run fully non-mutating.
 
+### Phase 8b — Maya 2027 GUI Smoke (Apply button)
+
+**Validated:** Maya 2027.1, manual execution via Script Editor. Scene contained pCube1 with custom Lambert material.
+
+| Step | Expected | Status | Observations |
+| ---- | -------- | ------ | ------------ |
+| Apply button moves eligible mesh | Object moves to `Pipeline_Organized/Production_Meshes` | PASS | pCube1 (custom Lambert) moved to `Production_Meshes` via UI Apply button. |
+| Results message reflects move | Message contains moved count | PASS | UI message showed "1 moved". |
+| Preview shows moved status | Preview row shows object, group, and status | PASS | Preview showed `pCube1 -> Production_Meshes [moved]`. |
+| JSON report `moved` count | `summary.moved = 1` in JSON report | PASS | JSON report confirmed `moved = 1` and `success = true` after UI Apply run. |
+| `summary.planned` label clarity | `planned` count meaning is unambiguous after movement | REVIEW | `summary.planned` currently reflects total planned route decisions in context; label may need clarification once all movement slices are complete to distinguish "planned and not yet moved" from total route count. Backlog item — no code change needed now. |
+
 ---
 
 ## Test 28 - Public Repository Documentation Check
