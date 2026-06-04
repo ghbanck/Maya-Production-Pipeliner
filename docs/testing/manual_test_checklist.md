@@ -630,21 +630,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 **Purpose:** Verify that all eligible route decisions move into their respective target groups, protected content is untouched, and Dry Run remains non-mutating.
 
-**Validated:** Maya 2027, mayapy standalone. `test31_mayapy_phase8c.py`. 17/17 PASS.
+**Historical note:** A previous Phase 8c validation run was reported as successful, but the referenced validation script is not currently present in `tools/validation/`.
 
-| Step | Expected | Status | Observations |
-| ---- | -------- | ------ | ------------ |
-| `Production_Meshes` eligible object moves | `did_move = True`, under `Production_Meshes` | PASS | `ProdMesh_A` (unique material) confirmed at `\|Pipeline_Organized\|Production_Meshes\|ProdMesh_A`. |
-| `Scene_Utilities` eligible object moves | `did_move = True`, under `Scene_Utilities` | PASS | `SceneLocator_A` confirmed at `\|Pipeline_Organized\|Scene_Utilities\|SceneLocator_A`. |
-| `Review_MissingMaterial` eligible object moves | `did_move = True`, under `Review_MissingMaterial` | PASS | `DefaultMatMesh_A` confirmed at correct path. |
-| `Review_MultiMaterial` eligible object moves | `did_move = True`, under `Review_MultiMaterial` | PASS | `MultiMatMesh_A` confirmed at correct path. |
-| `Review_UnclearCases` eligible object moves | `did_move = True`, under `Review_UnclearCases` | PASS | `AmbiguousGroup_A` (empty group): `route = Review_UnclearCases`, `can_move = true`, confirmed at `\|Pipeline_Organized\|Review_UnclearCases\|AmbiguousGroup_A`. |
-| All moved objects have `operation_status = moved` | Status consistent across all routes | PASS | All `did_move = True` decisions confirmed `STATUS_MOVED`. |
-| Instanced content not moved | `can_move = False` enforced by classifier | PASS | `SourceMesh_A` and `InstancedMesh_A` both `did_move = False`. |
-| `summary.moved` accurate | Count matches actual moved decisions | PASS | `summary.moved` equals `sum(did_move == True)` across all route decisions. |
-| Dry Run creates no groups, moves nothing | Non-regression | PASS | `Pipeline_Organized` absent; all `did_move = False`; message unchanged. |
-
-**Expected result:** All eligible routes move to their target groups in a single Apply call. Protected content untouched. Dry Run fully non-mutating.
+**Checklist status:** `PENDING` — repo-backed validation evidence for Phase 8c is still pending until the script is added or the checks are rerun and recorded in the repository.
 
 ---
 
@@ -652,19 +640,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 **Purpose:** Verify that a second Apply run correctly identifies previously moved objects without attempting a redundant `cmds.parent`, and that new objects added after the first run still move.
 
-**Validated:** Maya 2027, mayapy standalone. `test32_mayapy_phase8d.py`. 14/14 PASS. No code change required.
+**Historical note:** A previous Phase 8d validation run was reported as successful, but the referenced validation script is not currently present in `tools/validation/`.
 
-| Step | Expected | Status | Observations |
-| ---- | -------- | ------ | ------------ |
-| Run 1 moves eligible objects | `did_move = True` for eligible objects | PASS | `ProdMesh_A` and `SceneLocator_A` moved on first Apply. |
-| Run 2: previously moved objects are `already_in_target` | `operation_status = already_in_target` | PASS | Both objects returned `STATUS_ALREADY_IN_TARGET` on second Apply. |
-| Run 2: `did_move = False` for already-in-target objects | No redundant `cmds.parent` | PASS | `did_move = False`; objects remain at post-run-1 paths unchanged. |
-| Objects remain in scene at post-run-1 path | `cmds.objExists(new_long_name)` still true | PASS | Both paths confirmed still present after second Apply. |
-| `summary.already_in_target` accurate | Count matches actual decisions with that status | PASS | `summary.already_in_target = 6` matched actual count of `STATUS_ALREADY_IN_TARGET` decisions. |
-| New object added after run 1 still moves on run 2 | `did_move = True`, `STATUS_MOVED` | PASS | `ProdMesh_B` (added between runs) moved correctly on run 2. |
-| Dry Run non-regression | No groups, no movement, message unchanged | PASS | `Pipeline_Organized` absent; all `did_move = False`; message confirmed. |
-
-**Expected result:** Already-organized objects are identified and skipped cleanly. Movement gate is not blocked globally; newly added objects still move. No code change was needed.
+**Checklist status:** `PENDING` — repo-backed validation evidence for Phase 8d is still pending until the script is added or the checks are rerun and recorded in the repository.
 
 ---
 
@@ -672,19 +650,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 **Purpose:** Verify that a node present at preflight but missing before movement is handled gracefully, remaining decisions continue, and no exception escapes the organizer.
 
-**Validated:** mocked cmds outside Maya. `test31_phase8e_missing_node_validation.py`. 10/10 PASS. No code change required.
+**Historical note:** A previous Phase 8e check was reported using mocked `cmds` behavior rather than a Maya runtime, but the referenced validation script is not currently present in `tools/validation/`.
 
-| Step | Expected | Status | Observations |
-| ---- | -------- | ------ | ------------ |
-| Missing node gets `STATUS_SKIPPED_MISSING_NODE` | Correct status on affected decision | PASS | `node_A` eligible at preflight; `cmds.objExists` returns `False` at move time → `STATUS_SKIPPED_MISSING_NODE`. |
-| `did_move = False` on missing node | No partial move | PASS | Confirmed. |
-| `new_long_name = None` on missing node | No stale path | PASS | Confirmed. |
-| Warning contains `"node missing at move time"` | Warning text accurate | PASS | Exact text confirmed in decision warnings. |
-| Remaining eligible decision continues and moves | Processing not aborted | PASS | `node_B` moved successfully after `node_A` was skipped; `did_move = True`, `STATUS_MOVED`. |
-| `cmds.parent` called exactly once | No redundant call for missing node | PASS | `mock_cmds.parent.call_count == 1` confirmed. |
-| No exception escapes `apply_routes` | Clean return | PASS | `apply_routes` returned normally; no exception raised. |
-
-**Expected result:** Missing nodes are isolated and warned. Processing continues cleanly for remaining decisions. No code change was needed.
+**Checklist status:** `PENDING` — repo-backed validation evidence for Phase 8e is still pending until the mocked-cmds check is added to the repository or rerun and recorded there. If this section is cited before that happens, treat it as historical non-Maya evidence only, not current repo-backed validation.
 
 ### Phase 8b — Maya 2027 GUI Smoke (Apply button)
 
