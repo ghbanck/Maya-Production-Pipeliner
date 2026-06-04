@@ -1,11 +1,12 @@
 """Apply organizer for Maya Production Pipeliner.
 
-Phase 8a runtime scope:
+Phase 8b runtime scope:
 - Create or reuse Pipeline_Organized and all config.OUTPUT_GROUPS child groups
   when Apply is called (ensure_group_structure).
 - Evaluate Apply preflight eligibility for each RouteDecision (apply_routes).
-- No route decision objects are moved, parented, or renamed.
-- Dry Run must never call ensure_group_structure.
+- Move eligible Production_Meshes route decisions into Production_Meshes group.
+- All other eligible routes remain STATUS_PLANNED; moved in future slices.
+- Dry Run must never call ensure_group_structure or any movement function.
 
 Mutation boundary: only organizer.py may mutate scene hierarchy.
 """
@@ -66,7 +67,11 @@ def ensure_group_structure():
 
 
 def apply_routes(route_decisions):
-    """Return non-mutating Apply preflight results for route decisions.
+    """Evaluate preflight eligibility then move eligible Production_Meshes.
+
+    Phase 1 — preflight: annotate every decision with eligibility and status.
+    Phase 2 — movement: move eligible Production_Meshes decisions only.
+    All other eligible routes remain STATUS_PLANNED for future slices.
 
     Parameters
     ----------
@@ -76,8 +81,8 @@ def apply_routes(route_decisions):
     Returns
     -------
     list[dict]
-        Route decisions annotated with apply preflight fields and
-        operation status updates where applicable.
+        Route decisions with preflight annotation, did_move, new_long_name,
+        and final operation_status.
     """
     evaluated = []
     for decision in route_decisions or []:
@@ -91,12 +96,68 @@ def apply_routes(route_decisions):
         item["did_move"] = False
         item["new_long_name"] = None
         evaluated.append(item)
+
+    if cmds is not None:
+        _move_production_meshes(evaluated)
+
     return evaluated
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers (stubs)
+# Internal helpers
 # ---------------------------------------------------------------------------
+
+def _move_production_meshes(evaluated):
+    """Move eligible Production_Meshes decisions into Production_Meshes group.
+
+    Sorts eligible decisions depth-descending before movement to avoid
+    long-name invalidation when a parent and child are both in the plan.
+    Modifies decisions in-place; returns nothing.
+    """
+    target_path = "|{0}|{1}".format(config.ROOT_GROUP, config.PRODUCTION_MESHES)
+
+    eligible_indices = [
+        i for i, d in enumerate(evaluated)
+        if (d.get("apply_preflight") or {}).get("eligible")
+        and d.get("route") == config.ROUTE_PRODUCTION_MESHES
+    ]
+    eligible_indices.sort(
+        key=lambda i: evaluated[i].get("long_name", "").count("|"),
+        reverse=True,
+    )
+
+    for i in eligible_indices:
+        item = evaluated[i]
+        long_name = item.get("long_name")
+
+        try:
+            if not cmds.objExists(long_name):
+                item["operation_status"] = config.STATUS_SKIPPED_MISSING_NODE
+                item.setdefault("warnings", []).append(
+                    "node missing at move time: {0}".format(long_name)
+                )
+                continue
+        except Exception as exc:
+            item["operation_status"] = config.STATUS_SKIPPED_MISSING_NODE
+            item.setdefault("warnings", []).append(str(exc))
+            continue
+
+        try:
+            result = cmds.parent(long_name, target_path)
+            short_name = (result or [None])[0]
+            try:
+                new_path = cmds.ls(short_name, long=True)[0]
+            except Exception:
+                new_path = short_name
+            item["did_move"] = True
+            item["new_long_name"] = new_path
+            item["operation_status"] = config.STATUS_MOVED
+        except Exception as exc:
+            item["operation_status"] = config.STATUS_FAILED_PARENTING
+            item.setdefault("warnings", []).append(
+                "parenting failed: {0}".format(str(exc))
+            )
+
 
 def _preflight_decision(decision):
     """Return eligibility and block reasons without mutating scene state."""

@@ -88,15 +88,21 @@ def run(scope_mode, execution_mode, ignore_string="",
         )
         group_status = organizer.ensure_group_structure()
         route_decisions = organizer.apply_routes(route_decisions)
-        planned_count = len([
-            item for item in route_decisions
-            if (item.get("apply_preflight") or {}).get("eligible")
-        ])
-        blocked_count = len(route_decisions) - planned_count
+        moved_count = sum(1 for d in route_decisions if d.get("did_move"))
+        failed_count = sum(
+            1 for d in route_decisions
+            if d.get("operation_status") == config.STATUS_FAILED_PARENTING
+        )
+        planned_count = sum(
+            1 for d in route_decisions
+            if d.get("operation_status") == config.STATUS_PLANNED
+        )
+        blocked_count = (
+            len(route_decisions) - moved_count - failed_count - planned_count
+        )
         message = (
-            "Apply: group structure ready. "
-            "Planned moves: {0}. Blocked: {1}. No objects moved."
-        ).format(planned_count, blocked_count)
+            "Apply: {0} moved, {1} planned, {2} blocked, {3} failed."
+        ).format(moved_count, planned_count, blocked_count, failed_count)
         run_result = _build_run_result(
             scope_mode, execution_mode, ignore_string, object_records,
             route_decisions, {}, mel_hook_status, True, message,
