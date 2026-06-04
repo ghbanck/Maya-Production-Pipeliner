@@ -229,12 +229,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                   | Expected                                         | Status  | Observations |
 | ---------------------- | ------------------------------------------------ | ------- | ------------ |
-| Run Selected scope     | Selected child is detected safely                | PENDING |              |
-| Check reference state  | Node is classified as referenced/report-only     | PENDING |              |
-| Run Apply              | Tool does not attempt to parent referenced child | PENDING |              |
-| Check movement state   | `did_move = false`                               | PENDING |              |
-| Check operation status | `operation_status = skipped_reference`           | PENDING |              |
-| Check report           | Preservation reason is clear                     | PENDING |              |
+| Run Selected scope     | Selected child is detected safely                | PASS    | `mayapy` validation selected a child transform inside a referenced asset and returned exactly one Selected-scope route decision for that child. |
+| Check reference state  | Node is classified as referenced/report-only     | PASS    | The selected referenced child returned `route = References`, `can_move = false`, `operation = report_only`, and `report_only = true`. |
+| Run Apply              | Tool does not attempt to parent referenced child | PASS    | Apply preflight completed with `Planned moves: 0. Blocked: 1.` and left the referenced child under its original referenced parent. |
+| Check movement state   | `did_move = false`                               | PASS    | The selected referenced child returned `did_move = false` and `new_long_name = None` in Apply preflight. |
+| Check operation status | `operation_status = skipped_reference`           | PASS    | Dry Run and Apply preflight both returned `operation_status = skipped_reference` for the selected referenced child. |
+| Check report           | Preservation reason is clear                     | PASS    | Apply JSON report documented the selected referenced child with `preserve_reason = referenced content`. |
 
 **Expected result:** Selected referenced children are preserved and reported honestly.
 
