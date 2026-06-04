@@ -9,7 +9,7 @@ Validates outside Maya (mocked cmds) that:
   5. pipeline.run() Apply path calls ensure_group_structure().
   6. pipeline.run() Dry Run path does NOT call ensure_group_structure().
   7. RunResult contains group_structure_status key in Apply mode.
-  8. Apply RunResult message no longer says "preflight completed without scene changes".
+  8. Apply RunResult message reports current Apply movement counters.
 
 Maya runtime validation (group creation in a real scene, idempotency,
 child group list) must be performed manually per the test checklist.
@@ -153,11 +153,15 @@ def main():
         "group_structure_status" in apply_result
     )
 
-    # 8 — Apply message no longer says "preflight completed without scene changes"
+    # 8 — Apply message reports current movement counters
     apply_message = apply_result.get("message", "")
     checks["apply_message_updated"] = (
         "preflight completed without scene changes" not in apply_message
-        and "group structure ready" in apply_message
+        and apply_message.startswith("Apply: ")
+        and "moved" in apply_message
+        and "planned" in apply_message
+        and "blocked" in apply_message
+        and "failed" in apply_message
     )
 
     # 9 — Dry Run message unchanged
@@ -175,6 +179,7 @@ def main():
     RESULT_PATH.write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps(result, indent=2))
     print("ALL PASS" if all_pass else "FAIL")
+    sys.exit(0 if all_pass else 1)
 
 
 if __name__ == "__main__":

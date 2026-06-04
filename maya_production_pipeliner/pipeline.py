@@ -18,7 +18,7 @@ Execution flow
 2. Scan the scene with scanner.scan().
 3. Classify records with classifier.classify().
 4. If Dry Run: write reports and build RunResult without touching the scene.
-5. If Apply:   create/reuse group structure, run apply preflight, write reports, build RunResult.
+5. If Apply:   create/reuse groups, run guardrails, move eligible objects, write reports, build RunResult.
 6. Call MEL post-hook (if configured) and return RunResult.
 
 Dependencies

@@ -7,8 +7,7 @@ Validates outside Maya (mocked cmds) that when cmds.parent raises:
   3. new_long_name = None on the failing decision.
   4. warning contains "parenting failed" on the failing decision.
   5. Remaining eligible Production_Meshes decisions continue and succeed.
-  6. Non-Production_Meshes eligible decisions remain STATUS_PLANNED (untouched).
-  7. Ineligible decisions are unchanged.
+  6. Ineligible decisions are unchanged.
 """
 import json
 import sys
@@ -55,8 +54,6 @@ DECISIONS = [
     _make_decision("ProdMesh_A", config.ROUTE_PRODUCTION_MESHES, True),
     # eligible PM — cmds.parent will succeed (second call)
     _make_decision("ProdMesh_B", config.ROUTE_PRODUCTION_MESHES, True),
-    # eligible non-PM — must stay STATUS_PLANNED, untouched
-    _make_decision("ReviewMesh_A", config.ROUTE_REVIEW_MISSING_MATERIAL, True),
     # ineligible — can_move=False
     _make_decision("RefMesh_A", config.ROUTE_REFERENCES, False),
 ]
@@ -89,7 +86,6 @@ def main():
     by_name = {d["object_name"]: d for d in result}
     fail_dec  = by_name["ProdMesh_A"]
     succ_dec  = by_name["ProdMesh_B"]
-    plan_dec  = by_name["ReviewMesh_A"]
     inelig    = by_name["RefMesh_A"]
 
     # 1 — operation_status = failed_parenting on failing decision
@@ -116,13 +112,7 @@ def main():
     )
     checks["next_pm_new_long_name_set"] = bool(succ_dec.get("new_long_name"))
 
-    # 6 — non-PM eligible stays STATUS_PLANNED, did_move False
-    checks["non_pm_stays_planned"] = (
-        plan_dec.get("operation_status") == config.STATUS_PLANNED
-    )
-    checks["non_pm_not_moved"] = plan_dec.get("did_move") is False
-
-    # 7 — ineligible decision unchanged
+    # 6 — ineligible decision unchanged
     checks["ineligible_not_moved"] = inelig.get("did_move") is False
 
     all_pass = all(checks.values()) and not errors
@@ -130,6 +120,7 @@ def main():
     RESULT_PATH.write_text(json.dumps(output, indent=2), encoding="utf-8")
     print(json.dumps(output, indent=2))
     print("ALL PASS" if all_pass else "FAIL")
+    sys.exit(0 if all_pass else 1)
 
 
 if __name__ == "__main__":
