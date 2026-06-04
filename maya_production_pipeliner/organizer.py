@@ -1,11 +1,10 @@
 """Apply organizer for Maya Production Pipeliner.
 
-Phase 8b runtime scope:
+Phase 8c runtime scope:
 - Create or reuse Pipeline_Organized and all config.OUTPUT_GROUPS child groups
   when Apply is called (ensure_group_structure).
 - Evaluate Apply preflight eligibility for each RouteDecision (apply_routes).
-- Move eligible Production_Meshes route decisions into Production_Meshes group.
-- All other eligible routes remain STATUS_PLANNED; moved in future slices.
+- Move all eligible route decisions into their target groups.
 - Dry Run must never call ensure_group_structure or any movement function.
 
 Mutation boundary: only organizer.py may mutate scene hierarchy.
@@ -67,11 +66,10 @@ def ensure_group_structure():
 
 
 def apply_routes(route_decisions):
-    """Evaluate preflight eligibility then move eligible Production_Meshes.
+    """Evaluate preflight eligibility then move all eligible route decisions.
 
     Phase 1 — preflight: annotate every decision with eligibility and status.
-    Phase 2 — movement: move eligible Production_Meshes decisions only.
-    All other eligible routes remain STATUS_PLANNED for future slices.
+    Phase 2 — movement: move all eligible decisions into their target groups.
 
     Parameters
     ----------
@@ -98,7 +96,7 @@ def apply_routes(route_decisions):
         evaluated.append(item)
 
     if cmds is not None:
-        _move_production_meshes(evaluated)
+        _move_eligible_decisions(evaluated)
 
     return evaluated
 
@@ -107,19 +105,16 @@ def apply_routes(route_decisions):
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _move_production_meshes(evaluated):
-    """Move eligible Production_Meshes decisions into Production_Meshes group.
+def _move_eligible_decisions(evaluated):
+    """Move all eligible route decisions into their respective target groups.
 
     Sorts eligible decisions depth-descending before movement to avoid
     long-name invalidation when a parent and child are both in the plan.
     Modifies decisions in-place; returns nothing.
     """
-    target_path = "|{0}|{1}".format(config.ROOT_GROUP, config.PRODUCTION_MESHES)
-
     eligible_indices = [
         i for i, d in enumerate(evaluated)
         if (d.get("apply_preflight") or {}).get("eligible")
-        and d.get("route") == config.ROUTE_PRODUCTION_MESHES
     ]
     eligible_indices.sort(
         key=lambda i: evaluated[i].get("long_name", "").count("|"),
@@ -129,6 +124,7 @@ def _move_production_meshes(evaluated):
     for i in eligible_indices:
         item = evaluated[i]
         long_name = item.get("long_name")
+        target_path = "|{0}|{1}".format(config.ROOT_GROUP, item.get("target_group", ""))
 
         try:
             if not cmds.objExists(long_name):
