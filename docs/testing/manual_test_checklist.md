@@ -126,15 +126,15 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                  | Expected                                               | Status  | Observations |
 | ------------------------------------- | ------------------------------------------------------ | ------- | ------------ |
-| Execute Dry Run                       | No groups are created                                  | PENDING |              |
-| Inspect Outliner after Dry Run        | `Pipeline_Organized` does not exist                    | PENDING |              |
-| Check object parents before and after | No parent changes occur                                | PENDING |              |
-| Check object names before and after   | No rename occurs                                       | PENDING |              |
-| Check reports                         | TXT/JSON report planned actions without scene mutation | PENDING |              |
-| Check report schema field             | JSON includes `schema_version`                         | PENDING |              |
-| Check warning events field            | JSON includes `warning_events` list                    | PENDING |              |
-| Check RouteDecision values            | `would_move` may be true, but `did_move = false`       | PENDING |              |
-| Check operation status                | `operation_status = dry_run_only` or equivalent        | PENDING |              |
+| Execute Dry Run                       | No groups are created                                  | PASS    | test06 (`dry_run_did_not_create_pipeline_group = true`): Dry Run on a fresh scene with `ProdMesh_A` left `pipeline_group_after = false`. |
+| Inspect Outliner after Dry Run        | `Pipeline_Organized` does not exist                    | PASS    | test06 (`dry_run_outliner_unchanged = true`): Outliner remained `[|persp, |top, |front, |side, |ProdMesh_A]` identically before and after Dry Run. |
+| Check object parents before and after | No parent changes occur                                | PASS    | test06 (`dry_run_no_name_or_path_changes`): `did_move = false` confirmed; `assemblies_before == assemblies_after` for both Dry Run and Apply preflight runs. |
+| Check object names before and after   | No rename occurs                                       | PASS    | test06: `new_long_name = null` in Dry Run target decision; `ProdMesh_A` long name `|ProdMesh_A` unchanged throughout. |
+| Check reports                         | TXT/JSON report planned actions without scene mutation | PASS    | test06 (`reports_written_and_json_contains_decision = true`, `txt_report_surfaces_production_mesh_route = true`): TXT and JSON written to Maya workspace; JSON contains Production_Meshes decision with `operation_status = dry_run_only`. |
+| Check report schema field             | JSON includes `schema_version`                         | PENDING | test06 confirmed reports are written; `schema_version` presence not explicitly asserted. No dedicated script covers this yet. |
+| Check warning events field            | JSON includes `warning_events` list                    | PENDING | test06 confirmed reports are written; `warning_events` in JSON report not explicitly asserted. test24 confirmed the field in RunResult only. |
+| Check RouteDecision values            | `would_move` may be true, but `did_move = false`       | PASS    | test06 (`dry_run_can_move_and_not_report_only = true`): `would_move = true` and `did_move = false` confirmed for `ProdMesh_A` Dry Run decision. |
+| Check operation status                | `operation_status = dry_run_only` or equivalent        | PASS    | test06 (`dry_run_status_is_dry_run_only = true`): `operation_status = dry_run_only` confirmed for `ProdMesh_A` Dry Run target. |
 
 **Expected result:** Dry Run previews the route plan without modifying the Maya scene.
 

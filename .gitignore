@@ -65,5 +65,8 @@ test*_result.json
 !examples/example_report.txt
 !examples/example_report.json
 
+# Claude Code output logs (audits, diffs, inventories — not source files)
+.claude_output_logs/
+
 # Local collaborator guidance
 AGENTS.md
