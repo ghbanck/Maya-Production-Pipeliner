@@ -323,12 +323,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                              | Expected                                        | Status  | Observations |
 | --------------------------------- | ----------------------------------------------- | ------- | ------------ |
-| Run Apply                         | Object is parented if safe                      | PENDING |              |
-| Validate before move              | Organizer checks node existence before movement | PENDING |              |
-| Capture parenting result          | Returned Maya path is captured when available   | PENDING |              |
-| Check `new_long_name`             | New path is recorded after move                 | PENDING |              |
-| Check report                      | Original long name and new long name appear     | PENDING |              |
-| Simulate failed move if practical | `did_move = false` and warning are recorded     | PENDING |              |
+| Run Apply                         | Object is parented if safe                      | PASS    | mayapy 8b/8c: eligible objects parented into target groups via `cmds.parent`. |
+| Validate before move              | Organizer checks node existence before movement | PASS    | 8e: `cmds.objExists` re-checked at move time; missing node gets `STATUS_SKIPPED_MISSING_NODE` and is skipped. |
+| Capture parenting result          | Returned Maya path is captured when available   | PASS    | 8b/8c: `cmds.parent` return value captured; `cmds.ls(long=True)` used to resolve full post-parent path. |
+| Check `new_long_name`             | New path is recorded after move                 | PASS    | mayapy 8b: `new_long_name` set and confirmed present in scene after Apply. |
+| Check report                      | Original long name and new long name appear     | PENDING | Report file content for long-name fields not explicitly validated; deferred to Phase 9 report audit. |
+| Simulate failed move if practical | `did_move = false` and warning are recorded     | PASS    | 8b test30 (mocked failure): `did_move = False`, `STATUS_FAILED_PARENTING`, warning confirmed; next decision continued. |
 
 **Expected result:** Path mutation after parenting is tracked accurately.
 
@@ -359,11 +359,11 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                            | Expected                                                            | Status  | Observations |
 | ------------------------------- | ------------------------------------------------------------------- | ------- | ------------ |
-| Run Apply again                 | No duplicate `Pipeline_Organized` group is created                  | PENDING |              |
-| Check structural groups         | Tool-created structural groups are not routed as production content | PENDING |              |
-| Check objects already in target | `operation_status = already_in_target`                              | PENDING |              |
-| Check moved count               | Second run does not move already-correct objects                    | PENDING |              |
-| Check report                    | Idempotent behavior is documented                                   | PENDING |              |
+| Run Apply again                 | No duplicate `Pipeline_Organized` group is created                  | PASS    | mayapy test18: second Apply left exactly one `Pipeline_Organized`; child group list identical after both runs. |
+| Check structural groups         | Tool-created structural groups are not routed as production content | PASS    | mayapy test18: structural groups returned `skipped_tool_structure`; none appeared as movable content decisions. |
+| Check objects already in target | `operation_status = already_in_target`                              | PASS    | mayapy test18: 7 decisions returned `already_in_target` on second run; `did_move = False` on all. |
+| Check moved count               | Second run does not move already-correct objects                    | PASS    | mayapy test18: `summary.moved = 0` on second Apply; message showed "0 moved". |
+| Check report                    | Idempotent behavior is documented                                   | PENDING | Report file content not explicitly validated; deferred to Phase 9 report audit. |
 
 **Expected result:** Repeated execution is safe and does not duplicate structure.
 
