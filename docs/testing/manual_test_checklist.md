@@ -568,11 +568,11 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | JSON report path displayed | Path shown as text in Results without opening the file | PASS | `C:/tmp/maya_test27_validation/maya_production_pipeliner_report.json` displayed in json_path_text label. |
 | Preview populated | Route rows shown: "ObjectName  ->  GroupName  [status]" | PASS | 14 of 14 rows displayed; count sourced from RunResult.preview_routes and route_decisions_count. |
 | Dry Run non-mutating | `cmds.objExists("Pipeline_Organized") == False` | PASS | Outliner unchanged after Run; no Pipeline_Organized group created. |
-| Second `launcher.launch()` is idempotent | Existing window raised; no duplicate created | PENDING | Not explicitly exercised during this smoke session. |
+| Second `launcher.launch()` is idempotent | Existing window raised; no duplicate created | PASS    | Maya 2027.1 smoke: called launcher.launch() while window was open; window count remained 1. |
 | Open TXT/JSON Report buttons | Clicking opens file in system viewer | PENDING | Buttons were enabled after Run but not clicked during this smoke session. |
-| Run in Apply Preflight mode | Results populated; no scene mutation | PENDING | Apply Preflight mode button not exercised during this smoke session. |
+| Run in Apply Preflight mode | Results populated; no scene mutation | PASS    | Maya 2027.1 smoke: message "Apply preflight completed without scene changes. Planned moves: 11. Blocked: 3."; summary Scanned 14, Planned 14, Would Move 0, Preserved 3, Warnings 0, Failed 0; preview showed planned and skipped statuses; Pipeline_Organized exists: False. |
 
-**Expected result:** Phase 7 minimal UI is functional for Dry Run in a real Maya GUI session. Apply Preflight mode and Open Report buttons require a follow-up smoke session.
+**Expected result:** Phase 7 minimal UI is functional for Dry Run and Apply Preflight in a real Maya GUI session. Open Report buttons require a follow-up smoke session.
 
 ---
 
