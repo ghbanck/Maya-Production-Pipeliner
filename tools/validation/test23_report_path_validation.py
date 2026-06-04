@@ -24,7 +24,7 @@ SAMPLE_RUN_RESULT = {
     "message": "Dry Run completed without scene changes.",
     "summary": {
         "scanned": 1,
-        "planned": 1,
+        "total": 1,
         "would_move": 1,
         "moved": 0,
         "already_in_target": 0,
