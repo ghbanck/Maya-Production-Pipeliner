@@ -464,7 +464,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Workspace available                    | Workspace fallback works if scene path is unavailable      | PASS    | Validation script wrote TXT/JSON into the mocked Maya workspace root when scene path was empty. |
 | Path not writable if practical to test | User-safe fallback or clear error is returned              | PASS    | Reporter now falls back from a blocked scene directory to the workspace directory during write failure. |
 | Check RunResult                        | Report paths are included                                  | PASS    | Validation captured explicit TXT/JSON paths for each fallback case. |
-| Check UI                               | Report paths are displayed without reading report contents | PENDING |              |
+| Check UI                               | Report paths are displayed without reading report contents | PASS    | Maya 2027.1 smoke: TXT and JSON report path labels populated in the Results section from RunResult.report_paths. No report file was opened or parsed by the UI. |
 
 **Expected result:** Report generation does not depend on ideal scene file state.
 
@@ -480,8 +480,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | --------------------- | ----------------------------------------------------- | ------- | ------------ |
 | Run pipeline          | RunResult includes `route_decisions_count`            | PASS    | Validation script returned `route_decisions_count = 30` with matching `summary`, `warnings`, `report_paths`, `message`, and `success` fields in Dry Run. |
 | Check preview         | `preview_routes` is limited by `max_ui_preview_items` | PASS    | Validation script returned 30 route decisions but only 25 preview entries, matching `max_ui_preview_items = 25`. |
-| Check UI summary      | UI displays summary counters and report paths         | PENDING |              |
-| Check full route list | UI does not render every object route                 | PENDING |              |
+| Check UI summary      | UI displays summary counters and report paths         | PASS    | Maya 2027.1 smoke: summary showed Scanned 14, Planned 14, Would Move 11, Preserved 3, Warnings 0, Failed 0 from RunResult.summary. Report path labels populated. |
+| Check full route list | UI does not render every object route                 | PASS    | Maya 2027.1 smoke: preview showed 14 of 14 rows (scene fit within MAX_UI_PREVIEW_ITEMS=25); capping behavior confirmed by RunResult.preview_routes length, not by UI parsing. |
 | Check reports         | Full route details remain in TXT/JSON                 | PENDING |              |
 | Check responsiveness  | UI does not freeze from rendering large object lists  | PENDING |              |
 
@@ -496,7 +496,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                                       | Expected                                            | Status  | Observations |
 | ------------------------------------------ | --------------------------------------------------- | ------- | ------------ |
 | Run pipeline without UI                    | Pipeline can execute directly                       | PASS    | `tools/validation/test25_ui_reporter_decoupling_validation.py` ran `pipeline.run()` with mocked scanner/classifier/reporter and confirmed Dry Run success plus a single `reporter.write_reports()` call without any UI dependency. |
-| Run UI workflow                            | UI receives feedback through RunResult              | PENDING | Current `ui.py` workflow remains unimplemented (`show`, `_on_run_clicked`, and `_update_result_display` still raise `NotImplementedError`), so no runtime UI flow could be exercised honestly. |
+| Run UI workflow                            | UI receives feedback through RunResult              | PASS    | Maya 2027.1 smoke: launcher.launch() opened the window; clicking Run in Dry Run called pipeline.run() and populated message, summary, warnings, report path labels, and preview from RunResult only. No report files were parsed. |
 | Inspect UI behavior                        | UI does not parse TXT/JSON to know what happened    | PASS    | Validation confirmed `ui.py` imports only `config` and `pipeline`, explicitly documents RunResult-only feedback, and explicitly forbids parsing TXT/JSON report files. |
 | Inspect reporter behavior                  | Reporter writes files independently from UI display | PASS    | Validation confirmed `reporter.py` has no UI import path and `pipeline.run()` receives report paths through `reporter.write_reports()` rather than through any UI callback or display dependency. |
 | Simulate report write failure if practical | UI receives clear warning through RunResult         | PASS    | `tools/validation/test28_report_failure_signaling_validation.py` confirmed failed report paths remain explicit while `RunResult` now adds warning text plus a structured `REPORT_WRITE_FAILED` warning event, without changing current `success=True` Dry Run semantics. |
@@ -543,6 +543,36 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Check Dry Run scene state           | Dry Run did not influence Apply by mutating scene              | PASS    | Outliner snapshot was unchanged before Dry Run, after Dry Run, and after Apply preflight. |
 
 **Expected result:** Dry Run preview and Apply preflight behavior are trustworthy without scene mutation.
+
+---
+
+## Phase 7 Minimal UI — Maya 2027.1 GUI Smoke
+
+**Purpose:** Verify that the Phase 7 minimal UI opens, renders all controls, and populates Results from RunResult in a real Maya GUI session.
+
+**Validated:** Maya 2027.1, manual execution in Script Editor. Scene contained 14 objects.
+
+| Step | Expected | Status | Observations |
+| ---- | -------- | ------ | ------------ |
+| `launcher.launch()` opens window | Window titled "Maya Production Pipeliner" appears | PASS | Window opened without errors from Script Editor. |
+| Scope controls rendered | Three radio buttons: All Scene, Selected, Visible | PASS | `labelArray3 = ['All Scene', 'Selected', 'Visible']` confirmed. |
+| Execution mode controls rendered | Two radio buttons: Dry Run, Apply Preflight | PASS | `labelArray2 = ['Dry Run', 'Apply Preflight']` confirmed; bare "Apply" label is absent. |
+| Ignore string field rendered | Text field present and queryable | PASS | `cmds.textField` query returned empty string on fresh window. |
+| Run button rendered | Button present in window | PASS | Button visible and clickable. |
+| Results section rendered | Message, summary, warnings, reports, preview area visible | PASS | All result widgets present and queryable after window open. |
+| Report path labels rendered | TXT and JSON path text labels visible in Results | PASS | Both labels rendered as empty before first Run, then populated after. |
+| Clicking Run (Dry Run) populates Results | Results section fills from RunResult without scene mutation | PASS | All result widgets populated after clicking Run in Dry Run mode. |
+| Message populated | "Dry Run completed without scene changes." | PASS | Exact message confirmed from RunResult.message. |
+| Summary populated | Scanned 14, Planned 14, Would Move 11, Preserved 3, Warnings 0, Failed 0 | PASS | All counters sourced from RunResult.summary. |
+| TXT report path displayed | Path shown as text in Results without opening the file | PASS | `C:/tmp/maya_test27_validation/maya_production_pipeliner_report.txt` displayed in txt_path_text label. |
+| JSON report path displayed | Path shown as text in Results without opening the file | PASS | `C:/tmp/maya_test27_validation/maya_production_pipeliner_report.json` displayed in json_path_text label. |
+| Preview populated | Route rows shown: "ObjectName  ->  GroupName  [status]" | PASS | 14 of 14 rows displayed; count sourced from RunResult.preview_routes and route_decisions_count. |
+| Dry Run non-mutating | `cmds.objExists("Pipeline_Organized") == False` | PASS | Outliner unchanged after Run; no Pipeline_Organized group created. |
+| Second `launcher.launch()` is idempotent | Existing window raised; no duplicate created | PENDING | Not explicitly exercised during this smoke session. |
+| Open TXT/JSON Report buttons | Clicking opens file in system viewer | PENDING | Buttons were enabled after Run but not clicked during this smoke session. |
+| Run in Apply Preflight mode | Results populated; no scene mutation | PENDING | Apply Preflight mode button not exercised during this smoke session. |
+
+**Expected result:** Phase 7 minimal UI is functional for Dry Run in a real Maya GUI session. Apply Preflight mode and Open Report buttons require a follow-up smoke session.
 
 ---
 
