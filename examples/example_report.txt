@@ -1,23 +1,23 @@
 Maya Production Pipeliner
 Schema version: 0.1
-Report generated: 2026-05-29T03:14:34
+Report generated: 2026-06-04T05:19:46
 
 Execution
 ---------
-Mode: dry_run
+Mode: apply
 Scope: all_scene
 Ignore string: 
 Success: True
-Message: Dry Run completed without scene changes.
+Message: Apply: 9 moved, 0 planned, 2 blocked, 0 failed.
 
 Summary
 -------
 already_in_target: 0
 failed: 0
-moved: 0
-planned: 0
-preserved: 0
-scanned: 0
+moved: 9
+planned: 11
+preserved: 2
+scanned: 11
 warnings: 0
 would_move: 0
 
@@ -27,4 +27,14 @@ None
 
 Route Decisions
 ---------------
-No route decisions.
+- AmbiguousGroup_A | route=Review_UnclearCases | target=Review_UnclearCases | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Review_UnclearCases|AmbiguousGroup_A | preflight=eligible | preflight_reasons= | reason=unclear object type | preserve_reason=
+- DefaultMatMesh_A | route=Review_MissingMaterial | target=Review_MissingMaterial | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Review_MissingMaterial|DefaultMatMesh_A | preflight=eligible | preflight_reasons= | reason=material review required | preserve_reason=
+- InstancedMesh_A | route=Review_UnclearCases | target= | can_move=False | status=skipped_instance | did_move=False | new_long_name= | preflight=blocked | preflight_reasons=operation is report_only | reason=instanced geometry | preserve_reason=instanced geometry
+- MultiMatMesh_A | route=Review_MultiMaterial | target=Review_MultiMaterial | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Review_MultiMaterial|MultiMatMesh_A | preflight=eligible | preflight_reasons= | reason=material review required | preserve_reason=
+- ProdMesh_A | route=Production_Meshes | target=Production_Meshes | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Production_Meshes|ProdMesh_A | preflight=eligible | preflight_reasons= | reason=production mesh candidate | preserve_reason=
+- SceneLocator_A | route=Scene_Utilities | target=Scene_Utilities | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Scene_Utilities|SceneLocator_A | preflight=eligible | preflight_reasons= | reason=scene utility | preserve_reason=
+- SourceMesh_A | route=Review_UnclearCases | target= | can_move=False | status=skipped_instance | did_move=False | new_long_name= | preflight=blocked | preflight_reasons=operation is report_only | reason=instanced geometry | preserve_reason=instanced geometry
+- front | route=Scene_Utilities | target=Scene_Utilities | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Scene_Utilities|front | preflight=eligible | preflight_reasons= | reason=scene utility | preserve_reason=
+- persp | route=Scene_Utilities | target=Scene_Utilities | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Scene_Utilities|persp | preflight=eligible | preflight_reasons= | reason=scene utility | preserve_reason=
+- side | route=Scene_Utilities | target=Scene_Utilities | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Scene_Utilities|side | preflight=eligible | preflight_reasons= | reason=scene utility | preserve_reason=
+- top | route=Scene_Utilities | target=Scene_Utilities | can_move=True | status=moved | did_move=True | new_long_name=|Pipeline_Organized|Scene_Utilities|top | preflight=eligible | preflight_reasons= | reason=scene utility | preserve_reason=

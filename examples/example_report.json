@@ -1,8 +1,702 @@
 {
-  "generated_at": "2026-05-29T03:14:34",
-  "route_decisions": [],
+  "generated_at": "2026-06-04T05:19:46",
+  "route_decisions": [
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|AmbiguousGroup_A",
+      "new_long_name": "|Pipeline_Organized|Review_UnclearCases|AmbiguousGroup_A",
+      "object_name": "AmbiguousGroup_A",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "unclear object type",
+      "report_only": false,
+      "route": "Review_UnclearCases",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": true,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": false,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": true,
+        "long_name": "|AmbiguousGroup_A",
+        "matches_ignore_string": false,
+        "material_count": 0,
+        "material_node_count": 0,
+        "materials": [],
+        "name": "AmbiguousGroup_A",
+        "namespace": "",
+        "native_visible": true,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": true,
+        "shading_engine_count": 0,
+        "shading_engines": [],
+        "shape_nodes": [],
+        "shape_type": null,
+        "shape_types": [],
+        "transform_node": "|AmbiguousGroup_A",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": "Review_UnclearCases",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|DefaultMatMesh_A",
+      "new_long_name": "|Pipeline_Organized|Review_MissingMaterial|DefaultMatMesh_A",
+      "object_name": "DefaultMatMesh_A",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "material review required",
+      "report_only": false,
+      "route": "Review_MissingMaterial",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": true,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": true,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": true,
+        "long_name": "|DefaultMatMesh_A",
+        "matches_ignore_string": false,
+        "material_count": 1,
+        "material_node_count": 1,
+        "materials": [
+          "openPBR_shader1"
+        ],
+        "name": "DefaultMatMesh_A",
+        "namespace": "",
+        "native_visible": true,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": true,
+        "shading_engine_count": 1,
+        "shading_engines": [
+          "initialShadingGroup"
+        ],
+        "shape_nodes": [
+          "|DefaultMatMesh_A|DefaultMatMesh_AShape"
+        ],
+        "shape_type": "mesh",
+        "shape_types": [
+          "mesh"
+        ],
+        "transform_node": "|DefaultMatMesh_A",
+        "uses_default_material": true,
+        "warnings": []
+      },
+      "target_group": "Review_MissingMaterial",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": false,
+        "reasons": [
+          "operation is report_only"
+        ],
+        "status": "skipped_instance"
+      },
+      "can_move": false,
+      "did_move": false,
+      "execution_mode": "apply",
+      "long_name": "|InstancedMesh_A",
+      "new_long_name": null,
+      "object_name": "InstancedMesh_A",
+      "operation": "report_only",
+      "operation_status": "skipped_instance",
+      "preserve_reason": "instanced geometry",
+      "reason": "instanced geometry",
+      "report_only": true,
+      "route": "Review_UnclearCases",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": true,
+        "is_inside_tool_output": false,
+        "is_instanced": true,
+        "is_mesh": true,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": true,
+        "long_name": "|InstancedMesh_A",
+        "matches_ignore_string": false,
+        "material_count": 1,
+        "material_node_count": 1,
+        "materials": [
+          "SourceMesh_A_mat"
+        ],
+        "name": "InstancedMesh_A",
+        "namespace": "",
+        "native_visible": true,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": true,
+        "shading_engine_count": 1,
+        "shading_engines": [
+          "SourceMesh_A_SG"
+        ],
+        "shape_nodes": [
+          "|InstancedMesh_A|InstancedMesh_AShape"
+        ],
+        "shape_type": "mesh",
+        "shape_types": [
+          "mesh"
+        ],
+        "transform_node": "|InstancedMesh_A",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": null,
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|MultiMatMesh_A",
+      "new_long_name": "|Pipeline_Organized|Review_MultiMaterial|MultiMatMesh_A",
+      "object_name": "MultiMatMesh_A",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "material review required",
+      "report_only": false,
+      "route": "Review_MultiMaterial",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": true,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": true,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": true,
+        "long_name": "|MultiMatMesh_A",
+        "matches_ignore_string": false,
+        "material_count": 3,
+        "material_node_count": 3,
+        "materials": [
+          "MM1",
+          "MM2",
+          "openPBR_shader1"
+        ],
+        "name": "MultiMatMesh_A",
+        "namespace": "",
+        "native_visible": true,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": true,
+        "shading_engine_count": 3,
+        "shading_engines": [
+          "MM1SG",
+          "MM2SG",
+          "initialShadingGroup"
+        ],
+        "shape_nodes": [
+          "|MultiMatMesh_A|MultiMatMesh_AShape"
+        ],
+        "shape_type": "mesh",
+        "shape_types": [
+          "mesh"
+        ],
+        "transform_node": "|MultiMatMesh_A",
+        "uses_default_material": true,
+        "warnings": []
+      },
+      "target_group": "Review_MultiMaterial",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|ProdMesh_A",
+      "new_long_name": "|Pipeline_Organized|Production_Meshes|ProdMesh_A",
+      "object_name": "ProdMesh_A",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "production mesh candidate",
+      "report_only": false,
+      "route": "Production_Meshes",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": true,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": true,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": true,
+        "long_name": "|ProdMesh_A",
+        "matches_ignore_string": false,
+        "material_count": 1,
+        "material_node_count": 1,
+        "materials": [
+          "ProdMesh_A_mat"
+        ],
+        "name": "ProdMesh_A",
+        "namespace": "",
+        "native_visible": true,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": true,
+        "shading_engine_count": 1,
+        "shading_engines": [
+          "ProdMesh_A_SG"
+        ],
+        "shape_nodes": [
+          "|ProdMesh_A|ProdMesh_AShape"
+        ],
+        "shape_type": "mesh",
+        "shape_types": [
+          "mesh"
+        ],
+        "transform_node": "|ProdMesh_A",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": "Production_Meshes",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|SceneLocator_A",
+      "new_long_name": "|Pipeline_Organized|Scene_Utilities|SceneLocator_A",
+      "object_name": "SceneLocator_A",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "scene utility",
+      "report_only": false,
+      "route": "Scene_Utilities",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": true,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": false,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": true,
+        "long_name": "|SceneLocator_A",
+        "matches_ignore_string": false,
+        "material_count": 0,
+        "material_node_count": 0,
+        "materials": [],
+        "name": "SceneLocator_A",
+        "namespace": "",
+        "native_visible": true,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": true,
+        "shading_engine_count": 0,
+        "shading_engines": [],
+        "shape_nodes": [
+          "|SceneLocator_A|SceneLocator_AShape"
+        ],
+        "shape_type": "locator",
+        "shape_types": [
+          "locator"
+        ],
+        "transform_node": "|SceneLocator_A",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": "Scene_Utilities",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": false,
+        "reasons": [
+          "operation is report_only"
+        ],
+        "status": "skipped_instance"
+      },
+      "can_move": false,
+      "did_move": false,
+      "execution_mode": "apply",
+      "long_name": "|SourceMesh_A",
+      "new_long_name": null,
+      "object_name": "SourceMesh_A",
+      "operation": "report_only",
+      "operation_status": "skipped_instance",
+      "preserve_reason": "instanced geometry",
+      "reason": "instanced geometry",
+      "report_only": true,
+      "route": "Review_UnclearCases",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": true,
+        "is_inside_tool_output": false,
+        "is_instanced": true,
+        "is_mesh": true,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": true,
+        "long_name": "|SourceMesh_A",
+        "matches_ignore_string": false,
+        "material_count": 1,
+        "material_node_count": 1,
+        "materials": [
+          "SourceMesh_A_mat"
+        ],
+        "name": "SourceMesh_A",
+        "namespace": "",
+        "native_visible": true,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": true,
+        "shading_engine_count": 1,
+        "shading_engines": [
+          "SourceMesh_A_SG"
+        ],
+        "shape_nodes": [
+          "|SourceMesh_A|InstancedMesh_AShape"
+        ],
+        "shape_type": "mesh",
+        "shape_types": [
+          "mesh"
+        ],
+        "transform_node": "|SourceMesh_A",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": null,
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|front",
+      "new_long_name": "|Pipeline_Organized|Scene_Utilities|front",
+      "object_name": "front",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "scene utility",
+      "report_only": false,
+      "route": "Scene_Utilities",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": false,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": false,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": false,
+        "long_name": "|front",
+        "matches_ignore_string": false,
+        "material_count": 0,
+        "material_node_count": 0,
+        "materials": [],
+        "name": "front",
+        "namespace": "",
+        "native_visible": false,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": false,
+        "shading_engine_count": 0,
+        "shading_engines": [],
+        "shape_nodes": [
+          "|front|frontShape"
+        ],
+        "shape_type": "camera",
+        "shape_types": [
+          "camera"
+        ],
+        "transform_node": "|front",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": "Scene_Utilities",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|persp",
+      "new_long_name": "|Pipeline_Organized|Scene_Utilities|persp",
+      "object_name": "persp",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "scene utility",
+      "report_only": false,
+      "route": "Scene_Utilities",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": false,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": false,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": false,
+        "long_name": "|persp",
+        "matches_ignore_string": false,
+        "material_count": 0,
+        "material_node_count": 0,
+        "materials": [],
+        "name": "persp",
+        "namespace": "",
+        "native_visible": false,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": false,
+        "shading_engine_count": 0,
+        "shading_engines": [],
+        "shape_nodes": [
+          "|persp|perspShape"
+        ],
+        "shape_type": "camera",
+        "shape_types": [
+          "camera"
+        ],
+        "transform_node": "|persp",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": "Scene_Utilities",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|side",
+      "new_long_name": "|Pipeline_Organized|Scene_Utilities|side",
+      "object_name": "side",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "scene utility",
+      "report_only": false,
+      "route": "Scene_Utilities",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": false,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": false,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": false,
+        "long_name": "|side",
+        "matches_ignore_string": false,
+        "material_count": 0,
+        "material_node_count": 0,
+        "materials": [],
+        "name": "side",
+        "namespace": "",
+        "native_visible": false,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": false,
+        "shading_engine_count": 0,
+        "shading_engines": [],
+        "shape_nodes": [
+          "|side|sideShape"
+        ],
+        "shape_type": "camera",
+        "shape_types": [
+          "camera"
+        ],
+        "transform_node": "|side",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": "Scene_Utilities",
+      "warnings": [],
+      "would_move": false
+    },
+    {
+      "apply_preflight": {
+        "eligible": true,
+        "reasons": [],
+        "status": "planned"
+      },
+      "can_move": true,
+      "did_move": true,
+      "execution_mode": "apply",
+      "long_name": "|top",
+      "new_long_name": "|Pipeline_Organized|Scene_Utilities|top",
+      "object_name": "top",
+      "operation": "move",
+      "operation_status": "moved",
+      "preserve_reason": "",
+      "reason": "scene utility",
+      "report_only": false,
+      "route": "Scene_Utilities",
+      "scope_mode": "all_scene",
+      "source_record": {
+        "display_layer_visible": null,
+        "has_blendshape": false,
+        "has_skin_cluster": false,
+        "hierarchy_visible": false,
+        "is_inside_tool_output": false,
+        "is_instanced": false,
+        "is_mesh": false,
+        "is_referenced": false,
+        "is_selected": false,
+        "is_tool_structural_group": false,
+        "is_under_sensitive_hierarchy": false,
+        "is_visible": false,
+        "long_name": "|top",
+        "matches_ignore_string": false,
+        "material_count": 0,
+        "material_node_count": 0,
+        "materials": [],
+        "name": "top",
+        "namespace": "",
+        "native_visible": false,
+        "node_type": "transform",
+        "parent_is_joint": false,
+        "resolved_visible": false,
+        "shading_engine_count": 0,
+        "shading_engines": [],
+        "shape_nodes": [
+          "|top|topShape"
+        ],
+        "shape_type": "camera",
+        "shape_types": [
+          "camera"
+        ],
+        "transform_node": "|top",
+        "uses_default_material": false,
+        "warnings": []
+      },
+      "target_group": "Scene_Utilities",
+      "warnings": [],
+      "would_move": false
+    }
+  ],
   "run_result": {
-    "execution_mode": "dry_run",
+    "execution_mode": "apply",
+    "group_structure_status": {
+      "Pipeline_Organized": "created",
+      "Production_Meshes": "created",
+      "References": "created",
+      "Review_MissingMaterial": "created",
+      "Review_MultiMaterial": "created",
+      "Review_UnclearCases": "created",
+      "Scene_Utilities": "created"
+    },
     "ignore_string": "",
     "max_ui_preview_items": 25,
     "mel_hook_status": {
@@ -18,23 +712,786 @@
         "success": true
       }
     },
-    "message": "Dry Run completed without scene changes.",
-    "preview_routes": [],
+    "message": "Apply: 9 moved, 0 planned, 2 blocked, 0 failed.",
+    "preview_routes": [
+      {
+        "can_move": true,
+        "object_name": "AmbiguousGroup_A",
+        "operation_status": "moved",
+        "route": "Review_UnclearCases",
+        "target_group": "Review_UnclearCases"
+      },
+      {
+        "can_move": true,
+        "object_name": "DefaultMatMesh_A",
+        "operation_status": "moved",
+        "route": "Review_MissingMaterial",
+        "target_group": "Review_MissingMaterial"
+      },
+      {
+        "can_move": false,
+        "object_name": "InstancedMesh_A",
+        "operation_status": "skipped_instance",
+        "route": "Review_UnclearCases",
+        "target_group": null
+      },
+      {
+        "can_move": true,
+        "object_name": "MultiMatMesh_A",
+        "operation_status": "moved",
+        "route": "Review_MultiMaterial",
+        "target_group": "Review_MultiMaterial"
+      },
+      {
+        "can_move": true,
+        "object_name": "ProdMesh_A",
+        "operation_status": "moved",
+        "route": "Production_Meshes",
+        "target_group": "Production_Meshes"
+      },
+      {
+        "can_move": true,
+        "object_name": "SceneLocator_A",
+        "operation_status": "moved",
+        "route": "Scene_Utilities",
+        "target_group": "Scene_Utilities"
+      },
+      {
+        "can_move": false,
+        "object_name": "SourceMesh_A",
+        "operation_status": "skipped_instance",
+        "route": "Review_UnclearCases",
+        "target_group": null
+      },
+      {
+        "can_move": true,
+        "object_name": "front",
+        "operation_status": "moved",
+        "route": "Scene_Utilities",
+        "target_group": "Scene_Utilities"
+      },
+      {
+        "can_move": true,
+        "object_name": "persp",
+        "operation_status": "moved",
+        "route": "Scene_Utilities",
+        "target_group": "Scene_Utilities"
+      },
+      {
+        "can_move": true,
+        "object_name": "side",
+        "operation_status": "moved",
+        "route": "Scene_Utilities",
+        "target_group": "Scene_Utilities"
+      },
+      {
+        "can_move": true,
+        "object_name": "top",
+        "operation_status": "moved",
+        "route": "Scene_Utilities",
+        "target_group": "Scene_Utilities"
+      }
+    ],
     "report_paths": {
-      "json": "C:\\Users\\gusta\\AppData\\Local\\Temp\\maya_production_pipeliner_report.json",
-      "txt": "C:\\Users\\gusta\\AppData\\Local\\Temp\\maya_production_pipeliner_report.txt"
+      "json": "C:/Users/gusta/Documents/maya/projects/default/maya_production_pipeliner_report.json",
+      "txt": "C:/Users/gusta/Documents/maya/projects/default/maya_production_pipeliner_report.txt"
     },
-    "route_decisions": [],
-    "route_decisions_count": 0,
+    "route_decisions": [
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|AmbiguousGroup_A",
+        "new_long_name": "|Pipeline_Organized|Review_UnclearCases|AmbiguousGroup_A",
+        "object_name": "AmbiguousGroup_A",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "unclear object type",
+        "report_only": false,
+        "route": "Review_UnclearCases",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": true,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": false,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": true,
+          "long_name": "|AmbiguousGroup_A",
+          "matches_ignore_string": false,
+          "material_count": 0,
+          "material_node_count": 0,
+          "materials": [],
+          "name": "AmbiguousGroup_A",
+          "namespace": "",
+          "native_visible": true,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": true,
+          "shading_engine_count": 0,
+          "shading_engines": [],
+          "shape_nodes": [],
+          "shape_type": null,
+          "shape_types": [],
+          "transform_node": "|AmbiguousGroup_A",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": "Review_UnclearCases",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|DefaultMatMesh_A",
+        "new_long_name": "|Pipeline_Organized|Review_MissingMaterial|DefaultMatMesh_A",
+        "object_name": "DefaultMatMesh_A",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "material review required",
+        "report_only": false,
+        "route": "Review_MissingMaterial",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": true,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": true,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": true,
+          "long_name": "|DefaultMatMesh_A",
+          "matches_ignore_string": false,
+          "material_count": 1,
+          "material_node_count": 1,
+          "materials": [
+            "openPBR_shader1"
+          ],
+          "name": "DefaultMatMesh_A",
+          "namespace": "",
+          "native_visible": true,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": true,
+          "shading_engine_count": 1,
+          "shading_engines": [
+            "initialShadingGroup"
+          ],
+          "shape_nodes": [
+            "|DefaultMatMesh_A|DefaultMatMesh_AShape"
+          ],
+          "shape_type": "mesh",
+          "shape_types": [
+            "mesh"
+          ],
+          "transform_node": "|DefaultMatMesh_A",
+          "uses_default_material": true,
+          "warnings": []
+        },
+        "target_group": "Review_MissingMaterial",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": false,
+          "reasons": [
+            "operation is report_only"
+          ],
+          "status": "skipped_instance"
+        },
+        "can_move": false,
+        "did_move": false,
+        "execution_mode": "apply",
+        "long_name": "|InstancedMesh_A",
+        "new_long_name": null,
+        "object_name": "InstancedMesh_A",
+        "operation": "report_only",
+        "operation_status": "skipped_instance",
+        "preserve_reason": "instanced geometry",
+        "reason": "instanced geometry",
+        "report_only": true,
+        "route": "Review_UnclearCases",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": true,
+          "is_inside_tool_output": false,
+          "is_instanced": true,
+          "is_mesh": true,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": true,
+          "long_name": "|InstancedMesh_A",
+          "matches_ignore_string": false,
+          "material_count": 1,
+          "material_node_count": 1,
+          "materials": [
+            "SourceMesh_A_mat"
+          ],
+          "name": "InstancedMesh_A",
+          "namespace": "",
+          "native_visible": true,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": true,
+          "shading_engine_count": 1,
+          "shading_engines": [
+            "SourceMesh_A_SG"
+          ],
+          "shape_nodes": [
+            "|InstancedMesh_A|InstancedMesh_AShape"
+          ],
+          "shape_type": "mesh",
+          "shape_types": [
+            "mesh"
+          ],
+          "transform_node": "|InstancedMesh_A",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": null,
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|MultiMatMesh_A",
+        "new_long_name": "|Pipeline_Organized|Review_MultiMaterial|MultiMatMesh_A",
+        "object_name": "MultiMatMesh_A",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "material review required",
+        "report_only": false,
+        "route": "Review_MultiMaterial",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": true,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": true,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": true,
+          "long_name": "|MultiMatMesh_A",
+          "matches_ignore_string": false,
+          "material_count": 3,
+          "material_node_count": 3,
+          "materials": [
+            "MM1",
+            "MM2",
+            "openPBR_shader1"
+          ],
+          "name": "MultiMatMesh_A",
+          "namespace": "",
+          "native_visible": true,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": true,
+          "shading_engine_count": 3,
+          "shading_engines": [
+            "MM1SG",
+            "MM2SG",
+            "initialShadingGroup"
+          ],
+          "shape_nodes": [
+            "|MultiMatMesh_A|MultiMatMesh_AShape"
+          ],
+          "shape_type": "mesh",
+          "shape_types": [
+            "mesh"
+          ],
+          "transform_node": "|MultiMatMesh_A",
+          "uses_default_material": true,
+          "warnings": []
+        },
+        "target_group": "Review_MultiMaterial",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|ProdMesh_A",
+        "new_long_name": "|Pipeline_Organized|Production_Meshes|ProdMesh_A",
+        "object_name": "ProdMesh_A",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "production mesh candidate",
+        "report_only": false,
+        "route": "Production_Meshes",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": true,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": true,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": true,
+          "long_name": "|ProdMesh_A",
+          "matches_ignore_string": false,
+          "material_count": 1,
+          "material_node_count": 1,
+          "materials": [
+            "ProdMesh_A_mat"
+          ],
+          "name": "ProdMesh_A",
+          "namespace": "",
+          "native_visible": true,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": true,
+          "shading_engine_count": 1,
+          "shading_engines": [
+            "ProdMesh_A_SG"
+          ],
+          "shape_nodes": [
+            "|ProdMesh_A|ProdMesh_AShape"
+          ],
+          "shape_type": "mesh",
+          "shape_types": [
+            "mesh"
+          ],
+          "transform_node": "|ProdMesh_A",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": "Production_Meshes",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|SceneLocator_A",
+        "new_long_name": "|Pipeline_Organized|Scene_Utilities|SceneLocator_A",
+        "object_name": "SceneLocator_A",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "scene utility",
+        "report_only": false,
+        "route": "Scene_Utilities",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": true,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": false,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": true,
+          "long_name": "|SceneLocator_A",
+          "matches_ignore_string": false,
+          "material_count": 0,
+          "material_node_count": 0,
+          "materials": [],
+          "name": "SceneLocator_A",
+          "namespace": "",
+          "native_visible": true,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": true,
+          "shading_engine_count": 0,
+          "shading_engines": [],
+          "shape_nodes": [
+            "|SceneLocator_A|SceneLocator_AShape"
+          ],
+          "shape_type": "locator",
+          "shape_types": [
+            "locator"
+          ],
+          "transform_node": "|SceneLocator_A",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": "Scene_Utilities",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": false,
+          "reasons": [
+            "operation is report_only"
+          ],
+          "status": "skipped_instance"
+        },
+        "can_move": false,
+        "did_move": false,
+        "execution_mode": "apply",
+        "long_name": "|SourceMesh_A",
+        "new_long_name": null,
+        "object_name": "SourceMesh_A",
+        "operation": "report_only",
+        "operation_status": "skipped_instance",
+        "preserve_reason": "instanced geometry",
+        "reason": "instanced geometry",
+        "report_only": true,
+        "route": "Review_UnclearCases",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": true,
+          "is_inside_tool_output": false,
+          "is_instanced": true,
+          "is_mesh": true,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": true,
+          "long_name": "|SourceMesh_A",
+          "matches_ignore_string": false,
+          "material_count": 1,
+          "material_node_count": 1,
+          "materials": [
+            "SourceMesh_A_mat"
+          ],
+          "name": "SourceMesh_A",
+          "namespace": "",
+          "native_visible": true,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": true,
+          "shading_engine_count": 1,
+          "shading_engines": [
+            "SourceMesh_A_SG"
+          ],
+          "shape_nodes": [
+            "|SourceMesh_A|InstancedMesh_AShape"
+          ],
+          "shape_type": "mesh",
+          "shape_types": [
+            "mesh"
+          ],
+          "transform_node": "|SourceMesh_A",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": null,
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|front",
+        "new_long_name": "|Pipeline_Organized|Scene_Utilities|front",
+        "object_name": "front",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "scene utility",
+        "report_only": false,
+        "route": "Scene_Utilities",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": false,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": false,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": false,
+          "long_name": "|front",
+          "matches_ignore_string": false,
+          "material_count": 0,
+          "material_node_count": 0,
+          "materials": [],
+          "name": "front",
+          "namespace": "",
+          "native_visible": false,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": false,
+          "shading_engine_count": 0,
+          "shading_engines": [],
+          "shape_nodes": [
+            "|front|frontShape"
+          ],
+          "shape_type": "camera",
+          "shape_types": [
+            "camera"
+          ],
+          "transform_node": "|front",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": "Scene_Utilities",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|persp",
+        "new_long_name": "|Pipeline_Organized|Scene_Utilities|persp",
+        "object_name": "persp",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "scene utility",
+        "report_only": false,
+        "route": "Scene_Utilities",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": false,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": false,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": false,
+          "long_name": "|persp",
+          "matches_ignore_string": false,
+          "material_count": 0,
+          "material_node_count": 0,
+          "materials": [],
+          "name": "persp",
+          "namespace": "",
+          "native_visible": false,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": false,
+          "shading_engine_count": 0,
+          "shading_engines": [],
+          "shape_nodes": [
+            "|persp|perspShape"
+          ],
+          "shape_type": "camera",
+          "shape_types": [
+            "camera"
+          ],
+          "transform_node": "|persp",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": "Scene_Utilities",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|side",
+        "new_long_name": "|Pipeline_Organized|Scene_Utilities|side",
+        "object_name": "side",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "scene utility",
+        "report_only": false,
+        "route": "Scene_Utilities",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": false,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": false,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": false,
+          "long_name": "|side",
+          "matches_ignore_string": false,
+          "material_count": 0,
+          "material_node_count": 0,
+          "materials": [],
+          "name": "side",
+          "namespace": "",
+          "native_visible": false,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": false,
+          "shading_engine_count": 0,
+          "shading_engines": [],
+          "shape_nodes": [
+            "|side|sideShape"
+          ],
+          "shape_type": "camera",
+          "shape_types": [
+            "camera"
+          ],
+          "transform_node": "|side",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": "Scene_Utilities",
+        "warnings": [],
+        "would_move": false
+      },
+      {
+        "apply_preflight": {
+          "eligible": true,
+          "reasons": [],
+          "status": "planned"
+        },
+        "can_move": true,
+        "did_move": true,
+        "execution_mode": "apply",
+        "long_name": "|top",
+        "new_long_name": "|Pipeline_Organized|Scene_Utilities|top",
+        "object_name": "top",
+        "operation": "move",
+        "operation_status": "moved",
+        "preserve_reason": "",
+        "reason": "scene utility",
+        "report_only": false,
+        "route": "Scene_Utilities",
+        "scope_mode": "all_scene",
+        "source_record": {
+          "display_layer_visible": null,
+          "has_blendshape": false,
+          "has_skin_cluster": false,
+          "hierarchy_visible": false,
+          "is_inside_tool_output": false,
+          "is_instanced": false,
+          "is_mesh": false,
+          "is_referenced": false,
+          "is_selected": false,
+          "is_tool_structural_group": false,
+          "is_under_sensitive_hierarchy": false,
+          "is_visible": false,
+          "long_name": "|top",
+          "matches_ignore_string": false,
+          "material_count": 0,
+          "material_node_count": 0,
+          "materials": [],
+          "name": "top",
+          "namespace": "",
+          "native_visible": false,
+          "node_type": "transform",
+          "parent_is_joint": false,
+          "resolved_visible": false,
+          "shading_engine_count": 0,
+          "shading_engines": [],
+          "shape_nodes": [
+            "|top|topShape"
+          ],
+          "shape_type": "camera",
+          "shape_types": [
+            "camera"
+          ],
+          "transform_node": "|top",
+          "uses_default_material": false,
+          "warnings": []
+        },
+        "target_group": "Scene_Utilities",
+        "warnings": [],
+        "would_move": false
+      }
+    ],
+    "route_decisions_count": 11,
     "scope_mode": "all_scene",
     "success": true,
     "summary": {
       "already_in_target": 0,
       "failed": 0,
-      "moved": 0,
-      "planned": 0,
-      "preserved": 0,
-      "scanned": 0,
+      "moved": 9,
+      "planned": 11,
+      "preserved": 2,
+      "scanned": 11,
       "warnings": 0,
       "would_move": 0
     },
