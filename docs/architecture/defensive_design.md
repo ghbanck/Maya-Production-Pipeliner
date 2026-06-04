@@ -136,13 +136,15 @@ Classification priority:
 
 The classifier must not modify the scene.
 
+Unclear cases are classifier and route-plan behavior only. Safe unclear content can route to `Review_UnclearCases` as movable review content when the current route plan marks it `can_move = true`. Unsafe or sensitive unclear content remains preserved/report-only, consistent with the conservative safety model used elsewhere in the classifier.
+
 ---
 
 ## Organizer: Apply Gate and Scene Mutation Boundary
 
 `organizer.py` currently evaluates Apply preflight eligibility without mutating scene hierarchy.
 
-Future mutating Apply should execute only after the preflight gate and only for safe move candidates.
+Future mutating Apply should execute only after the preflight gate and only for safe move candidates. Mutating Apply is not implemented in the current scope.
 
 Current preflight behavior should:
 

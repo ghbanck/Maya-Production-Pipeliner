@@ -394,6 +394,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 **Preconditions:** Create one ambiguous object that is safe to move and one ambiguous object with unsafe movement indicators.
 
+**Note:** Mark `PASS` only after real Maya validation; this checklist is the manual evidence source.
+
 | Step                                 | Expected                               | Status  | Observations |
 | ------------------------------------ | -------------------------------------- | ------- | ------------ |
 | Run Dry Run on safe unclear object   | Object receives unclear route          | PASS    | `mayapy` unclear-case validation routed `AmbiguousGroup_A` to `Review_UnclearCases` as a non-mesh ambiguous object. |
@@ -401,7 +403,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Check safe unclear movement          | Object moves only if `can_move = true` | PASS    | Current runtime now treats the safe-looking ambiguous group as movable review content: `can_move = true`, `operation = move`, and Apply preflight marks it as eligible `planned` content for `Review_UnclearCases`. |
 | Run Dry Run on unsafe unclear object | Object is preserved/report-only        | PASS    | `AmbiguousChildGroup_A` under a joint stayed preserved as `report_only` in Dry Run. |
 | Check unsafe unclear safety          | `can_move = false`                     | PASS    | The unsafe ambiguous child group returned `can_move = false` and `operation_status = skipped_sensitive_hierarchy`. |
-| Check report                         | Reason explains uncertainty or risk    | PASS    | TXT and JSON reports matched runtime facts: the safe ambiguous group kept `reason = unclear object type` with the `Review_UnclearCases` target, while the unsafe child group kept `preserve_reason = rig/deformer sensitive content`. |
+| Check report                         | Reason explains uncertainty or risk    | PASS    | Safe unclear now goes to `Review_UnclearCases` with `can_move = true`; unsafe/sensitive unclear stays preserved/report-only; Apply follows preflight without moving scene. |
 
 **Expected result:** Safe ambiguity has a review destination; unsafe ambiguity is preserved.
 

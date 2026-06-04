@@ -27,6 +27,8 @@ Current validated slices support:
 * route classification;
 * Dry Run reporting;
 * Apply preflight reporting without mutation;
+* utility routing;
+* unclear-case routing;
 * manual validation slices recorded in the checklist.
 
 Mutating Apply remains out of the current runtime.
@@ -47,6 +49,7 @@ The repository is no longer only scaffold. The current state is better understoo
 ### Partial or scaffold-heavy modules
 
 * `ui.py` still contains placeholder/UI-phase scaffolding;
+* UI remains partial and scaffold-heavy;
 * `launcher.py` exists as the intended entry point but remains lightly validated;
 * `mel_bridge.py` is isolated but still depends on broader optional-behavior validation;
 * `install.py` is a setup helper, not the core runtime workflow.
