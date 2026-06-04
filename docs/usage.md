@@ -56,17 +56,18 @@ Expected behavior:
 
 ### Apply
 
-Apply is currently implemented as non-mutating preflight.
+Apply creates the output group structure and moves eligible route decisions into their target groups.
 
 Current behavior:
 
-* evaluates whether route decisions would be eligible for future Apply;
-* annotates decisions with preflight eligibility and reasons;
-* keeps `did_move = false` and `new_long_name = None`;
-* writes reports describing the preflight outcome;
-* does not mutate the Maya scene.
+* creates or reuses `Pipeline_Organized` and all output child groups;
+* evaluates Apply preflight eligibility for each route decision;
+* moves eligible objects into their classified target group;
+* records `did_move`, `new_long_name`, and `operation_status` per decision;
+* writes reports reflecting actual movement outcomes;
+* preserves protected content (referenced, instanced, rig/deformer-sensitive) as report-only — these are never moved.
 
-Future mutating Apply is planned separately and remains gated by documented safety contracts.
+Idempotent: running Apply again on an already-organized scene marks existing objects `already_in_target` without re-parenting them.
 
 ## Ignore String
 
