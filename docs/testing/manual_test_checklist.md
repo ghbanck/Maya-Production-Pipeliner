@@ -151,9 +151,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Execute Apply          | `Pipeline_Organized` is created or reused     | PASS    | mayapy 8a: `Pipeline_Organized` created on first Apply; reused on second Apply. |
 | Check child groups     | Planned child groups are created or reused    | PASS    | mayapy 8a: all 6 `config.OUTPUT_GROUPS` children created as direct children of `Pipeline_Organized`; idempotent on second run. |
 | Check production mesh  | Mesh routes to `Production_Meshes` if safe    | PASS    | mayapy 8b: eligible mesh with non-default material moved to `Production_Meshes`; `did_move = True`, `new_long_name` set and confirmed in scene. |
-| Check utility object   | Utility routes to `Scene_Utilities` if safe   | PENDING | Requires Phase 8c movement slice. |
-| Check can_move gate    | Only objects with `can_move = true` move      | PASS    | mayapy 8b: `can_move = False` objects not moved; non-PM eligible stays `STATUS_PLANNED`; `failed_parenting` branch continues processing remaining decisions (test30, 10/10). |
-| Check report           | TXT/JSON reflects actual movement             | PENDING | Report content for movement not explicitly validated; requires Phase 8c full pass. |
+| Check utility object   | Utility routes to `Scene_Utilities` if safe   | PASS    | mayapy 8c: `SceneLocator_A` moved to `Scene_Utilities`; `did_move = True`, confirmed in scene. |
+| Check can_move gate    | Only objects with `can_move = true` move      | PASS    | mayapy 8b/8c: `can_move = False` objects not moved; instanced content blocked; `failed_parenting` branch continues (test30, 10/10). |
+| Check report           | TXT/JSON reflects actual movement             | PENDING | Report content for movement not explicitly validated in isolation; deferred to Phase 9 polish. |
 | Check operation status | Moved objects have `operation_status = moved` | PASS    | mayapy 8b: `STATUS_MOVED` confirmed on moved Production_Meshes decision; `STATUS_FAILED_PARENTING` confirmed via mocked failure (test30). |
 
 **Expected result:** Apply organizes simple safe content and records what happened.
@@ -623,6 +623,28 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Remaining decisions continue after failure | Next eligible PM still processed | PASS | test30 mock: `ProdMesh_B` moved successfully after `ProdMesh_A` failed. |
 
 **Expected result:** Production_Meshes eligible objects move correctly. Failures are isolated and reported. Non-PM and protected content untouched. Dry Run fully non-mutating.
+
+---
+
+## Phase 8c — All Eligible Routes Movement Validation
+
+**Purpose:** Verify that all eligible route decisions move into their respective target groups, protected content is untouched, and Dry Run remains non-mutating.
+
+**Validated:** Maya 2027, mayapy standalone. `test31_mayapy_phase8c.py`. 17/17 PASS.
+
+| Step | Expected | Status | Observations |
+| ---- | -------- | ------ | ------------ |
+| `Production_Meshes` eligible object moves | `did_move = True`, under `Production_Meshes` | PASS | `ProdMesh_A` (unique material) confirmed at `\|Pipeline_Organized\|Production_Meshes\|ProdMesh_A`. |
+| `Scene_Utilities` eligible object moves | `did_move = True`, under `Scene_Utilities` | PASS | `SceneLocator_A` confirmed at `\|Pipeline_Organized\|Scene_Utilities\|SceneLocator_A`. |
+| `Review_MissingMaterial` eligible object moves | `did_move = True`, under `Review_MissingMaterial` | PASS | `DefaultMatMesh_A` confirmed at correct path. |
+| `Review_MultiMaterial` eligible object moves | `did_move = True`, under `Review_MultiMaterial` | PASS | `MultiMatMesh_A` confirmed at correct path. |
+| `Review_UnclearCases` eligible object moves | `did_move = True`, under `Review_UnclearCases` | PASS | `AmbiguousGroup_A` (empty group): `route = Review_UnclearCases`, `can_move = true`, confirmed at `\|Pipeline_Organized\|Review_UnclearCases\|AmbiguousGroup_A`. |
+| All moved objects have `operation_status = moved` | Status consistent across all routes | PASS | All `did_move = True` decisions confirmed `STATUS_MOVED`. |
+| Instanced content not moved | `can_move = False` enforced by classifier | PASS | `SourceMesh_A` and `InstancedMesh_A` both `did_move = False`. |
+| `summary.moved` accurate | Count matches actual moved decisions | PASS | `summary.moved` equals `sum(did_move == True)` across all route decisions. |
+| Dry Run creates no groups, moves nothing | Non-regression | PASS | `Pipeline_Organized` absent; all `did_move = False`; message unchanged. |
+
+**Expected result:** All eligible routes move to their target groups in a single Apply call. Protected content untouched. Dry Run fully non-mutating.
 
 ### Phase 8b — Maya 2027 GUI Smoke (Apply button)
 
