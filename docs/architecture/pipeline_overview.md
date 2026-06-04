@@ -12,12 +12,12 @@ Maya scene
 -> ObjectRecord facts
 -> classifier
 -> RouteDecision plan
--> Dry Run or Apply preflight
+-> Dry Run or Apply
 -> reporter
 -> RunResult
 ```
 
-The route plan is central. The tool should decide what it intends to do before any future scene mutation is allowed to happen.
+The route plan is central. The tool decides what it intends to do before any scene mutation is executed.
 
 ## Current Implementation Boundary
 
@@ -26,12 +26,10 @@ Current validated slices support:
 * scene scanning;
 * route classification;
 * Dry Run reporting;
-* Apply preflight reporting without mutation;
+* Apply: group structure creation, object movement, idempotency, already-in-target detection, failure handling;
 * utility routing;
 * unclear-case routing;
 * manual validation slices recorded in the checklist.
-
-Mutating Apply remains out of the current runtime.
 
 ## Implementation Status Snapshot
 
@@ -42,8 +40,8 @@ The repository is no longer only scaffold. The current state is better understoo
 * `scanner.py` performs real scene scanning;
 * `classifier.py` produces real route decisions;
 * `reporter.py` writes real TXT/JSON reports;
-* `pipeline.py` runs the end-to-end Dry Run and Apply-preflight flow;
-* `organizer.py` performs non-mutating Apply preflight checks;
+* `pipeline.py` runs the end-to-end Dry Run and Apply flow;
+* `organizer.py` creates group structure and moves eligible route decisions in Apply mode;
 * `config.py` defines the active constants and contracts used by runtime modules.
 
 ### Partial or scaffold-heavy modules
@@ -53,12 +51,10 @@ The repository is no longer only scaffold. The current state is better understoo
 * `mel_bridge.py` is isolated but still depends on broader optional-behavior validation;
 * `install.py` is a setup helper, not the core runtime workflow.
 
-### Planned but not implemented behavior
+### Remaining open behavior
 
-* mutating Apply;
-* real Outliner reparenting/group creation as runtime Apply behavior;
-* mutation outcomes such as `moved` and `failed_parenting`;
-* UI flow for mutating Apply (depends on mutating Apply implementation).
+* leaf object reclassification inside `Pipeline_Organized` after user edits (Test 19);
+* full release gate validation (Test 28 documentation check, final checklist pass).
 
 ## Module Responsibilities
 
@@ -93,7 +89,7 @@ Review_MultiMaterial
 Review_UnclearCases
 ```
 
-This is the intended output structure for future Safe Apply, not a claim that object movement is already implemented.
+This structure is created by the current Apply runtime. Object movement, idempotency, and already-in-target detection are validated through Phase 8d.
 
 Ignored content matched by the user-defined ignore string should be preserved outside the normal organized output buckets unless a future contract explicitly says otherwise.
 

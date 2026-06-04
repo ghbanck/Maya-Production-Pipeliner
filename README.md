@@ -49,8 +49,8 @@ This repository is still in controlled implementation.
 | Core runtime | Implemented in slices |
 | Dry Run | Implemented and validated in focused checklist slices |
 | Apply | Creates group structure and moves eligible routed objects; mayapy-validated through Phase 8c |
-| Mutating Apply (full) | Idempotency and remaining edge cases pending |
-| UI | Minimal UI implemented; Dry Run and Apply Preflight smoke validated in Maya 2027.1 |
+| Mutating Apply (full) | Group creation, movement, idempotency, and failure handling validated; leaf reclassification and final release gate pending |
+| UI | Minimal UI implemented; Dry Run and Apply smoke validated in Maya 2027.1 |
 | Release status | Not release-ready |
 
 Treat planned behavior as planned until code and manual Maya validation evidence are both present in the repository.
@@ -64,7 +64,7 @@ Scan scene facts
 -> classify route decisions
 -> build a route plan
 -> preserve unsafe content
--> preview through Dry Run or Apply preflight
+-> execute through Dry Run or Apply
 -> write TXT/JSON reports
 ```
 
@@ -78,7 +78,7 @@ Current safety posture:
 
 * Dry Run is strictly observational and non-mutating.
 * Apply creates or reuses the output group structure and moves eligible routed objects into their target groups. Protected content — referenced nodes, instanced geometry, rig/deformer-sensitive objects — remains report-only and is never moved.
-* Idempotency, already-in-target detection, and remaining edge cases are pending validation.
+* Idempotency and already-in-target detection are validated. Leaf reclassification after user edits is the remaining open case.
 
 ---
 
@@ -136,7 +136,7 @@ Treat that launch path as the intended public interface, not as proof of a finis
 
 Current limitations include:
 
-* Apply moves eligible routed objects but idempotency and all edge cases are not yet fully validated;
+* Apply moves eligible routed objects and is idempotent; leaf reclassification after user edits is not yet validated;
 * no claim of production-ready or release-ready behavior;
 * no promise of full validation, publishing, export correctness, shader repair, namespace conflict resolution, telemetry, or generalized pipeline runtime features;
 * no guarantee that every planned feature in the frozen scope is already implemented.

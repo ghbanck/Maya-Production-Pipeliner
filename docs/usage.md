@@ -9,7 +9,7 @@ For frozen scope authority, see [`docs/planning/frozen_scope_contract_v1.1.3.md`
 Current usage maturity is mixed:
 
 * Dry Run is real runtime behavior and has focused manual validation evidence.
-* Apply currently means non-mutating preflight, not scene reorganization.
+* Apply creates the group structure and moves eligible routed objects; idempotency is validated.
 * The minimal UI is implemented and smoke validated in Maya 2027.1 for Dry Run and Apply Preflight; installation maturity should still be treated conservatively.
 
 ## Working Model
@@ -80,15 +80,15 @@ Current intent:
 * matching objects are preserved outside the normal organized output groups by default;
 * broad ignore usage can generate warnings when the match count becomes suspiciously high.
 
-## Planned Output Structure
+## Output Structure
 
-When Safe Apply is eventually implemented, the intended output root is:
+Apply creates or reuses the following group hierarchy in the Maya scene:
 
 ```text
 Pipeline_Organized
 ```
 
-Planned child groups:
+Child groups created on Apply:
 
 ```text
 Production_Meshes
@@ -99,7 +99,7 @@ Review_MultiMaterial
 Review_UnclearCases
 ```
 
-This structure should be treated as target architecture, not as evidence that mutating Apply is already available.
+This structure is created by the current runtime. Running Apply again on an already-organized scene reuses existing groups and marks leaf objects as `already_in_target` without re-parenting them.
 
 Ignored content matched by the user-defined ignore string should be bypassed/preserved rather than treated as its own organized class by default.
 
