@@ -167,6 +167,23 @@ def _on_run_clicked(*args):
 
     ignore_string = cmds.textField(_ctrl["ignore"], query=True, text=True) or ""
 
+    if execution_mode == config.APPLY:
+        answer = cmds.confirmDialog(
+            title="Confirm Apply",
+            message=(
+                "Apply will create the Pipeline_Organized group structure\n"
+                "and move eligible objects into it.\n\n"
+                "This action can be undone with Ctrl+Z.\n\n"
+                "Continue?"
+            ),
+            button=["Apply", "Cancel"],
+            defaultButton="Cancel",
+            cancelButton="Cancel",
+            dismissString="Cancel",
+        )
+        if answer != "Apply":
+            return
+
     try:
         run_result = pipeline.run(scope_mode, execution_mode, ignore_string)
     except Exception as exc:
