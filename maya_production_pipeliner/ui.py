@@ -285,5 +285,7 @@ def _on_open_report_clicked(path, *args):
         return
     if sys.platform == "win32":
         os.startfile(path)  # noqa: S606
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", path])
     else:
         subprocess.Popen(["xdg-open", path])
