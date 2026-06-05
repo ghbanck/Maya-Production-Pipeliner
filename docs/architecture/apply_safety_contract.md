@@ -18,7 +18,8 @@ Current Apply behavior:
 * preserves referenced, instanced, rig/deformer-sensitive, report-only, missing,
   already-in-target, and otherwise ineligible content;
 * records `did_move`, `new_long_name`, `operation_status`, warnings, and
-  summary counts from actual execution.
+  summary counts from actual execution;
+* leaves only genuinely blocked or failed routes out of the moved/already-in-target outcomes.
 
 Dry Run remains strictly observational and must not create groups or move scene
 nodes.

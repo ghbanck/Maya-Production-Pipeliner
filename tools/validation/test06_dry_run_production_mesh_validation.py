@@ -101,30 +101,30 @@ def main():
     pipeline_group_before = cmds.objExists(config.ROOT_GROUP)
 
     dry_run_result = pipeline.run(config.ALL_SCENE, config.DRY_RUN)
-    apply_result = pipeline.run(config.ALL_SCENE, config.APPLY)
-
-    assemblies_after = cmds.ls(assemblies=True, long=True) or []
-    pipeline_group_after = cmds.objExists(config.ROOT_GROUP)
-
     dry_decisions = dry_run_result.get("route_decisions") or []
-    apply_decisions = apply_result.get("route_decisions") or []
-
     dry_target = _compact_decision(_decision_by_name(dry_decisions, mesh_name))
-    apply_target = _compact_decision(_decision_by_name(apply_decisions, mesh_name))
 
     dry_txt_path = (dry_run_result.get("report_paths") or {}).get("txt")
     dry_json_path = (dry_run_result.get("report_paths") or {}).get("json")
-    apply_json_path = (apply_result.get("report_paths") or {}).get("json")
-
     dry_json_report = _load_json_report(dry_json_path)
-    apply_json_report = _load_json_report(apply_json_path)
-
     dry_json_decision = _decision_by_name(
         dry_json_report.get("route_decisions") or [], mesh_name
     )
+
+    assemblies_after_dry_run = cmds.ls(assemblies=True, long=True) or []
+    pipeline_group_after_dry_run = cmds.objExists(config.ROOT_GROUP)
+
+    apply_result = pipeline.run(config.ALL_SCENE, config.APPLY)
+    apply_decisions = apply_result.get("route_decisions") or []
+    apply_target = _compact_decision(_decision_by_name(apply_decisions, mesh_name))
+    apply_json_path = (apply_result.get("report_paths") or {}).get("json")
+    apply_json_report = _load_json_report(apply_json_path)
     apply_json_decision = _decision_by_name(
         apply_json_report.get("route_decisions") or [], mesh_name
     )
+
+    assemblies_after_apply = cmds.ls(assemblies=True, long=True) or []
+    pipeline_group_after_apply = cmds.objExists(config.ROOT_GROUP)
 
     result = {
         "scene_setup": {
@@ -143,7 +143,7 @@ def main():
             },
             "target": dry_target,
         },
-        "apply_preflight": {
+        "apply": {
             "success": apply_result.get("success"),
             "message": apply_result.get("message"),
             "summary": apply_result.get("summary"),
@@ -152,10 +152,12 @@ def main():
             "target": apply_target,
         },
         "scene_state": {
-            "assemblies_after": assemblies_after,
-            "outliner_unchanged": assemblies_before == assemblies_after,
+            "assemblies_after_dry_run": assemblies_after_dry_run,
+            "assemblies_after_apply": assemblies_after_apply,
+            "outliner_unchanged_after_dry_run": assemblies_before == assemblies_after_dry_run,
             "pipeline_group_before": pipeline_group_before,
-            "pipeline_group_after": pipeline_group_after,
+            "pipeline_group_after_dry_run": pipeline_group_after_dry_run,
+            "pipeline_group_after_apply": pipeline_group_after_apply,
         },
         "reports": {
             "dry_txt_contains_production_mesh_route": _txt_contains_production_mesh_route(
@@ -201,22 +203,23 @@ def main():
             ),
             "dry_run_did_not_create_pipeline_group": (
                 pipeline_group_before is False
-                and pipeline_group_after is False
+                and pipeline_group_after_dry_run is False
             ),
-            "dry_run_outliner_unchanged": assemblies_before == assemblies_after,
-            "apply_preflight_marks_mesh_eligible_and_planned": (
+            "dry_run_outliner_unchanged": assemblies_before == assemblies_after_dry_run,
+            "apply_moves_mesh_when_eligible": (
                 apply_target is not None
                 and (apply_target.get("apply_preflight") or {}).get("eligible") is True
-                and apply_target.get("operation_status") == config.STATUS_PLANNED
+                and apply_target.get("operation_status") == config.STATUS_MOVED
+                and apply_target.get("did_move") is True
+                and bool(apply_target.get("new_long_name"))
             ),
-            "apply_preflight_no_scene_mutation": (
+            "apply_creates_pipeline_group": (
                 apply_target is not None
-                and apply_target.get("did_move") is False
-                and apply_target.get("new_long_name") is None
-                and pipeline_group_after is False
+                and pipeline_group_after_apply is True
             ),
-            "apply_preflight_message_confirms_no_changes": (
-                "without scene changes" in (apply_result.get("message") or "")
+            "apply_message_reports_moves": (
+                (apply_result.get("message") or "").startswith("Apply: ")
+                and "moved" in (apply_result.get("message") or "")
             ),
             "reports_written_and_json_contains_decision": (
                 bool(dry_txt_path and os.path.exists(dry_txt_path))

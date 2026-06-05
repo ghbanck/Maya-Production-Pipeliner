@@ -120,7 +120,7 @@ def main():
             "route_decisions_count": dry_run_result.get("route_decisions_count"),
             "targets": dry_targets,
         },
-        "apply_preflight": {
+        "apply": {
             "success": apply_result.get("success"),
             "message": apply_result.get("message"),
             "summary": apply_result.get("summary"),
@@ -175,13 +175,18 @@ def main():
                 and dry_targets["unsafe_unclear"].get("operation_status") == config.STATUS_SKIPPED_SENSITIVE_HIERARCHY
                 and dry_targets["unsafe_unclear"].get("source_record", {}).get("parent_is_joint") is True
             ),
-            "apply_preflight_keeps_both_unmoved": all(
-                target is not None
-                and target.get("did_move") is False
-                and target.get("new_long_name") is None
-                for target in apply_targets.values()
+            "apply_moves_only_safe_unclear": (
+                (apply_targets["safe_unclear"] is not None)
+                and (apply_targets["safe_unclear"].get("did_move") is True)
+                and bool(apply_targets["safe_unclear"].get("new_long_name"))
+                and (apply_targets["safe_unclear"].get("operation_status") == config.STATUS_MOVED)
             ) and (
                 (apply_targets["safe_unclear"] or {}).get("apply_preflight", {}).get("eligible") is True
+            ) and (
+                (apply_targets["unsafe_unclear"] is not None)
+                and (apply_targets["unsafe_unclear"].get("did_move") is False)
+                and (apply_targets["unsafe_unclear"].get("new_long_name") is None)
+                and (apply_targets["unsafe_unclear"].get("operation_status") == config.STATUS_SKIPPED_SENSITIVE_HIERARCHY)
             ) and (
                 (apply_targets["unsafe_unclear"] or {}).get("apply_preflight", {}).get("eligible") is False
             ),

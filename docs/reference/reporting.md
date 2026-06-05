@@ -31,7 +31,7 @@ Current report structure is designed to capture:
 * warning events in structured form;
 * optional MEL hook status when present in runtime output.
 
-For validated unclear-case routing, TXT and JSON reports should reflect `route`, `target_group`, `can_move`, `report_only`, `operation_status`, and `preserve_reason` when present. For Apply preflight runs, they should also reflect `apply_preflight`. Safe unclear review content may appear as movable review content in Dry Run and as `planned` in Apply preflight, while unsafe or sensitive unclear content remains preserved/report-only. No schema version bump is needed unless the JSON structure changes.
+For validated unclear-case routing, TXT and JSON reports should reflect `route`, `target_group`, `can_move`, `report_only`, `operation_status`, and `preserve_reason` when present. Apply reports should also reflect `apply_preflight` where available. Safe unclear review content may appear as movable review content in Dry Run and as `moved` or `already_in_target` in Apply when eligible, while unsafe or sensitive unclear content remains preserved/report-only. No schema version bump is needed unless the JSON structure changes.
 
 ## TXT Reports
 

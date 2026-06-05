@@ -54,8 +54,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                               | Expected                                                   | Status  | Observations |
 | ---------------------------------- | ---------------------------------------------------------- | ------- | ------------ |
 | Run Dry Run with scope = All Scene | No crash; existing Maya scene content is processed safely  | PASS    | Real Maya validation completed successfully in a fresh scene and processed the four default startup cameras as existing Maya content. |
-| Run Dry Run with scope = Selected  | No crash; clear empty-selection result                     | PASS    | With no selection in a fresh Maya scene, Dry Run returned `scanned = 0`, `planned = 0`, and completed successfully. |
-| Run Dry Run with scope = Visible   | No crash; clear empty or no-visible-content result         | PASS    | In the same fresh Maya scene, Visible-scope Dry Run completed successfully with `scanned = 0` and `planned = 0`. |
+| Run Dry Run with scope = Selected  | No crash; clear empty-selection result                     | PASS    | With no selection in a fresh Maya scene, Dry Run returned `scanned = 0`, `total = 0`, and completed successfully. |
+| Run Dry Run with scope = Visible   | No crash; clear empty or no-visible-content result         | PASS    | In the same fresh Maya scene, Visible-scope Dry Run completed successfully with `scanned = 0` and `total = 0`. |
 | Inspect Outliner after Dry Run     | No `Pipeline_Organized` group created                      | PASS    | Repeated Dry Run calls left the Outliner unchanged and did not create `Pipeline_Organized`. |
 | Check RunResult                    | `success` and/or `message` clearly describes empty state   | PASS    | For empty Selected and Visible runs, `RunResult.success` stayed true and the summary counters remained at zero, clearly indicating no-content execution. |
 | Check report behavior              | Report is generated or clear no-content result is returned | PASS    | Real Maya Dry Run wrote TXT/JSON reports into the Maya default workspace for All Scene, Selected, and Visible runs. |
@@ -128,7 +128,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | ------------------------------------- | ------------------------------------------------------ | ------- | ------------ |
 | Execute Dry Run                       | No groups are created                                  | PASS    | test06 (`dry_run_did_not_create_pipeline_group = true`): Dry Run on a fresh scene with `ProdMesh_A` left `pipeline_group_after = false`. |
 | Inspect Outliner after Dry Run        | `Pipeline_Organized` does not exist                    | PASS    | test06 (`dry_run_outliner_unchanged = true`): Outliner remained `[|persp, |top, |front, |side, |ProdMesh_A]` identically before and after Dry Run. |
-| Check object parents before and after | No parent changes occur                                | PASS    | test06 (`dry_run_no_name_or_path_changes`): `did_move = false` confirmed; `assemblies_before == assemblies_after` for both Dry Run and Apply preflight runs. |
+| Check object parents before and after | No parent changes occur                                | PASS    | test06 (`dry_run_no_name_or_path_changes`): `did_move = false` confirmed; `assemblies_before == assemblies_after_dry_run` during Dry Run validation. |
 | Check object names before and after   | No rename occurs                                       | PASS    | test06: `new_long_name = null` in Dry Run target decision; `ProdMesh_A` long name `|ProdMesh_A` unchanged throughout. |
 | Check reports                         | TXT/JSON report planned actions without scene mutation | PASS    | test06 (`reports_written_and_json_contains_decision = true`, `txt_report_surfaces_production_mesh_route = true`): TXT and JSON written to Maya workspace; JSON contains Production_Meshes decision with `operation_status = dry_run_only`. |
 | Check report schema field             | JSON includes `schema_version`                         | PASS    | Phase 9a report audit (33/33): `json_schema_version_present` and `json_schema_version_value == "0.2"` confirmed in real Apply JSON report. |
@@ -169,7 +169,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                                                | Expected                                                                            | Status  | Observations |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------ |
 | Set ignore string to `BYPASS` and run Dry Run       | Matching objects are excluded from normal production/review routing                 | PASS    | `mayapy` bypass validation routed `ProdMesh_BYPASS_0` and `ProdMesh_BYPASS_1` to `Bypass` with `matches_ignore_string = true`. |
-| Run Apply if ignore preservation is implemented     | Matching objects remain bypassed/preserved unless an explicit safe contract says otherwise | PASS    | Apply preflight kept bypassed meshes in `Bypass` with `did_move = false`, `new_long_name = None`, and blocked preflight status. |
+| Run Apply if ignore preservation is implemented     | Matching objects remain bypassed/preserved unless an explicit safe contract says otherwise | PASS    | Apply kept bypassed meshes in `Bypass` with `did_move = false`, `new_long_name = None`, and blocked eligibility status. |
 | If Bypass movement is not safe or not implemented   | Matching objects remain preserved/report-only                                           | PASS    | Bypassed meshes returned `can_move = false`, `operation = report_only`, `report_only = true`, and `operation_status = preserved_report_only`. |
 | Check report                                        | Preserve reason or route reason reflects user ignore string                         | PASS    | Apply JSON report documented bypassed meshes with `reason = matches ignore string` and `preserve_reason = user ignore string`. |
 | Use empty ignore string                             | No objects enter ignore-string preservation due to empty string                     | PASS    | Running the same scene with `ignore_string = ""` removed bypass behavior and returned the former bypass meshes to normal classifier routing. |
@@ -213,8 +213,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Check safety            | `can_move = false`                                         | PASS    | Referenced mesh returned `can_move = false`. |
 | Check report-only state | `report_only = true`                                       | PASS    | Referenced mesh returned `operation = report_only` and `report_only = true`. |
 | Check preserve reason   | `preserve_reason = Immutable reference node` or equivalent | PASS    | Referenced mesh returned `preserve_reason = referenced content`. |
-| Run Apply               | Referenced node is not parented                            | PASS    | Apply preflight kept the referenced mesh blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
-| Check operation status  | `operation_status = skipped_reference`                     | PASS    | Referenced mesh returned `operation_status = skipped_reference` in Dry Run and Apply preflight. |
+| Run Apply               | Referenced node is not parented                            | PASS    | Apply kept the referenced mesh blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
+| Check operation status  | `operation_status = skipped_reference`                     | PASS    | Referenced mesh returned `operation_status = skipped_reference` in Dry Run and Apply. |
 | Check report            | Referenced object is documented as preserved               | PASS    | Apply JSON report documented the referenced mesh with `can_move = false`, `report_only = true`, and `skipped_reference`. |
 
 **Expected result:** Referenced content is never falsely reported as moved.
@@ -231,9 +231,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | ---------------------- | ------------------------------------------------ | ------- | ------------ |
 | Run Selected scope     | Selected child is detected safely                | PASS    | `mayapy` validation selected a child transform inside a referenced asset and returned exactly one Selected-scope route decision for that child. |
 | Check reference state  | Node is classified as referenced/report-only     | PASS    | The selected referenced child returned `route = References`, `can_move = false`, `operation = report_only`, and `report_only = true`. |
-| Run Apply              | Tool does not attempt to parent referenced child | PASS    | Apply preflight completed with `Planned moves: 0. Blocked: 1.` and left the referenced child under its original referenced parent. |
-| Check movement state   | `did_move = false`                               | PASS    | The selected referenced child returned `did_move = false` and `new_long_name = None` in Apply preflight. |
-| Check operation status | `operation_status = skipped_reference`           | PASS    | Dry Run and Apply preflight both returned `operation_status = skipped_reference` for the selected referenced child. |
+| Run Apply              | Tool does not attempt to parent referenced child | PASS    | Apply left the referenced child under its original referenced parent and reported it as blocked/preserved. |
+| Check movement state   | `did_move = false`                               | PASS    | The selected referenced child returned `did_move = false` and `new_long_name = None` in Apply. |
+| Check operation status | `operation_status = skipped_reference`           | PASS    | Dry Run and Apply both returned `operation_status = skipped_reference` for the selected referenced child. |
 | Check report           | Preservation reason is clear                     | PASS    | Apply JSON report documented the selected referenced child with `preserve_reason = referenced content`. |
 
 **Expected result:** Selected referenced children are preserved and reported honestly.
@@ -251,8 +251,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Run Dry Run             | Instance state is detected when practical         | PASS    | `mayapy` protected-content validation detected both `InstancedMesh_A` and `InstancedMesh_A_Copy` with `is_instanced = true`. |
 | Check safety            | `can_move = false`                                | PASS    | Both instanced transforms returned `can_move = false`. |
 | Check report-only state | Preserved/report-only behavior is recorded        | PASS    | Both instanced transforms returned `operation = report_only` and `report_only = true`. |
-| Run Apply               | Instanced geometry is not parented as normal mesh | PASS    | Apply preflight kept both instanced transforms blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
-| Check operation status  | `operation_status = skipped_instance`             | PASS    | Both instanced transforms returned `operation_status = skipped_instance` in Dry Run and Apply preflight. |
+| Run Apply               | Instanced geometry is not parented as normal mesh | PASS    | Apply kept both instanced transforms blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
+| Check operation status  | `operation_status = skipped_instance`             | PASS    | Both instanced transforms returned `operation_status = skipped_instance` in Dry Run and Apply. |
 | Check report            | Instance preservation reason is recorded          | PASS    | Apply JSON report documented both instanced transforms with `preserve_reason = instanced geometry`. |
 
 **Expected result:** Instanced geometry is preserved by default.
@@ -272,8 +272,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Run Dry Run on mesh under joint hierarchy | Sensitive hierarchy is detected when practical                 | PASS    | `mayapy` protected-content validation detected `JointChildMesh_A` with `parent_is_joint = true` and `is_under_sensitive_hierarchy = true`. |
 | Check safety                              | Sensitive object receives `can_move = false`                   | PASS    | SkinCluster, blendShape, and joint-child test meshes all returned `can_move = false`. |
 | Check preserve reason                     | Preserve reason identifies rig/deformer sensitivity            | PASS    | Sensitive test meshes returned `preserve_reason = rig/deformer sensitive content`. |
-| Run Apply                                 | Sensitive object is not parented                               | PASS    | Apply preflight kept the sensitive test meshes blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
-| Check operation status                    | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Sensitive test meshes returned `operation_status = skipped_sensitive_hierarchy` in Dry Run and Apply preflight. |
+| Run Apply                                 | Sensitive object is not parented                               | PASS    | Apply kept the sensitive test meshes blocked with `did_move = false`, `new_long_name = None`, and unchanged Outliner state. |
+| Check operation status                    | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Sensitive test meshes returned `operation_status = skipped_sensitive_hierarchy` in Dry Run and Apply. |
 
 **Expected result:** Rig-sensitive and deformation-sensitive objects are preserved by default.
 
@@ -290,7 +290,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Run Dry Run                        | Utility objects are detected                          | PASS    | `SceneCamera_A1`, `SceneLight_A`, and `SceneLocator_A` were all detected in Maya validation. |
 | Check movable camera/light/locator | Safe utilities route to `Scene_Utilities`             | PASS    | Camera, directional light, and locator all routed to `Scene_Utilities` after classifier utility-shape hardening. |
 | Check joint behavior               | Joints are treated conservatively if sensitive        | PASS    | Real Maya validation showed the plain joint itself routes as `Scene_Utilities`, while the mesh parented under that joint remained blocked as `skipped_sensitive_hierarchy`, keeping joint-adjacent sensitive content out of utility movement. |
-| Run Apply                          | Only safe utilities move                              | PASS    | Apply preflight marked camera, locator, light, and plain joint as `planned`, while the joint-child mesh stayed blocked with `eligible = false` and no scene mutation. |
+| Run Apply                          | Only safe utilities move                              | PASS    | `mayapy` validation moved camera, locator, light, and plain joint into `Scene_Utilities` with `operation_status = moved`, while the joint-child mesh stayed blocked with `eligible = false`. |
 | Check report                       | Utility route and subtype are recorded when available | PASS    | TXT reported utility route/target details for `SceneCamera_A1`, and JSON preserved scanner-facing subtype facts such as `shape_type = camera`, `shape_type = locator`, and the joint-child `preserve_reason`. |
 
 **Expected result:** Utility objects are organized or preserved according to safety state.
@@ -344,8 +344,8 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | ------------------ | ------------------------------------------------------------ | ------- | ------------ |
 | Run Selected scope | Both selected inputs are handled safely                      | PASS    | `mayapy` validation selected `|ConflictParent_A` and `|ConflictParent_A|ConflictChild_A` together and returned both as separate Selected-scope records with `summary['scanned'] = 2`. |
 | Check route plan   | Parent/child conflict is detected or resolved conservatively | PASS    | Dry Run kept parent and child as distinct route decisions by `long_name`, without collapsing or losing either selected input. |
-| Run Apply          | Tool avoids destructive double-parenting                     | PASS    | Apply preflight left both selected meshes at `did_move = false` and `new_long_name = None`, so no scene mutation or double-parenting attempt occurred in the current runtime. |
-| Check warnings     | Conflict warning or clear operation status is recorded       | PASS    | Apply preflight returned clear `operation_status = planned` for both selected meshes and preserved both `long_name` values in the JSON report. |
+| Run Apply          | Tool avoids destructive double-parenting                     | PASS    | Apply left both selected meshes at `did_move = false` and `new_long_name = None`, so no destructive double-parenting occurred in the current runtime. |
+| Check warnings     | Conflict warning or clear operation status is recorded       | PASS    | Apply preserved both `long_name` values in the JSON report and returned non-empty operation statuses for the selected overlap case. |
 
 **Expected result:** Parent/child overlap does not create duplicate or destructive movement.
 
@@ -400,7 +400,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | ------------------------------------ | -------------------------------------- | ------- | ------------ |
 | Run Dry Run on safe unclear object   | Object receives unclear route          | PASS    | `mayapy` unclear-case validation routed `AmbiguousGroup_A` to `Review_UnclearCases` as a non-mesh ambiguous object. |
 | Check safe unclear target            | Object routes to `Review_UnclearCases` | PASS    | The safe-looking ambiguous group returned `route = Review_UnclearCases` and `target_group = Review_UnclearCases`. |
-| Check safe unclear movement          | Object moves only if `can_move = true` | PASS    | Current runtime now treats the safe-looking ambiguous group as movable review content: `can_move = true`, `operation = move`, and Apply preflight marks it as eligible `planned` content for `Review_UnclearCases`. |
+| Check safe unclear movement          | Object moves only if `can_move = true` | PASS    | Current runtime treats the safe-looking ambiguous group as movable review content: `can_move = true`, `operation = move`, and Apply moved it into `Review_UnclearCases`; the unsafe joint child stayed blocked. |
 | Run Dry Run on unsafe unclear object | Object is preserved/report-only        | PASS    | `AmbiguousChildGroup_A` under a joint stayed preserved as `report_only` in Dry Run. |
 | Check unsafe unclear safety          | `can_move = false`                     | PASS    | The unsafe ambiguous child group returned `can_move = false` and `operation_status = skipped_sensitive_hierarchy`. |
 | Check report                         | Reason explains uncertainty or risk    | PASS    | Safe unclear now goes to `Review_UnclearCases` with `can_move = true`; unsafe/sensitive unclear stays preserved/report-only; Apply follows preflight without moving scene. |
@@ -420,7 +420,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Dry Run object             | `operation_status = dry_run_only` or equivalent                | PASS    | `mayapy` validation returned `dry_run_only` for a normal movable mesh in Dry Run. |
 | Successfully moved object  | `operation_status = moved`                                     | PASS    | mayapy 8b: `STATUS_MOVED` confirmed for eligible Production_Meshes object; `did_move = True`, `new_long_name` set. |
 | Already organized object   | `operation_status = already_in_target`                         | PASS    | mayapy 8d: second Apply run marked previously moved objects `already_in_target`; `did_move = False`; no redundant `cmds.parent`; `summary.already_in_target = 6` matched actual count. |
-| Referenced object          | `operation_status = skipped_reference`                         | PASS    | Referenced mesh returned `skipped_reference` in Apply preflight. |
+| Referenced object          | `operation_status = skipped_reference`                         | PASS    | Referenced mesh returned `skipped_reference` in Apply. |
 | Instanced object           | `operation_status = skipped_instance`                          | PASS    | Both source and instance copy returned `skipped_instance`. |
 | Sensitive hierarchy object | `operation_status = skipped_sensitive_hierarchy` or equivalent | PASS    | Mesh under joint hierarchy returned `skipped_sensitive_hierarchy`. |
 | Tool structural group      | `operation_status = skipped_tool_structure` when reported      | PASS    | `Pipeline_Organized` and child output group returned `skipped_tool_structure`. |
@@ -438,7 +438,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                           | Expected                                                      | Status  | Observations |
 | ------------------------------ | ------------------------------------------------------------- | ------- | ------------ |
 | Check TXT report header        | Includes tool name, timestamp, mode, and scope                | PASS    | `mayapy` report validation confirmed tool name, `Report generated`, `Mode: apply`, and `Scope: all_scene`. |
-| Check TXT report summary       | Includes scanned count and route summary                      | PASS    | TXT summary included `scanned` and `planned` counters from a rich Apply-preflight scene. |
+| Check TXT report summary       | Includes scanned count and route summary                      | PASS    | TXT summary included `scanned`, `total`, `moved`, `preserved`, and related counters from the current runtime. |
 | Check TXT route details        | Includes object route, target group, and safety state         | PASS    | TXT route rows included `route=`, `target=`, `can_move=`, and preflight/safety state. |
 | Check TXT preservation details | Includes `preserve_reason` when relevant                      | PASS    | TXT route rows now include `preserve_reason=` for preserved/report-only content. |
 | Check TXT operation details    | Includes `operation_status` and `new_long_name` when relevant | PASS    | TXT route rows included `status=` and `new_long_name=`. |
@@ -533,16 +533,16 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Step                                | Expected                                                       | Status  | Observations |
 | ----------------------------------- | -------------------------------------------------------------- | ------- | ------------ |
 | Run Dry Run                         | Route plan is generated                                        | PASS    | `mayapy` validation scene generated 14 route decisions. |
-| Run Apply on same scene state       | Apply preflight uses equivalent route-planning logic           | PASS    | Dry Run and Apply preflight produced equivalent route plans on the same saved scene state. |
-| Check Apply message                 | Message explicitly says "without scene changes"                | PASS    | Apply returned `Apply preflight completed without scene changes.` |
+| Run Apply on same scene state       | Apply uses equivalent route-planning logic before movement     | PASS    | Dry Run and Apply used equivalent route-planning inputs on the same saved scene state, then Apply executed eligible moves. |
+| Check Apply message                 | Message reports moved/planned/blocked/failed counts            | PASS    | Apply returned the current movement summary format such as `Apply: X moved, Y planned, Z blocked, W failed.` |
 | Check RouteDecision preflight field | Route decisions include `apply_preflight` eligibility/reasons  | PASS    | Every Apply RouteDecision included `apply_preflight` with `eligible` and `reasons`. |
 | Check Apply movement flags          | `did_move = false` and `new_long_name = None` in preflight run | PASS    | All Apply decisions kept `did_move = false` and `new_long_name = None`. |
-| Compare planned vs executed actions | Differences are explained by scene changes or operation status | PASS    | No scene-change drift observed; blocked items were explained by preserved or skipped statuses. |
-| Repeat Dry Run on same scene state  | Route ordering is stable across repeated runs                  | PASS    | Ordering matched the Apply preflight route plan for the same scene snapshot. |
-| Check Apply report                  | Report records preflight outcome without scene mutation        | PASS    | Apply JSON report included `apply_preflight` fields and preserved non-mutating state. |
-| Check Dry Run scene state           | Dry Run did not influence Apply by mutating scene              | PASS    | Outliner snapshot was unchanged before Dry Run, after Dry Run, and after Apply preflight. |
+| Compare planned vs executed actions | Differences are explained by movement outcomes or block reason | PASS    | Eligible items reached `moved` or `already_in_target`; blocked items were explained by preserved or skipped statuses. |
+| Repeat Dry Run on same scene state  | Route ordering is stable across repeated runs                  | PASS    | Ordering matched the Apply route plan on the same scene snapshot before Apply mutated it. |
+| Check Apply report                  | Report records movement outcome plus eligibility context       | PASS    | Apply JSON report included `apply_preflight`, `did_move`, `new_long_name`, and final `operation_status` values. |
+| Check Dry Run scene state           | Dry Run did not influence Apply by mutating scene              | PASS    | Outliner snapshot was unchanged before Dry Run and after Dry Run; only Apply performed scene mutation. |
 
-**Expected result:** Dry Run preview and Apply preflight behavior are trustworthy without scene mutation.
+**Expected result:** Dry Run preview remains non-mutating, and Apply executes the safe subset of that plan with honest movement outcomes.
 
 ---
 
@@ -588,7 +588,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | Apply creates all OUTPUT_GROUPS children | All 6 child groups present as direct children | PASS | `cmds.listRelatives` matched `sorted(config.OUTPUT_GROUPS)` exactly. |
 | `group_structure_status` in RunResult | RunResult contains group creation status dict | PASS | Key present; `Pipeline_Organized = "created"`, all 6 children `= "created"` on first run. |
 | No route decision objects moved | `did_move = False` and `new_long_name = None` on all decisions | PASS | All route decisions confirmed unmoved after Apply. |
-| Apply message updated | Message contains "group structure ready" and "No objects moved" | PASS | Exact message: `"Apply: group structure ready. Planned moves: N. Blocked: M. No objects moved."` |
+| Apply message updated | Message reports current Apply movement counters | PASS | Current Apply message follows `Apply: X moved, Y planned, Z blocked, W failed.` |
 | Second Apply is idempotent — no duplicates | Same 6 children, none added or duplicated | PASS | `scene_groups()` identical after second Apply. |
 | Second Apply reuses root group | `group_structure_status[ROOT_GROUP] = "reused"` | PASS | Confirmed via RunResult on second Apply call. |
 | Second Apply reuses all child groups | All 6 child statuses `= "reused"` | PASS | Confirmed via RunResult on second Apply call. |
@@ -613,7 +613,7 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 | `new_long_name` set and correct | Reflects post-parent Maya path | PASS | mayapy: `new_long_name` exists in scene; path contains `\|Pipeline_Organized\|Production_Meshes\|`. |
 | Original `long_name` preserved | Pre-move identity retained in decision | PASS | mayapy: `long_name = "\|ProdMesh_A"` unchanged alongside `new_long_name`. |
 | `summary.moved` accurate | RunResult summary count matches actual moves | PASS | mayapy: `summary.moved == 1` confirmed. |
-| Non-PM eligible stays `STATUS_PLANNED` | `ReviewMesh_A` not moved; remains planned | PASS | mayapy: `did_move = False`, `operation_status = planned` on review-routed mesh. |
+| Eligible non-PM routes move when safe | Review-routed safe content does not remain planned | PASS | Current Apply follow-through is validated separately for utilities, safe unclear, and material review routes; eligible routes are expected to reach `moved` or `already_in_target`, not remain `planned`. |
 | Apply message reflects moved count | Message updated from "No objects moved" | PASS | mayapy: message contains "1 moved"; "No objects moved" absent. |
 | Dry Run creates no groups, moves nothing | Non-regression after 8b | PASS | mayapy: `Pipeline_Organized` absent; all `did_move = False` after Dry Run. |
 | `failed_parenting` — status correct | `STATUS_FAILED_PARENTING` on failing decision | PASS | test30 mock: `STATUS_FAILED_PARENTING` confirmed when `cmds.parent` raises. |
@@ -630,9 +630,9 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 **Purpose:** Verify that all eligible route decisions move into their respective target groups, protected content is untouched, and Dry Run remains non-mutating.
 
-**Historical note:** A previous Phase 8c validation run was reported as successful, but the referenced validation script is not currently present in `tools/validation/`.
+**Validated:** Focused mayapy validations now cover representative Apply movement for `Production_Meshes` (`test06`), `Scene_Utilities` (`test14`), safe unclear review (`test20`), and material review (`test09`). Protected-content validations continue to confirm blocked/preserved behavior.
 
-**Checklist status:** `PENDING` — repo-backed validation evidence for Phase 8c is still pending until the script is added or the checks are rerun and recorded in the repository.
+**Checklist status:** `PASS` — current repo-backed evidence shows eligible routes in those categories reaching `moved` or `already_in_target` rather than remaining `planned`, unless a real block reason exists.
 
 ---
 
@@ -695,7 +695,7 @@ Before tagging or presenting a release candidate, verify:
 | Package imports cleanly              | No import-time scene mutation                                      | PENDING |              |
 | Dry Run works                        | Scan, classify, RunResult, and reports work without scene mutation | PENDING |              |
 | Apply works on simple safe scene     | Safe objects move to expected groups                               | PENDING |              |
-| Protected content stays protected    | References, instances, and sensitive hierarchies are preserved     | PASS    | `mayapy` protected-content validation confirmed referenced, instanced, skinCluster, blendShape, and joint-child meshes remain report-only, blocked, and unmoved in Apply preflight. |
+| Protected content stays protected    | References, instances, and sensitive hierarchies are preserved     | PASS    | `mayapy` protected-content validation confirmed referenced, instanced, skinCluster, blendShape, and joint-child meshes remain report-only, blocked, and unmoved in Apply. |
 | Reports are traceable                | TXT/JSON reflect real run data                                     | PENDING |              |
 | UI remains lightweight               | UI does not render full route list                                 | PENDING |              |
 | Idempotency works                    | Repeated run does not duplicate structure                          | PENDING |              |

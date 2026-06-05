@@ -37,9 +37,9 @@ It is designed to describe what the tool plans or preserves for one object, incl
 * `new_long_name`;
 * `operation_status`.
 
-For validated unclear review cases, a safe unclear object may be represented with `route=Review_UnclearCases`, `target_group=Review_UnclearCases`, `can_move=true`, and `operation=move`. In Dry Run, that movable unclear review content remains non-mutating and uses the dry-run route-plan status. In Apply preflight, eligible safe unclear content may become `planned` without scene mutation. Unsafe or sensitive unclear content remains `report_only` with `can_move=false` and a preservation or status reason.
+For validated unclear review cases, a safe unclear object may be represented with `route=Review_UnclearCases`, `target_group=Review_UnclearCases`, `can_move=true`, and `operation=move`. In Dry Run, that movable unclear review content remains non-mutating and uses the dry-run route-plan status. In current Apply runtime, eligible safe unclear content should end as `moved` or `already_in_target`, while unsafe or sensitive unclear content remains `report_only` with `can_move=false` and a preservation or status reason.
 
-During current Apply preflight, these decisions can also include eligibility annotations without mutating scene state.
+Current Apply decisions may also include `apply_preflight` eligibility annotations, but Apply is mutating once those eligible decisions are executed.
 
 ## RunResult
 
@@ -78,4 +78,4 @@ skipped_missing_node
 failed_parenting
 ```
 
-Not every status is currently reachable in the runtime. The checklist tracks which statuses have been validated in Maya and which remain gated behind future mutating Apply work.
+Not every status is currently reachable in the runtime. The checklist tracks which statuses have been validated in Maya and which remain gated behind unresolved edge cases rather than a preflight-only Apply model.

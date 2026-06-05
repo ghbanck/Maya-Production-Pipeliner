@@ -1,39 +1,45 @@
-"""
-launch_tool_in_maya.py
-======================
-Paste into the Maya Script Editor (Python tab) or add as a shelf button.
-
-If pasted directly, __file__ is not defined — set REPO_ROOT manually below.
-If run as a file (shelf button pointing to this file), REPO_ROOT is resolved
-automatically from the file location.
-"""
 import sys
 import importlib
+from pathlib import Path
 
-# Set this manually when pasting into the Script Editor.
-# Leave as None when running as a file — it is resolved automatically.
-# Example: REPO_ROOT = "C:/Projects/Maya-Production-Pipeliner"
-REPO_ROOT = None
+REPO_ROOT = r"C:\Users\gusta\Documents\GitHub\Maya Production Pipeliner"
 
-try:
-    from pathlib import Path
-    REPO_ROOT = str(Path(__file__).resolve().parents[2])
-except NameError:
-    pass  # __file__ not available; REPO_ROOT must be set above
+repo_path = Path(REPO_ROOT).resolve()
 
-if not REPO_ROOT:
+if not repo_path.exists():
+    raise RuntimeError("REPO_ROOT does not exist: %s" % repo_path)
+
+package_path = repo_path / "maya_production_pipeliner"
+
+if not package_path.exists():
     raise RuntimeError(
-        "REPO_ROOT is not set. "
-        "Set REPO_ROOT at the top of this script before running."
+        "maya_production_pipeliner package not found inside REPO_ROOT: %s" % package_path
     )
 
-if REPO_ROOT not in sys.path:
-    sys.path.insert(0, REPO_ROOT)
+repo_root_str = str(repo_path)
 
-import maya_production_pipeliner.ui as _ui
+if repo_root_str not in sys.path:
+    sys.path.insert(0, repo_root_str)
+
+MODULE_NAMES = (
+    "maya_production_pipeliner.config",
+    "maya_production_pipeliner.scanner",
+    "maya_production_pipeliner.classifier",
+    "maya_production_pipeliner.organizer",
+    "maya_production_pipeliner.reporter",
+    "maya_production_pipeliner.mel_bridge",
+    "maya_production_pipeliner.pipeline",
+    "maya_production_pipeliner.ui",
+    "maya_production_pipeliner.launcher",
+)
+
+for module_name in MODULE_NAMES:
+    module = sys.modules.get(module_name)
+    if module is None:
+        importlib.import_module(module_name)
+        continue
+    importlib.reload(module)
+
 import maya_production_pipeliner.launcher as _launcher
-
-importlib.reload(_ui)
-importlib.reload(_launcher)
 
 _launcher.launch()

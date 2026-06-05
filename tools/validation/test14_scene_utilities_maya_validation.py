@@ -131,7 +131,7 @@ def main():
             "route_decisions_count": dry_run_result.get("route_decisions_count"),
             "targets": dry_targets,
         },
-        "apply_preflight": {
+        "apply": {
             "success": apply_result.get("success"),
             "message": apply_result.get("message"),
             "summary": apply_result.get("summary"),
@@ -187,7 +187,8 @@ def main():
                 and apply_targets["joint"] is not None
                 and dry_targets["joint"].get("route") == config.ROUTE_SCENE_UTILITIES
                 and dry_targets["joint"].get("source_record", {}).get("node_type") == "joint"
-                and apply_targets["joint"].get("operation_status") == "planned"
+                and apply_targets["joint"].get("operation_status") == config.STATUS_MOVED
+                and apply_targets["joint"].get("did_move") is True
             ),
             "joint_child_remains_sensitive_not_utility": (
                 dry_targets["joint_child"] is not None
@@ -196,9 +197,10 @@ def main():
                 and dry_targets["joint_child"].get("operation_status") == config.STATUS_SKIPPED_SENSITIVE_HIERARCHY
                 and dry_targets["joint_child"].get("source_record", {}).get("parent_is_joint") is True
             ),
-            "apply_preflight_only_safe_utilities_move": all(
+            "apply_moves_safe_utilities": all(
                 (apply_targets[key] or {}).get("apply_preflight", {}).get("eligible") is True
-                and (apply_targets[key] or {}).get("operation_status") == "planned"
+                and (apply_targets[key] or {}).get("operation_status") == config.STATUS_MOVED
+                and (apply_targets[key] or {}).get("did_move") is True
                 for key in ("camera", "locator", "light", "joint")
             ) and (
                 (apply_targets["joint_child"] or {}).get("apply_preflight", {}).get("eligible") is False

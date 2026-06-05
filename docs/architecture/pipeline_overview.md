@@ -89,7 +89,7 @@ Review_MultiMaterial
 Review_UnclearCases
 ```
 
-This structure is created by the current Apply runtime. Object movement, idempotency, and already-in-target detection are validated through Phase 8d.
+This structure is created by the current Apply runtime. Eligible Production_Meshes, Scene_Utilities, material-review, and safe unclear routes now move under Apply; already-in-target detection and related follow-through remain tracked by the checklist and validation artifacts.
 
 Ignored content matched by the user-defined ignore string should be preserved outside the normal organized output buckets unless a future contract explicitly says otherwise.
 

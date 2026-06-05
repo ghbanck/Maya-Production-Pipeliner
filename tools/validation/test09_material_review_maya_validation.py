@@ -29,6 +29,9 @@ def _compact(decision):
     source = decision.get("source_record") or {}
     return {
         "object_name": decision.get("object_name"),
+        "did_move": decision.get("did_move"),
+        "new_long_name": decision.get("new_long_name"),
+        "apply_preflight": decision.get("apply_preflight"),
         "route": decision.get("route"),
         "target_group": decision.get("target_group"),
         "can_move": decision.get("can_move"),
@@ -92,24 +95,40 @@ def main():
     from maya_production_pipeliner import config, pipeline
 
     _create_scene(cmds)
-    run_result = pipeline.run(config.ALL_SCENE, config.DRY_RUN)
+    dry_run_result = pipeline.run(config.ALL_SCENE, config.DRY_RUN)
+    apply_result = pipeline.run(config.ALL_SCENE, config.APPLY)
 
-    route_decisions = run_result.get("route_decisions") or []
-    default_decision = _compact(_decision_by_name(route_decisions, "DefaultMaterialMesh_A"))
-    multi_decision = _compact(_decision_by_name(route_decisions, "MultiMaterialMesh_A"))
+    dry_route_decisions = dry_run_result.get("route_decisions") or []
+    apply_route_decisions = apply_result.get("route_decisions") or []
+    default_decision = _compact(_decision_by_name(dry_route_decisions, "DefaultMaterialMesh_A"))
+    multi_decision = _compact(_decision_by_name(dry_route_decisions, "MultiMaterialMesh_A"))
+    apply_default_decision = _compact(
+        _decision_by_name(apply_route_decisions, "DefaultMaterialMesh_A")
+    )
+    apply_multi_decision = _compact(
+        _decision_by_name(apply_route_decisions, "MultiMaterialMesh_A")
+    )
 
-    report_payload = _load_report((run_result.get("report_paths") or {}).get("json"))
+    report_payload = _load_report((dry_run_result.get("report_paths") or {}).get("json"))
     report_default = _report_decision(report_payload, "DefaultMaterialMesh_A")
     report_multi = _report_decision(report_payload, "MultiMaterialMesh_A")
 
     result = {
-        "run_result": {
-            "success": run_result.get("success"),
-            "message": run_result.get("message"),
-            "route_decisions_count": run_result.get("route_decisions_count"),
-            "report_paths": run_result.get("report_paths"),
+        "dry_run": {
+            "success": dry_run_result.get("success"),
+            "message": dry_run_result.get("message"),
+            "route_decisions_count": dry_run_result.get("route_decisions_count"),
+            "report_paths": dry_run_result.get("report_paths"),
             "default_material_mesh": default_decision,
             "multi_material_mesh": multi_decision,
+        },
+        "apply": {
+            "success": apply_result.get("success"),
+            "message": apply_result.get("message"),
+            "route_decisions_count": apply_result.get("route_decisions_count"),
+            "report_paths": apply_result.get("report_paths"),
+            "default_material_mesh": apply_default_decision,
+            "multi_material_mesh": apply_multi_decision,
         },
         "report_payload": {
             "default_material_mesh": report_default,
@@ -136,6 +155,20 @@ def main():
                 and default_decision["operation_status"] == config.STATUS_DRY_RUN_ONLY
                 and multi_decision["can_move"] is True
                 and multi_decision["operation_status"] == config.STATUS_DRY_RUN_ONLY
+            ),
+            "apply_material_review_routes_do_not_stay_planned": (
+                apply_default_decision is not None
+                and apply_multi_decision is not None
+                and (apply_default_decision.get("operation_status") in (
+                    config.STATUS_MOVED,
+                    config.STATUS_ALREADY_IN_TARGET,
+                ))
+                and (apply_multi_decision.get("operation_status") in (
+                    config.STATUS_MOVED,
+                    config.STATUS_ALREADY_IN_TARGET,
+                ))
+                and apply_default_decision.get("operation_status") != config.STATUS_PLANNED
+                and apply_multi_decision.get("operation_status") != config.STATUS_PLANNED
             ),
             "report_documents_material_counts": (
                 report_default is not None
