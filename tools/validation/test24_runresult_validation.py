@@ -105,6 +105,12 @@ def main():
             "summary_fields_present": sorted((run_result.get("summary") or {}).keys()),
             "summary_scanned_matches_records": (run_result.get("summary") or {}).get("scanned") == len(object_records),
             "summary_total_matches_routes": (run_result.get("summary") or {}).get("total") == len(route_decisions),
+            "summary_warning_count_matches_visible_warnings": (
+                (run_result.get("summary") or {}).get("warnings") == len(run_result.get("warnings") or [])
+            ),
+            "summary_warning_count_matches_warning_events": (
+                (run_result.get("summary") or {}).get("warnings") == len(run_result.get("warning_events") or [])
+            ),
             "warning_threshold_triggered": config.WARNING_IGNORE_MATCH_HIGH in [
                 event.get("code") for event in run_result.get("warning_events") or []
             ],

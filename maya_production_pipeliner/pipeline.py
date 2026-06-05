@@ -171,9 +171,12 @@ def _build_run_result(scope_mode, execution_mode, ignore_string,
             "source": "pipeline",
         })
 
+    summary = _build_summary(route_decisions, len(object_records))
+    summary["warnings"] = len(warnings)
+
     return {
         "route_decisions": route_decisions,
-        "summary": _build_summary(route_decisions, len(object_records)),
+        "summary": summary,
         "warnings": warnings,
         "warning_events": warning_events,
         "report_paths": report_paths or {"txt": None, "json": None},
@@ -239,6 +242,7 @@ def _apply_report_paths(run_result, report_paths):
         "message": warning_message,
         "source": "pipeline",
     })
+    (run_result.get("summary") or {})["warnings"] = len(run_result.get("warnings") or [])
 
 
 def _build_summary(route_decisions, scanned_count=0):

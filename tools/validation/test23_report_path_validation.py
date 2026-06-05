@@ -149,12 +149,58 @@ def case_unwritable_primary_dir():
     }
 
 
+def case_overwrite_and_lightweight_json():
+    target_dir = ARTIFACT_DIR / "overwrite_case"
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    first_run_result = dict(SAMPLE_RUN_RESULT)
+    first_run_result["message"] = "first"
+    first_run_result["route_decisions"] = list(SAMPLE_ROUTE_DECISIONS)
+    first_route_decisions = list(SAMPLE_ROUTE_DECISIONS)
+
+    second_route_decisions = [{
+        **SAMPLE_ROUTE_DECISIONS[0],
+        "object_name": "Cube_B",
+        "long_name": "|Cube_B",
+    }]
+    second_run_result = dict(SAMPLE_RUN_RESULT)
+    second_run_result["message"] = "second"
+    second_run_result["route_decisions"] = second_route_decisions
+
+    with mock.patch.object(reporter, "cmds") as fake_cmds:
+        fake_cmds.file.return_value = ""
+        fake_cmds.workspace.return_value = str(target_dir)
+        first_paths = reporter.write_reports(first_run_result, first_route_decisions)
+        second_paths = reporter.write_reports(second_run_result, second_route_decisions)
+
+    with open(second_paths["json"], encoding="utf-8") as handle:
+        second_json = json.load(handle)
+
+    top_level_decisions = second_json.get("route_decisions") or []
+    nested_route_decisions = ((second_json.get("run_result") or {}).get("route_decisions"))
+
+    return {
+        "first_paths": first_paths,
+        "second_paths": second_paths,
+        "same_paths_reused": first_paths == second_paths,
+        "top_level_route_decision_count": len(top_level_decisions),
+        "top_level_object_names": [item.get("object_name") for item in top_level_decisions],
+        "nested_route_decisions_present": nested_route_decisions is not None,
+        "run_result_message": (second_json.get("run_result") or {}).get("message"),
+        "json_overwritten_not_appended": (
+            len(top_level_decisions) == 1
+            and [item.get("object_name") for item in top_level_decisions] == ["Cube_B"]
+        ),
+    }
+
+
 def main():
     results = [
         write_case("saved_scene", case_saved_scene_directory),
         write_case("workspace_fallback", case_workspace_fallback),
         write_case("temp_fallback", case_temp_fallback),
         write_case("unwritable_primary_dir", case_unwritable_primary_dir),
+        write_case("overwrite_and_lightweight_json", case_overwrite_and_lightweight_json),
     ]
     RESULT_PATH.write_text(json.dumps(results, indent=2), encoding="utf-8")
     print(RESULT_PATH)

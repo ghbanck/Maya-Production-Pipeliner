@@ -126,6 +126,7 @@ def main():
             "message": dry_run.get("message"),
             "warning_codes": _warning_codes(dry_run),
             "warnings": dry_run.get("warnings"),
+            "summary": dry_run.get("summary"),
             "targets": dry_targets,
             "report_paths": dry_run.get("report_paths"),
         },
@@ -134,6 +135,7 @@ def main():
             "message": apply_preflight.get("message"),
             "warning_codes": _warning_codes(apply_preflight),
             "warnings": apply_preflight.get("warnings"),
+            "summary": apply_preflight.get("summary"),
             "targets": apply_targets,
             "report_paths": apply_preflight.get("report_paths"),
         },
@@ -168,6 +170,10 @@ def main():
                 for name in focus_bypass_names
             ),
             "warning_threshold_triggered": config.WARNING_IGNORE_MATCH_HIGH in _warning_codes(dry_run),
+            "warning_count_matches_visible_warnings": (
+                (dry_run.get("summary") or {}).get("warnings") == len(dry_run.get("warnings") or [])
+                and (dry_run.get("summary") or {}).get("warnings") == len(dry_run.get("warning_events") or [])
+            ),
             "report_documents_bypass": apply_report_contains_bypass,
         },
     }

@@ -181,14 +181,22 @@ def _format_json_payload(run_result, route_decisions):
     """Return a JSON-serialisable dict for the full execution.
 
     """
+    report_run_result = _report_run_result(run_result)
     payload = {
         "tool": config.TOOL_NAME,
         "schema_version": config.REPORT_SCHEMA_VERSION,
         "generated_at": _timestamp(),
-        "run_result": run_result,
+        "run_result": report_run_result,
         "route_decisions": _sorted_route_decisions(route_decisions),
     }
     return _json_safe(payload)
+
+
+def _report_run_result(run_result):
+    """Return a report-safe RunResult without duplicating full route details."""
+    report_run_result = dict(run_result or {})
+    report_run_result.pop("route_decisions", None)
+    return report_run_result
 
 
 def _write_file(directory, filename, content, mode="w"):

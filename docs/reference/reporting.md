@@ -54,12 +54,16 @@ Current JSON output includes:
 
 * top-level `schema_version`;
 * top-level `route_decisions`;
-* structured `run_result`;
+* structured lightweight `run_result`;
 * warning events as dictionaries with fields such as `code`, `message`, and `source`.
+
+The JSON payload keeps one canonical full route list at top-level
+`route_decisions`. The nested `run_result` is intentionally lighter-weight and
+must not duplicate that full list.
 
 The presence of JSON structure does not mean the schema is permanently integration-stable. Schema/version behavior should still be treated conservatively.
 
-Current schema version is `0.2`. Bumped from `0.1` when `summary.planned` was renamed to `summary.total` to remove ambiguity with `operation_status = planned`.
+Current schema version is `0.3`. Bumped from `0.2` when JSON report payloads stopped duplicating the full `route_decisions` list inside nested `run_result`.
 
 ## Schema Version Bump Policy
 

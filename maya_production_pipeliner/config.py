@@ -116,7 +116,7 @@ RIG_HISTORY_TYPES = ("skinCluster", "blendShape")
 TOOL_NAME = "Maya Production Pipeliner"
 REPORT_TXT_NAME = "maya_production_pipeliner_report.txt"
 REPORT_JSON_NAME = "maya_production_pipeliner_report.json"
-REPORT_SCHEMA_VERSION = "0.2"
+REPORT_SCHEMA_VERSION = "0.3"
 
 # ---------------------------------------------------------------------------
 # UI preview limits

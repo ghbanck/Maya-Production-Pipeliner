@@ -58,6 +58,10 @@ It is intended to include:
 
 Full object-level details belong in reports rather than in heavy UI state.
 
+In JSON reports, `run_result` should remain lightweight and must not duplicate
+the full `route_decisions` list. The canonical full route list belongs only in
+the top-level `route_decisions` field of the report payload.
+
 ## Operation Status Values
 
 The project uses explicit operation status values instead of vague success/failure wording.

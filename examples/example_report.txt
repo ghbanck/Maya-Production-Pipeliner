@@ -1,6 +1,6 @@
 Maya Production Pipeliner
-Schema version: 0.2
-Report generated: 2026-06-04T05:27:51
+Schema version: 0.3
+Report generated: 2026-06-04T21:44:23
 
 Execution
 ---------
