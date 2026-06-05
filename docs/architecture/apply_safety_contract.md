@@ -54,12 +54,14 @@ If any required condition is false or unknown, the object should be preserved an
 The current mutating lifecycle is:
 
 ```text
-build route plan
+call pre-hook (if configured)
+-> build route plan
 -> validate move candidates
 -> create or reuse groups
 -> execute safe moves
 -> validate outcomes
 -> write reports
+-> call post-hook (if configured)
 -> return RunResult
 ```
 

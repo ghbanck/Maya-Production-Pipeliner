@@ -79,9 +79,8 @@ def run(scope_mode, execution_mode, ignore_string="",
     if execution_mode not in config.EXECUTION_MODES:
         raise ValueError("Unsupported execution_mode: {0}".format(execution_mode))
 
-    mel_hook_status = _build_disabled_hook_status(pre_hook, post_hook)
-
     if execution_mode == config.APPLY:
+        pre_hook_status = mel_bridge.run_pre_hook(pre_hook)
         object_records = scanner.scan(scope_mode, ignore_string)
         route_decisions = classifier.classify(
             object_records, execution_mode, scope_mode, ignore_string
@@ -104,20 +103,24 @@ def run(scope_mode, execution_mode, ignore_string="",
         ).format(moved_count, planned_count, blocked_count, failed_count)
         run_result = _build_run_result(
             scope_mode, execution_mode, ignore_string, object_records,
-            route_decisions, {}, mel_hook_status, True, message,
+            route_decisions, {}, {}, True, message,
         )
         run_result["group_structure_status"] = group_status
         report_paths = reporter.write_reports(run_result, route_decisions)
         _apply_report_paths(run_result, report_paths)
+        post_hook_status = mel_bridge.run_post_hook(post_hook)
+        run_result["mel_hook_status"] = _assemble_hook_status(pre_hook_status, post_hook_status)
         return run_result
 
+    # Dry Run — MEL hooks are disabled; user hooks can mutate the scene.
+    dry_hook_status = _build_disabled_hook_status(pre_hook, post_hook)
     object_records = scanner.scan(scope_mode, ignore_string)
     route_decisions = classifier.classify(
         object_records, execution_mode, scope_mode, ignore_string
     )
     run_result = _build_run_result(
         scope_mode, execution_mode, ignore_string, object_records,
-        route_decisions, {}, mel_hook_status, True,
+        route_decisions, {}, dry_hook_status, True,
         "Dry Run completed without scene changes.",
     )
     report_paths = reporter.write_reports(run_result, route_decisions)
@@ -191,6 +194,12 @@ def _build_run_result(scope_mode, execution_mode, ignore_string,
         ),
         "max_ui_preview_items": config.MAX_UI_PREVIEW_ITEMS,
     }
+
+
+def _assemble_hook_status(pre_status, post_status):
+    """Assemble mel_hook_status from individual pre and post hook results."""
+    errors = [e for e in [pre_status.get("error"), post_status.get("error")] if e]
+    return {"pre": pre_status, "post": post_status, "errors": errors}
 
 
 def _build_disabled_hook_status(pre_hook="", post_hook=""):
