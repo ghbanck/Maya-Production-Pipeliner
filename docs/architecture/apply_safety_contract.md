@@ -60,8 +60,8 @@ call pre-hook (if configured)
 -> create or reuse groups
 -> execute safe moves
 -> validate outcomes
--> write reports
 -> call post-hook (if configured)
+-> write reports
 -> return RunResult
 ```
 

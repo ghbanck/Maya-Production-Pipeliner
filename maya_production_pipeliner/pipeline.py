@@ -86,6 +86,7 @@ def run(scope_mode, execution_mode, ignore_string="",
             object_records, execution_mode, scope_mode, ignore_string
         )
         group_status, route_decisions = organizer.apply(route_decisions)
+        post_hook_status = mel_bridge.run_post_hook(post_hook)
         moved_count = sum(1 for d in route_decisions if d.get("did_move"))
         failed_count = sum(
             1 for d in route_decisions
@@ -101,15 +102,14 @@ def run(scope_mode, execution_mode, ignore_string="",
         message = (
             "Apply: {0} moved, {1} planned, {2} blocked, {3} failed."
         ).format(moved_count, planned_count, blocked_count, failed_count)
+        mel_hook_status = _assemble_hook_status(pre_hook_status, post_hook_status)
         run_result = _build_run_result(
             scope_mode, execution_mode, ignore_string, object_records,
-            route_decisions, {}, {}, True, message,
+            route_decisions, {}, mel_hook_status, True, message,
         )
         run_result["group_structure_status"] = group_status
         report_paths = reporter.write_reports(run_result, route_decisions)
         _apply_report_paths(run_result, report_paths)
-        post_hook_status = mel_bridge.run_post_hook(post_hook)
-        run_result["mel_hook_status"] = _assemble_hook_status(pre_hook_status, post_hook_status)
         return run_result
 
     # Dry Run — MEL hooks are disabled; user hooks can mutate the scene.
