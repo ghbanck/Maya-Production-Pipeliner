@@ -53,7 +53,6 @@ The repository is no longer only scaffold. The current state is better understoo
 
 ### Remaining open behavior
 
-* leaf object reclassification inside `Pipeline_Organized` after user edits (Test 19);
 * full release gate validation (Test 28 documentation check, final checklist pass).
 
 ## Module Responsibilities

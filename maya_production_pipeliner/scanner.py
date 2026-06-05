@@ -167,7 +167,7 @@ def _build_object_record(transform, ignore_string="", selected_transforms=None):
     has_skin_cluster, has_blendshape = _detect_rig_history(long_name, shape_nodes)
     parent_is_joint = _parent_is_joint(long_name)
     is_inside_tool_output = _is_inside_tool_output(long_name)
-    is_tool_structural_group = name in config.STRUCTURAL_GROUPS
+    is_tool_structural_group = _is_tool_structural_group(long_name)
 
     return _build_object_record_dict({
         "name": name,
@@ -462,3 +462,17 @@ def _is_inside_tool_output(long_name):
     """Return True when a node is inside the tool's output hierarchy."""
     parts = [part for part in long_name.split("|") if part]
     return config.ROOT_GROUP in parts
+
+
+def _is_tool_structural_group(long_name):
+    """Return True only for the managed root or its direct output groups."""
+    if not long_name:
+        return False
+    if long_name == "|{0}".format(config.ROOT_GROUP):
+        return True
+    parts = [part for part in long_name.split("|") if part]
+    return (
+        len(parts) == 2
+        and parts[0] == config.ROOT_GROUP
+        and parts[1] in config.OUTPUT_GROUPS
+    )

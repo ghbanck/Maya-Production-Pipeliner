@@ -379,12 +379,12 @@ It is intended for manual verification inside Autodesk Maya. Do not mark any ite
 
 | Step                                         | Expected                                               | Status  | Observations |
 | -------------------------------------------- | ------------------------------------------------------ | ------- | ------------ |
-| Edit leaf object inside `Pipeline_Organized` | Object state changes                                   | PENDING |              |
-| Run Dry Run or Apply again                   | Leaf object is rescanned                               | PENDING |              |
-| Check route                                  | Object may reclassify to a new bucket                  | PENDING |              |
-| If already correct                           | `operation_status = already_in_target`                 | PENDING |              |
-| If target changes and safe                   | Object moves only if `can_move = true`                 | PENDING |              |
-| Check structural groups                      | Structural groups remain ignored as production content | PENDING |              |
+| Edit leaf object inside `Pipeline_Organized` | Object state changes                                   | PASS    | mayapy test19 changed `ReclassMesh_A` from a custom-material production mesh to default-material review content after the first Apply move. |
+| Run Dry Run or Apply again                   | Leaf object is rescanned                               | PASS    | mayapy test19 second Apply rescanned `ReclassMesh_A` at its post-move path under `|Pipeline_Organized|Production_Meshes|...`. |
+| Check route                                  | Object may reclassify to a new bucket                  | PASS    | mayapy test19 reclassified `ReclassMesh_A` from `Production_Meshes` to `Review_MissingMaterial` after the user edit. |
+| If already correct                           | `operation_status = already_in_target`                 | PASS    | mayapy test19 third Apply returned `already_in_target` with `did_move = false` once the reclassified mesh was already under `Review_MissingMaterial`. |
+| If target changes and safe                   | Object moves only if `can_move = true`                 | PASS    | mayapy test19 second Apply moved the edited leaf with `apply_preflight.eligible = true`, `did_move = true`, and no eligible route left at `planned`. |
+| Check structural groups                      | Structural groups remain ignored as production content | PASS    | mayapy test19 kept `Pipeline_Organized` and its direct child groups at `skipped_tool_structure`, while a protected leaf under `Scene_Utilities` remained preserved as content rather than misread as structure. |
 
 **Expected result:** Idempotency does not block useful reprocessing.
 

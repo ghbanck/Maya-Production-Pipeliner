@@ -67,3 +67,6 @@ test*_result.json
 
 # Local collaborator guidance
 AGENTS.md
+
+# Local scene-building helper scripts
+tools/manual/create_complex_scene.py
