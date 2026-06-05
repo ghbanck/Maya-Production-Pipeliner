@@ -8,6 +8,8 @@ Phase 8c runtime scope:
 - Dry Run must never call ensure_group_structure or any movement function.
 
 Mutation boundary: only organizer.py may mutate scene hierarchy.
+
+Undo contract: apply() wraps all scene mutations in a single named undo chunk.
 """
 
 try:
@@ -21,6 +23,40 @@ from maya_production_pipeliner import config
 # ---------------------------------------------------------------------------
 # Public entry points
 # ---------------------------------------------------------------------------
+
+def apply(route_decisions):
+    """Wrap a full Apply run in one Maya undo chunk.
+
+    Opens a named undo chunk, calls ensure_group_structure() then
+    apply_routes(), and closes the chunk unconditionally.  A single Ctrl+Z
+    in Maya reverses all group creation and parenting from the run.
+
+    Parameters
+    ----------
+    route_decisions : list[dict]
+        Output of classifier.classify().
+
+    Returns
+    -------
+    tuple[dict, list[dict]]
+        (group_status, annotated_route_decisions)
+        group_status: mapping returned by ensure_group_structure().
+        annotated_route_decisions: list returned by apply_routes().
+    """
+    if cmds is None:
+        group_status = ensure_group_structure()
+        annotated = apply_routes(route_decisions)
+        return group_status, annotated
+
+    cmds.undoInfo(openChunk=True, chunkName="MPP_Apply")
+    try:
+        group_status = ensure_group_structure()
+        annotated = apply_routes(route_decisions)
+    finally:
+        cmds.undoInfo(closeChunk=True)
+
+    return group_status, annotated
+
 
 def ensure_group_structure():
     """Create or reuse Pipeline_Organized and all OUTPUT_GROUPS child groups.

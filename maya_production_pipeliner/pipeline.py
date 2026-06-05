@@ -86,8 +86,7 @@ def run(scope_mode, execution_mode, ignore_string="",
         route_decisions = classifier.classify(
             object_records, execution_mode, scope_mode, ignore_string
         )
-        group_status = organizer.ensure_group_structure()
-        route_decisions = organizer.apply_routes(route_decisions)
+        group_status, route_decisions = organizer.apply(route_decisions)
         moved_count = sum(1 for d in route_decisions if d.get("did_move"))
         failed_count = sum(
             1 for d in route_decisions
