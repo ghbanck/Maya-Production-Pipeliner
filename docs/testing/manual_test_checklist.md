@@ -694,13 +694,13 @@ Before tagging or presenting a release candidate, verify:
 
 | Gate                                 | Expected                                                           | Status  | Observations |
 | ------------------------------------ | ------------------------------------------------------------------ | ------- | ------------ |
-| Package imports cleanly              | No import-time scene mutation                                      | PENDING |              |
-| Dry Run works                        | Scan, classify, RunResult, and reports work without scene mutation | PENDING |              |
-| Apply works on simple safe scene     | Safe objects move to expected groups                               | PENDING |              |
+| Package imports cleanly              | No import-time scene mutation                                      | PASS    | Test 1: all import smoke rows PASS in mayapy; no scene mutation on import. |
+| Dry Run works                        | Scan, classify, RunResult, and reports work without scene mutation | PASS    | Tests 2, 6, 27: Dry Run non-mutating across empty scene, production mesh, and consistency checks; reports written correctly. |
+| Apply works on simple safe scene     | Safe objects move to expected groups                               | PASS    | Tests 7, Phase 8b, Phase 8c: group structure created; production mesh and utility moved to correct groups; operation_status = moved confirmed. |
 | Protected content stays protected    | References, instances, and sensitive hierarchies are preserved     | PASS    | `mayapy` protected-content validation confirmed referenced, instanced, skinCluster, blendShape, and joint-child meshes remain report-only, blocked, and unmoved in Apply. |
-| Reports are traceable                | TXT/JSON reflect real run data                                     | PENDING |              |
-| UI remains lightweight               | UI does not render full route list                                 | PENDING |              |
-| Idempotency works                    | Repeated run does not duplicate structure                          | PENDING |              |
-| Documentation matches implementation | README and docs describe current state honestly                    | PENDING |              |
+| Reports are traceable                | TXT/JSON reflect real run data                                     | PASS    | Test 22 and Phase 9a: TXT and JSON completeness validated; real Apply output confirmed in examples. |
+| UI remains lightweight               | UI does not render full route list                                 | PASS    | Test 24 and Maya 2027.1 smoke: preview capped at max_ui_preview_items; RunResult-only feedback confirmed; no report file parsed. |
+| Idempotency works                    | Repeated run does not duplicate structure                          | PASS    | Tests 18 and 19: second Apply returned already_in_target and summary.moved = 0; leaf reclassification and third-run already_in_target confirmed. |
+| Documentation matches implementation | README and docs describe current state honestly                    | PASS    | Stale scope status, ObjectRecord field list, pipeline_overview remaining-open wording, and README status table corrected in this pass. |
 
 **Expected result:** The repository is ready for a public release candidate only after the functional claims in the README are backed by code and test evidence.

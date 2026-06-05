@@ -53,7 +53,8 @@ The repository is no longer only scaffold. The current state is better understoo
 
 ### Remaining open behavior
 
-* full release gate validation (Test 28 documentation check, final checklist pass).
+* Phase 8c, 8d, and 8e repo-backed validation scripts are not yet committed to `tools/validation/`; those behaviors were validated in Maya but the scripts were not added to the repository.
+* A small number of checklist rows remain PENDING; see `docs/testing/manual_test_checklist.md` for current state.
 
 ## Module Responsibilities
 

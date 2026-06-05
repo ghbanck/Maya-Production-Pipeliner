@@ -49,7 +49,7 @@ This repository is still in controlled implementation.
 | Core runtime | Implemented in slices |
 | Dry Run | Implemented and validated in focused checklist slices |
 | Apply | Creates group structure and moves eligible routed objects; mayapy-validated through Phase 8c |
-| Mutating Apply (full) | Group creation, movement, idempotency, and failure handling validated; leaf reclassification and final release gate pending |
+| Mutating Apply (full) | Group creation, movement, idempotency, failure handling, and leaf reclassification validated; release gate closed |
 | UI | Minimal UI implemented; Dry Run and Apply smoke validated in Maya 2027.1 |
 | Release status | Not release-ready |
 

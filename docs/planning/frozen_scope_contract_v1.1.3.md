@@ -15,7 +15,7 @@ This is a planning and implementation contract. It should not be read as proof t
 | Area                   | Status                                |
 | ---------------------- | ------------------------------------- |
 | Scope label            | v1.1.3 Final Hardened                 |
-| Tool status            | Scaffold / implementation in progress |
+| Tool status            | Core runtime implemented and validated |
 | Primary DCC            | Autodesk Maya                         |
 | Primary language       | Python                                |
 | Maya API layer         | `maya.cmds`                           |
@@ -669,17 +669,20 @@ Simple installation/path/launch helper.
 ```text
 name
 long_name
-input_node
 transform_node
 shape_nodes
 node_type
 shape_type
+shape_types
 is_mesh
 is_visible
 is_selected
 namespace
 materials
 material_count
+material_node_count
+shading_engines
+shading_engine_count
 uses_default_material
 matches_ignore_string
 is_referenced
