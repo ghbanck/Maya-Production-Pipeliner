@@ -114,38 +114,36 @@ def main():
         mock_cmds_full.createNode.call_count == 0
     )
 
-    # 5 — pipeline Apply path calls ensure_group_structure
-    with mock.patch.object(pipeline.scanner, "scan", return_value=OBJECT_RECORDS):
-        with mock.patch.object(pipeline.classifier, "classify",
-                               return_value=ROUTE_DECISIONS):
-            with mock.patch.object(pipeline.organizer, "apply_routes",
-                                   return_value=ROUTE_DECISIONS):
-                with mock.patch.object(pipeline.reporter, "write_reports",
-                                       return_value=FAKE_REPORT_PATHS):
-                    with mock.patch.object(
-                        pipeline.organizer, "ensure_group_structure",
-                        return_value={config.ROOT_GROUP: "created"}
-                    ) as mock_ensure:
-                        apply_result = pipeline.run(
-                            config.ALL_SCENE, config.APPLY
-                        )
-    checks["apply_calls_ensure_group_structure"] = mock_ensure.called
-
-    # 6 — pipeline Dry Run path does NOT call ensure_group_structure
+    # 5 — pipeline Apply path calls organizer.apply
     with mock.patch.object(pipeline.scanner, "scan", return_value=OBJECT_RECORDS):
         with mock.patch.object(pipeline.classifier, "classify",
                                return_value=ROUTE_DECISIONS):
             with mock.patch.object(pipeline.reporter, "write_reports",
                                    return_value=FAKE_REPORT_PATHS):
                 with mock.patch.object(
-                    pipeline.organizer, "ensure_group_structure",
-                    return_value={}
-                ) as mock_ensure_dry:
+                    pipeline.organizer, "apply",
+                    return_value=({config.ROOT_GROUP: "created"}, ROUTE_DECISIONS),
+                ) as mock_apply:
+                    apply_result = pipeline.run(
+                        config.ALL_SCENE, config.APPLY
+                    )
+    checks["apply_calls_organizer_apply"] = mock_apply.called
+
+    # 6 — pipeline Dry Run path does NOT call organizer.apply
+    with mock.patch.object(pipeline.scanner, "scan", return_value=OBJECT_RECORDS):
+        with mock.patch.object(pipeline.classifier, "classify",
+                               return_value=ROUTE_DECISIONS):
+            with mock.patch.object(pipeline.reporter, "write_reports",
+                                   return_value=FAKE_REPORT_PATHS):
+                with mock.patch.object(
+                    pipeline.organizer, "apply",
+                    return_value=({}, []),
+                ) as mock_apply_dry:
                     dry_result = pipeline.run(
                         config.ALL_SCENE, config.DRY_RUN
                     )
-    checks["dry_run_does_not_call_ensure_group_structure"] = (
-        not mock_ensure_dry.called
+    checks["dry_run_does_not_call_organizer_apply"] = (
+        not mock_apply_dry.called
     )
 
     # 7 — RunResult has group_structure_status key in Apply mode

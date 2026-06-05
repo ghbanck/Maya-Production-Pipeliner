@@ -205,6 +205,18 @@ def main():
     RESULT_PATH.write_text(json.dumps(results, indent=2), encoding="utf-8")
     print(RESULT_PATH)
 
+    by_case = {r["case"]: r for r in results}
+    all_pass = (
+        by_case["saved_scene"].get("uses_saved_scene_dir") is True
+        and by_case["workspace_fallback"].get("uses_workspace_dir") is True
+        and by_case["temp_fallback"].get("uses_temp_dir") is True
+        and by_case["unwritable_primary_dir"].get("uses_workspace_fallback") is True
+        and by_case["unwritable_primary_dir"].get("written_report_paths_match_returned_paths") is True
+        and by_case["overwrite_and_lightweight_json"].get("same_paths_reused") is True
+        and by_case["overwrite_and_lightweight_json"].get("json_overwritten_not_appended") is True
+    )
+    sys.exit(0 if all_pass else 1)
+
 
 if __name__ == "__main__":
     main()

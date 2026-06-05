@@ -135,6 +135,9 @@ def main():
     RESULT_PATH.write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(RESULT_PATH)
 
+    all_pass = all(v is True for v in (result.get("checks") or {}).values() if isinstance(v, bool))
+    sys.exit(0 if all_pass else 1)
+
 
 if __name__ == "__main__":
     main()
