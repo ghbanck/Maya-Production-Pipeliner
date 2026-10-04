@@ -12,6 +12,14 @@
   <em>Before validation, production needs readable structure.</em>
 </p>
 
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-3fb950"></a>
+  <img alt="Platform: Autodesk Maya" src="https://img.shields.io/badge/platform-Autodesk%20Maya-0078d4">
+  <img alt="Python: mayapy" src="https://img.shields.io/badge/python-mayapy-3776ab">
+  <img alt="Smoke validated: Maya 2027.1" src="https://img.shields.io/badge/smoke%20validated-Maya%202027.1-8250df">
+  <img alt="Status: not release-ready" src="https://img.shields.io/badge/status-not%20release--ready-d29922">
+</p>
+
 ---
 
 ## What It Is
